@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Playground · Hecho con Claude</title>
+  <title>Playground Interactivo</title>
   <style>
     :root {
       --bg: #0d1117;
@@ -344,8 +344,8 @@
     </section>
 
     <footer>
-      Generado como demo interactiva · Hora local: <span class="clock" id="clock">--:--:--</span><br />
-      <a href="https://claude.ai/code" target="_blank" rel="noopener">Hecho con Claude Code</a>
+      Hora local: <span class="clock" id="clock">--:--:--</span><br />
+      © <span id="year"></span> · Todos los derechos reservados
     </footer>
   </div>
 
@@ -608,6 +608,7 @@
       clockEl.textContent = new Date().toLocaleTimeString();
     }
     setInterval(tickClock, 1000); tickClock();
+    document.getElementById('year').textContent = new Date().getFullYear();
 
     /* ---------- Keyboard shortcut: T toggles theme ---------- */
     window.addEventListener('keydown', e => {
