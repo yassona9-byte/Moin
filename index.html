@@ -239,6 +239,54 @@
       z-index: 5;
     }
     .toast.show { transform: translateX(-50%) translateY(0); }
+
+    /* ---------- Typewriter ---------- */
+    .typewriter {
+      display: inline-block;
+      min-height: 1.6rem;
+      margin-top: 14px;
+      font-size: 1.05rem;
+      color: var(--accent);
+      font-weight: 600;
+    }
+    .typewriter::after {
+      content: '|';
+      animation: blink 1s steps(1) infinite;
+      color: var(--accent2);
+    }
+    @keyframes blink { 50% { opacity: 0; } }
+
+    /* ---------- Palette switcher ---------- */
+    .palettes {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin-top: 26px;
+    }
+    .swatch {
+      width: 30px; height: 30px;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: transform 0.15s ease, border-color 0.2s ease;
+    }
+    .swatch:hover { transform: scale(1.2); }
+    .swatch.active { border-color: var(--text); transform: scale(1.15); }
+
+    /* ---------- Scroll reveal ---------- */
+    .reveal {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    /* ---------- Clock ---------- */
+    .clock {
+      font-variant-numeric: tabular-nums;
+      font-weight: 700;
+      color: var(--accent);
+    }
   </style>
 </head>
 <body>
@@ -255,6 +303,8 @@
       <p>Una página de demostración 100% interactiva: fondo de partículas animadas,
          tema claro/oscuro, contadores que cobran vida y un mini-juego. Todo en un
          solo archivo, sin dependencias.</p>
+      <div class="typewriter" id="typewriter"></div>
+      <div class="palettes" id="palettes" title="Cambia la paleta de colores"></div>
       <div class="cta">
         <button class="btn btn-primary" id="surpriseBtn">Sorpréndeme 🎉</button>
         <button class="btn btn-ghost" onclick="document.getElementById('game').scrollIntoView({behavior:'smooth'})">Jugar 🎮</button>
@@ -268,7 +318,7 @@
       <div class="stat"><div class="num" data-target="1">0</div><div class="label">Archivo único</div></div>
     </section>
 
-    <section>
+    <section class="reveal">
       <h2 class="section-title">Lo que incluye</h2>
       <p class="section-sub">Cada tarjeta reacciona al pasar el ratón.</p>
       <div class="cards">
@@ -279,7 +329,7 @@
       </div>
     </section>
 
-    <section id="game">
+    <section id="game" class="reveal">
       <h2 class="section-title">🎯 Reflejos en 15 segundos</h2>
       <p class="section-sub">Haz clic en el círculo tantas veces como puedas.</p>
       <div class="game-box">
@@ -294,7 +344,7 @@
     </section>
 
     <footer>
-      Generado como demo interactiva ·
+      Generado como demo interactiva · Hora local: <span class="clock" id="clock">--:--:--</span><br />
       <a href="https://claude.ai/code" target="_blank" rel="noopener">Hecho con Claude Code</a>
     </footer>
   </div>
@@ -500,6 +550,69 @@
       moveTarget();
     });
     startBtn.addEventListener('click', startGame);
+
+    /* ---------- Typewriter ---------- */
+    const twEl = document.getElementById('typewriter');
+    const twPhrases = [
+      'Diseño responsivo en CSS puro.',
+      'Animaciones a 60 FPS.',
+      'Cero librerías externas.',
+      'Hecho en un solo archivo HTML.',
+      'Interactivo de principio a fin.'
+    ];
+    let twP = 0, twC = 0, twDel = false;
+    function typewriter() {
+      const full = twPhrases[twP];
+      twC += twDel ? -1 : 1;
+      twEl.textContent = full.slice(0, twC);
+      let delay = twDel ? 40 : 70;
+      if (!twDel && twC === full.length) { delay = 1600; twDel = true; }
+      else if (twDel && twC === 0) { twDel = false; twP = (twP + 1) % twPhrases.length; delay = 400; }
+      setTimeout(typewriter, delay);
+    }
+    typewriter();
+
+    /* ---------- Palette switcher ---------- */
+    const palettes = [
+      { name: 'Iris',   a: '#6e8bff', b: '#b46eff' },
+      { name: 'Sunset', a: '#ff6e7f', b: '#ffb86e' },
+      { name: 'Mint',   a: '#2ee6a8', b: '#3fb6ff' },
+      { name: 'Gold',   a: '#ffd166', b: '#ff8c42' },
+      { name: 'Rose',   a: '#ff5d8f', b: '#c44bff' }
+    ];
+    const palBox = document.getElementById('palettes');
+    palettes.forEach((p, i) => {
+      const s = document.createElement('div');
+      s.className = 'swatch' + (i === 0 ? ' active' : '');
+      s.style.background = `linear-gradient(135deg, ${p.a}, ${p.b})`;
+      s.title = p.name;
+      s.addEventListener('click', () => {
+        document.documentElement.style.setProperty('--accent', p.a);
+        document.documentElement.style.setProperty('--accent2', p.b);
+        document.querySelectorAll('.swatch').forEach(x => x.classList.remove('active'));
+        s.classList.add('active');
+        showToast('Paleta: ' + p.name);
+      });
+      palBox.appendChild(s);
+    });
+
+    /* ---------- Scroll reveal ---------- */
+    const revObs = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+    }, { threshold: 0.15 });
+    document.querySelectorAll('.reveal').forEach(el => revObs.observe(el));
+
+    /* ---------- Live clock ---------- */
+    const clockEl = document.getElementById('clock');
+    function tickClock() {
+      clockEl.textContent = new Date().toLocaleTimeString();
+    }
+    setInterval(tickClock, 1000); tickClock();
+
+    /* ---------- Keyboard shortcut: T toggles theme ---------- */
+    window.addEventListener('keydown', e => {
+      if (e.key.toLowerCase() === 't' && !e.target.matches('input,textarea')) themeBtn.click();
+    });
   </script>
 </body>
 </html>
