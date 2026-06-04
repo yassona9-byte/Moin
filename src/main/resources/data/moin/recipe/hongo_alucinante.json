@@ -1,0 +1,11 @@
+{
+    "type": "minecraft:crafting_shapeless",
+    "ingredients": [
+        { "item": "minecraft:red_mushroom" },
+        { "item": "minecraft:glowstone_dust" }
+    ],
+    "result": {
+        "id": "moin:hongo_alucinante",
+        "count": 1
+    }
+}

@@ -1,0 +1,23 @@
+{
+    "itemGroup.moin.moin_tab": "Moin",
+
+    "item.moin.semilla_hierba": "Semilla de Hierba",
+    "item.moin.cogollo": "Cogollo",
+    "item.moin.porro": "Porro",
+    "item.moin.polvo_bruto": "Polvo Bruto",
+    "item.moin.polvo_blanco": "Polvo Blanco",
+    "item.moin.hongo_alucinante": "Hongo Alucinante",
+    "item.moin.pastilla": "Pastilla",
+
+    "block.moin.mesa_procesado": "Mesa de Procesado",
+
+    "effect.moin.colocon": "Colocón",
+    "effect.moin.subidon": "Subidón",
+    "effect.moin.viaje": "Viaje",
+    "effect.moin.resaca": "Resaca",
+    "effect.moin.euforia": "Euforia",
+
+    "subtitles.moin.toke": "Alguien le da una calada",
+    "subtitles.moin.esnifar": "Alguien esnifa",
+    "subtitles.moin.viaje": "Sonidos extraños..."
+}
