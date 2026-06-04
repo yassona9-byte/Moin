@@ -1,0 +1,9 @@
+{
+    "type": "minecraft:crafting_shapeless",
+    "ingredients": [
+        { "item": "moin:polvo_blanco" },
+        { "item": "minecraft:glowstone_dust" },
+        { "item": "minecraft:glowstone_dust" }
+    ],
+    "result": { "id": "moin:cristal", "count": 1 }
+}

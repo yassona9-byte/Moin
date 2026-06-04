@@ -2,12 +2,17 @@
     "itemGroup.moin.moin_tab": "Moin",
 
     "item.moin.semilla_hierba": "Semilla de Hierba",
+    "item.moin.semilla_coca": "Semilla de Coca",
     "item.moin.cogollo": "Cogollo",
+    "item.moin.hoja_coca": "Hoja de Coca",
     "item.moin.porro": "Porro",
     "item.moin.polvo_bruto": "Polvo Bruto",
     "item.moin.polvo_blanco": "Polvo Blanco",
+    "item.moin.cristal": "Cristal",
     "item.moin.hongo_alucinante": "Hongo Alucinante",
+    "item.moin.tripi": "Tripi",
     "item.moin.pastilla": "Pastilla",
+    "item.moin.cerveza": "Cerveza",
 
     "block.moin.mesa_procesado": "Mesa de Procesado",
 
@@ -16,6 +21,8 @@
     "effect.moin.viaje": "Viaje",
     "effect.moin.resaca": "Resaca",
     "effect.moin.euforia": "Euforia",
+    "effect.moin.borrachera": "Borrachera",
+    "effect.moin.mono": "Mono",
 
     "subtitles.moin.toke": "Alguien le da una calada",
     "subtitles.moin.esnifar": "Alguien esnifa",

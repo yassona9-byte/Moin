@@ -124,6 +124,9 @@ public class MesaProcesadoBlockEntity extends BlockEntity implements MenuProvide
         if (entrada.is(ModItems.COGOLLO.get())) {
             return new ItemStack(ModItems.PORRO.get());
         }
+        if (entrada.is(ModItems.HOJA_COCA.get())) {
+            return new ItemStack(ModItems.POLVO_BRUTO.get());
+        }
         if (entrada.is(ModItems.POLVO_BRUTO.get())) {
             return new ItemStack(ModItems.POLVO_BLANCO.get());
         }

@@ -32,6 +32,14 @@ public class ModEffects {
     public static final DeferredHolder<MobEffect, MobEffect> EUFORIA = EFFECTS.register("euforia",
             () -> new MoinEffect(MobEffectCategory.BENEFICIAL, 0xFF66CC, MoinEffect.Tipo.CURAR, 25));
 
+    // "Borrachera": mareo y torpeza, te alimenta un poco (las ganas de picar).
+    public static final DeferredHolder<MobEffect, MobEffect> BORRACHERA = EFFECTS.register("borrachera",
+            () -> new MoinEffect(MobEffectCategory.NEUTRAL, 0xE6B800, MoinEffect.Tipo.COMER, 50));
+
+    // "Mono" (sindrome de abstinencia): el peor bajon, te va danando.
+    public static final DeferredHolder<MobEffect, MobEffect> MONO = EFFECTS.register("mono",
+            () -> new MoinEffect(MobEffectCategory.HARMFUL, 0x3D3D3D, MoinEffect.Tipo.DANAR, 40));
+
     public static void register(IEventBus bus) {
         EFFECTS.register(bus);
     }

@@ -1,0 +1,9 @@
+{
+    "type": "minecraft:crafting_shapeless",
+    "ingredients": [
+        { "item": "minecraft:wheat" },
+        { "item": "minecraft:sugar" },
+        { "item": "minecraft:glass_bottle" }
+    ],
+    "result": { "id": "moin:cerveza", "count": 1 }
+}

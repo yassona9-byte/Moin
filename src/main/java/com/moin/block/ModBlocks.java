@@ -15,6 +15,9 @@ public class ModBlocks {
     public static final DeferredBlock<CogolloCropBlock> COGOLLO_CROP = BLOCKS.register("cogollo_crop",
             () -> new CogolloCropBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.WHEAT)));
 
+    public static final DeferredBlock<CocaCropBlock> COCA_CROP = BLOCKS.register("coca_crop",
+            () -> new CocaCropBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.POTATOES)));
+
     public static final DeferredBlock<MesaProcesadoBlock> MESA_PROCESADO = BLOCKS.register("mesa_procesado",
             () -> new MesaProcesadoBlock(BlockBehaviour.Properties.of()
                     .mapColor(MapColor.WOOD)

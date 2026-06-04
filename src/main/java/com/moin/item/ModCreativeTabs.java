@@ -19,12 +19,17 @@ public class ModCreativeTabs {
                     .icon(() -> new ItemStack(ModItems.PORRO.get()))
                     .displayItems((parametros, salida) -> {
                         salida.accept(ModItems.SEMILLA_HIERBA.get());
+                        salida.accept(ModItems.SEMILLA_COCA.get());
                         salida.accept(ModItems.COGOLLO.get());
+                        salida.accept(ModItems.HOJA_COCA.get());
                         salida.accept(ModItems.PORRO.get());
                         salida.accept(ModItems.POLVO_BRUTO.get());
                         salida.accept(ModItems.POLVO_BLANCO.get());
+                        salida.accept(ModItems.CRISTAL.get());
                         salida.accept(ModItems.HONGO_ALUCINANTE.get());
+                        salida.accept(ModItems.TRIPI.get());
                         salida.accept(ModItems.PASTILLA.get());
+                        salida.accept(ModItems.CERVEZA.get());
                         salida.accept(ModItems.MESA_PROCESADO.get());
                     })
                     .build());

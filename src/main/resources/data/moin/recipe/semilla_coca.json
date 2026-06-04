@@ -1,0 +1,8 @@
+{
+    "type": "minecraft:crafting_shapeless",
+    "ingredients": [
+        { "item": "minecraft:carrot" },
+        { "item": "minecraft:green_dye" }
+    ],
+    "result": { "id": "moin:semilla_coca", "count": 1 }
+}

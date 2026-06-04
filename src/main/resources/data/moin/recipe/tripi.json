@@ -1,0 +1,8 @@
+{
+    "type": "minecraft:crafting_shapeless",
+    "ingredients": [
+        { "item": "minecraft:paper" },
+        { "item": "moin:hongo_alucinante" }
+    ],
+    "result": { "id": "moin:tripi", "count": 1 }
+}

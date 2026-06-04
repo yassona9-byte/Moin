@@ -2,12 +2,17 @@
     "itemGroup.moin.moin_tab": "Moin",
 
     "item.moin.semilla_hierba": "Herb Seeds",
+    "item.moin.semilla_coca": "Coca Seeds",
     "item.moin.cogollo": "Bud",
+    "item.moin.hoja_coca": "Coca Leaf",
     "item.moin.porro": "Joint",
     "item.moin.polvo_bruto": "Raw Powder",
     "item.moin.polvo_blanco": "White Powder",
+    "item.moin.cristal": "Crystal",
     "item.moin.hongo_alucinante": "Trippy Mushroom",
+    "item.moin.tripi": "Blotter",
     "item.moin.pastilla": "Pill",
+    "item.moin.cerveza": "Beer",
 
     "block.moin.mesa_procesado": "Processing Table",
 
@@ -16,6 +21,8 @@
     "effect.moin.viaje": "Trip",
     "effect.moin.resaca": "Hangover",
     "effect.moin.euforia": "Euphoria",
+    "effect.moin.borrachera": "Drunk",
+    "effect.moin.mono": "Withdrawal",
 
     "subtitles.moin.toke": "Someone takes a toke",
     "subtitles.moin.esnifar": "Someone sniffs",
