@@ -78,6 +78,7 @@
     }
     @keyframes pulse { 0%,100%{transform:scale(1);opacity:1} 50%{transform:scale(1.4);opacity:.6} }
 
+    .header-actions { display: flex; align-items: center; gap: 10px; }
     .theme-btn {
       cursor: pointer;
       border: 1px solid var(--border);
@@ -89,6 +90,20 @@
       transition: transform 0.15s ease, background 0.3s ease;
     }
     .theme-btn:hover { transform: translateY(-2px); }
+    .lang-select {
+      cursor: pointer;
+      border: 1px solid var(--border);
+      background: var(--card);
+      color: var(--text);
+      border-radius: 999px;
+      padding: 8px 12px;
+      font-size: 0.9rem;
+      transition: transform 0.15s ease, background 0.3s ease;
+      appearance: none;
+      -webkit-appearance: none;
+    }
+    .lang-select:hover { transform: translateY(-2px); }
+    .lang-select option { color: #000; }
 
     /* ---------- Hero ---------- */
     .hero { text-align: center; padding: 40px 0 60px; }
@@ -295,70 +310,166 @@
   <div class="wrap">
     <header>
       <div class="logo"><span class="dot"></span> Playground</div>
-      <button class="theme-btn" id="themeBtn">🌙 Modo oscuro</button>
+      <div class="header-actions">
+        <select class="lang-select" id="langSelect" aria-label="Idioma">
+          <option value="es">🇪🇸 ES</option>
+          <option value="en">🇬🇧 EN</option>
+          <option value="fr">🇫🇷 FR</option>
+        </select>
+        <button class="theme-btn" id="themeBtn"></button>
+      </div>
     </header>
 
     <section class="hero">
-      <h1>Hecho en segundos<br />con un poco de magia ✨</h1>
-      <p>Una página de demostración 100% interactiva: fondo de partículas animadas,
-         tema claro/oscuro, contadores que cobran vida y un mini-juego. Todo en un
-         solo archivo, sin dependencias.</p>
+      <h1 data-i18n="hero_title"></h1>
+      <p data-i18n="hero_sub"></p>
       <div class="typewriter" id="typewriter"></div>
-      <div class="palettes" id="palettes" title="Cambia la paleta de colores"></div>
+      <div class="palettes" id="palettes" data-i18n-title="palette_title"></div>
       <div class="cta">
-        <button class="btn btn-primary" id="surpriseBtn">Sorpréndeme 🎉</button>
-        <button class="btn btn-ghost" onclick="document.getElementById('game').scrollIntoView({behavior:'smooth'})">Jugar 🎮</button>
+        <button class="btn btn-primary" id="surpriseBtn" data-i18n="btn_surprise"></button>
+        <button class="btn btn-ghost" id="playBtn" onclick="document.getElementById('game').scrollIntoView({behavior:'smooth'})" data-i18n="btn_play"></button>
       </div>
     </section>
 
     <section class="stats" id="stats">
-      <div class="stat"><div class="num" data-target="100">0</div><div class="label">% Vanilla JS</div></div>
-      <div class="stat"><div class="num" data-target="0">0</div><div class="label">Dependencias</div></div>
-      <div class="stat"><div class="num" data-target="60">0</div><div class="label">FPS animación</div></div>
-      <div class="stat"><div class="num" data-target="1">0</div><div class="label">Archivo único</div></div>
+      <div class="stat"><div class="num" data-target="100">0</div><div class="label" data-i18n="stat_vanilla"></div></div>
+      <div class="stat"><div class="num" data-target="0">0</div><div class="label" data-i18n="stat_deps"></div></div>
+      <div class="stat"><div class="num" data-target="60">0</div><div class="label" data-i18n="stat_fps"></div></div>
+      <div class="stat"><div class="num" data-target="1">0</div><div class="label" data-i18n="stat_file"></div></div>
     </section>
 
     <section class="reveal">
-      <h2 class="section-title">Lo que incluye</h2>
-      <p class="section-sub">Cada tarjeta reacciona al pasar el ratón.</p>
+      <h2 class="section-title" data-i18n="features_title"></h2>
+      <p class="section-sub" data-i18n="features_sub"></p>
       <div class="cards">
-        <div class="feature"><div class="emoji">🎨</div><h3>Diseño responsivo</h3><p>Se adapta a móvil, tablet y escritorio con CSS Grid moderno.</p></div>
-        <div class="feature"><div class="emoji">🌗</div><h3>Tema dual</h3><p>Cambia entre modo claro y oscuro con transiciones suaves.</p></div>
-        <div class="feature"><div class="emoji">⚡</div><h3>Partículas</h3><p>Fondo animado en canvas conectando puntos en tiempo real.</p></div>
-        <div class="feature"><div class="emoji">🎮</div><h3>Mini-juego</h3><p>Pon a prueba tus reflejos en el juego de clics cronometrado.</p></div>
+        <div class="feature"><div class="emoji">🎨</div><h3 data-i18n="f1_t"></h3><p data-i18n="f1_d"></p></div>
+        <div class="feature"><div class="emoji">🌗</div><h3 data-i18n="f2_t"></h3><p data-i18n="f2_d"></p></div>
+        <div class="feature"><div class="emoji">⚡</div><h3 data-i18n="f3_t"></h3><p data-i18n="f3_d"></p></div>
+        <div class="feature"><div class="emoji">🎮</div><h3 data-i18n="f4_t"></h3><p data-i18n="f4_d"></p></div>
       </div>
     </section>
 
     <section id="game" class="reveal">
-      <h2 class="section-title">🎯 Reflejos en 15 segundos</h2>
-      <p class="section-sub">Haz clic en el círculo tantas veces como puedas.</p>
+      <h2 class="section-title" data-i18n="game_title"></h2>
+      <p class="section-sub" data-i18n="game_sub"></p>
       <div class="game-box">
-        <button class="btn btn-primary" id="startBtn">Empezar</button>
+        <button class="btn btn-primary" id="startBtn" data-i18n="game_start"></button>
         <div id="arena"><div id="target"></div></div>
         <div class="game-stats">
-          <div><span class="v" id="score">0</span><span class="k">Puntos</span></div>
-          <div><span class="v" id="time">15</span><span class="k">Segundos</span></div>
-          <div><span class="v" id="best">0</span><span class="k">Récord</span></div>
+          <div><span class="v" id="score">0</span><span class="k" data-i18n="game_points"></span></div>
+          <div><span class="v" id="time">15</span><span class="k" data-i18n="game_seconds"></span></div>
+          <div><span class="v" id="best">0</span><span class="k" data-i18n="game_best"></span></div>
         </div>
       </div>
     </section>
 
     <footer>
-      Hora local: <span class="clock" id="clock">--:--:--</span><br />
-      © <span id="year"></span> · Todos los derechos reservados
+      <span data-i18n="footer_time"></span> <span class="clock" id="clock">--:--:--</span><br />
+      © <span id="year"></span> · <span data-i18n="footer_rights"></span>
     </footer>
   </div>
 
   <div class="toast" id="toast">¡Hola! 👋</div>
 
   <script>
+    /* ===========================================================
+       I18N — traducciones. Añade un idioma copiando un bloque.
+       =========================================================== */
+    const I18N = {
+      es: {
+        _title: 'Playground Interactivo',
+        theme_dark: '🌙 Modo oscuro', theme_light: '☀️ Modo claro',
+        hero_title: 'Hecho en segundos<br>con un poco de magia ✨',
+        hero_sub: 'Una página de demostración 100% interactiva: fondo de partículas animadas, tema claro/oscuro, contadores que cobran vida y un mini-juego. Todo en un solo archivo, sin dependencias.',
+        palette_title: 'Cambia la paleta de colores',
+        btn_surprise: 'Sorpréndeme 🎉', btn_play: 'Jugar 🎮',
+        stat_vanilla: '% Vanilla JS', stat_deps: 'Dependencias', stat_fps: 'FPS animación', stat_file: 'Archivo único',
+        features_title: 'Lo que incluye', features_sub: 'Cada tarjeta reacciona al pasar el ratón.',
+        f1_t: 'Diseño responsivo', f1_d: 'Se adapta a móvil, tablet y escritorio con CSS Grid moderno.',
+        f2_t: 'Tema dual', f2_d: 'Cambia entre modo claro y oscuro con transiciones suaves.',
+        f3_t: 'Partículas', f3_d: 'Fondo animado en canvas conectando puntos en tiempo real.',
+        f4_t: 'Mini-juego', f4_d: 'Pon a prueba tus reflejos en el juego de clics cronometrado.',
+        game_title: '🎯 Reflejos en 15 segundos', game_sub: 'Haz clic en el círculo tantas veces como puedas.',
+        game_start: 'Empezar', game_playing: 'Jugando…', game_again: 'Volver a jugar',
+        game_points: 'Puntos', game_seconds: 'Segundos', game_best: 'Récord',
+        footer_time: 'Hora local:', footer_rights: 'Todos los derechos reservados',
+        toast_palette: 'Paleta: ', toast_record: '¡Nuevo récord! 🏆 ', toast_end: '¡Fin! Puntuación: ',
+        typed: ['Diseño responsivo en CSS puro.', 'Animaciones a 60 FPS.', 'Cero librerías externas.', 'Hecho en un solo archivo HTML.', 'Interactivo de principio a fin.'],
+        surprise: ['¡Buena elección! 🎉', 'Programar es divertido 💻', 'Sigue explorando 🚀', '¿Probaste el modo claro? 🌗', '60 FPS de pura física ⚡', 'Hecho con cariño 💙']
+      },
+      en: {
+        _title: 'Interactive Playground',
+        theme_dark: '🌙 Dark mode', theme_light: '☀️ Light mode',
+        hero_title: 'Built in seconds<br>with a touch of magic ✨',
+        hero_sub: 'A 100% interactive demo page: animated particle background, light/dark theme, counters that come to life and a mini-game. All in a single file, with no dependencies.',
+        palette_title: 'Change the color palette',
+        btn_surprise: 'Surprise me 🎉', btn_play: 'Play 🎮',
+        stat_vanilla: '% Vanilla JS', stat_deps: 'Dependencies', stat_fps: 'Animation FPS', stat_file: 'Single file',
+        features_title: "What's inside", features_sub: 'Every card reacts on hover.',
+        f1_t: 'Responsive design', f1_d: 'Adapts to mobile, tablet and desktop with modern CSS Grid.',
+        f2_t: 'Dual theme', f2_d: 'Switch between light and dark mode with smooth transitions.',
+        f3_t: 'Particles', f3_d: 'Animated canvas background connecting dots in real time.',
+        f4_t: 'Mini-game', f4_d: 'Test your reflexes in the timed clicking game.',
+        game_title: '🎯 Reflexes in 15 seconds', game_sub: 'Click the circle as many times as you can.',
+        game_start: 'Start', game_playing: 'Playing…', game_again: 'Play again',
+        game_points: 'Points', game_seconds: 'Seconds', game_best: 'Best',
+        footer_time: 'Local time:', footer_rights: 'All rights reserved',
+        toast_palette: 'Palette: ', toast_record: 'New record! 🏆 ', toast_end: 'Done! Score: ',
+        typed: ['Responsive design in pure CSS.', 'Animations at 60 FPS.', 'Zero external libraries.', 'Built in a single HTML file.', 'Interactive from start to finish.'],
+        surprise: ['Great choice! 🎉', 'Coding is fun 💻', 'Keep exploring 🚀', 'Tried light mode? 🌗', '60 FPS of pure physics ⚡', 'Made with love 💙']
+      },
+      fr: {
+        _title: 'Playground Interactif',
+        theme_dark: '🌙 Mode sombre', theme_light: '☀️ Mode clair',
+        hero_title: 'Créé en quelques secondes<br>avec un peu de magie ✨',
+        hero_sub: 'Une page de démo 100% interactive : fond de particules animées, thème clair/sombre, compteurs animés et un mini-jeu. Le tout dans un seul fichier, sans dépendances.',
+        palette_title: 'Changer la palette de couleurs',
+        btn_surprise: 'Surprends-moi 🎉', btn_play: 'Jouer 🎮',
+        stat_vanilla: '% Vanilla JS', stat_deps: 'Dépendances', stat_fps: 'FPS animation', stat_file: 'Fichier unique',
+        features_title: 'Ce que ça contient', features_sub: 'Chaque carte réagit au survol.',
+        f1_t: 'Design responsive', f1_d: "S'adapte au mobile, tablette et ordinateur avec CSS Grid moderne.",
+        f2_t: 'Thème double', f2_d: 'Basculez entre le mode clair et sombre avec des transitions fluides.',
+        f3_t: 'Particules', f3_d: 'Fond animé en canvas reliant les points en temps réel.',
+        f4_t: 'Mini-jeu', f4_d: 'Testez vos réflexes dans le jeu de clics chronométré.',
+        game_title: '🎯 Réflexes en 15 secondes', game_sub: 'Cliquez sur le cercle autant de fois que possible.',
+        game_start: 'Commencer', game_playing: 'En cours…', game_again: 'Rejouer',
+        game_points: 'Points', game_seconds: 'Secondes', game_best: 'Record',
+        footer_time: 'Heure locale :', footer_rights: 'Tous droits réservés',
+        toast_palette: 'Palette : ', toast_record: 'Nouveau record ! 🏆 ', toast_end: 'Fini ! Score : ',
+        typed: ['Design responsive en CSS pur.', 'Animations à 60 FPS.', 'Zéro bibliothèque externe.', 'Créé dans un seul fichier HTML.', 'Interactif du début à la fin.'],
+        surprise: ['Bon choix ! 🎉', 'Coder est amusant 💻', 'Continue à explorer 🚀', 'Essayé le mode clair ? 🌗', '60 FPS de pure physique ⚡', 'Fait avec amour 💙']
+      }
+    };
+
+    let LANG = localStorage.getItem('lang') || (navigator.language || 'es').slice(0, 2);
+    if (!I18N[LANG]) LANG = 'es';
+    let T = I18N[LANG];
+
+    const langSelect = document.getElementById('langSelect');
+    langSelect.value = LANG;
+
+    function applyLang() {
+      T = I18N[LANG];
+      document.documentElement.lang = LANG;
+      document.title = T._title;
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        el.innerHTML = T[el.dataset.i18n] ?? el.innerHTML;
+      });
+      document.querySelectorAll('[data-i18n-title]').forEach(el => {
+        el.title = T[el.dataset.i18nTitle] ?? el.title;
+      });
+      themeBtn.textContent = dark ? T.theme_dark : T.theme_light;
+      if (!playing) startBtn.textContent = startBtn.dataset.again ? T.game_again : T.game_start;
+      twP = 0; twC = 0; twDel = false; // reinicia el efecto de escritura
+    }
+
     /* ---------- Theme ---------- */
     const themeBtn = document.getElementById('themeBtn');
     let dark = true;
     themeBtn.addEventListener('click', () => {
       dark = !dark;
       document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
-      themeBtn.textContent = dark ? '🌙 Modo oscuro' : '☀️ Modo claro';
+      themeBtn.textContent = dark ? T.theme_dark : T.theme_light;
     });
     document.documentElement.setAttribute('data-theme', 'dark');
 
@@ -372,12 +483,8 @@
     }
 
     /* ---------- Surprise button ---------- */
-    const phrases = [
-      '¡Buena elección! 🎉', 'Programar es divertido 💻', 'Sigue explorando 🚀',
-      '¿Probaste el modo claro? 🌗', '60 FPS de pura física ⚡', 'Hecho con cariño 💙'
-    ];
     document.getElementById('surpriseBtn').addEventListener('click', () => {
-      showToast(phrases[Math.floor(Math.random() * phrases.length)]);
+      showToast(T.surprise[Math.floor(Math.random() * T.surprise.length)]);
       burst();
     });
 
@@ -516,7 +623,7 @@
       scoreEl.textContent = '0';
       timeEl.textContent = '15';
       startBtn.disabled = true;
-      startBtn.textContent = 'Jugando…';
+      startBtn.textContent = T.game_playing;
       target.style.display = 'block';
       moveTarget();
       gameTimer = setInterval(() => {
@@ -531,15 +638,16 @@
       playing = false;
       target.style.display = 'none';
       startBtn.disabled = false;
-      startBtn.textContent = 'Volver a jugar';
+      startBtn.dataset.again = '1';
+      startBtn.textContent = T.game_again;
       if (score > best) {
         best = score;
         localStorage.setItem('best', best);
         bestEl.textContent = best;
-        showToast('¡Nuevo récord! 🏆 ' + best);
+        showToast(T.toast_record + best);
         burst();
       } else {
-        showToast('¡Fin! Puntuación: ' + score);
+        showToast(T.toast_end + score);
       }
     }
 
@@ -553,21 +661,14 @@
 
     /* ---------- Typewriter ---------- */
     const twEl = document.getElementById('typewriter');
-    const twPhrases = [
-      'Diseño responsivo en CSS puro.',
-      'Animaciones a 60 FPS.',
-      'Cero librerías externas.',
-      'Hecho en un solo archivo HTML.',
-      'Interactivo de principio a fin.'
-    ];
     let twP = 0, twC = 0, twDel = false;
     function typewriter() {
-      const full = twPhrases[twP];
+      const full = T.typed[twP % T.typed.length];
       twC += twDel ? -1 : 1;
       twEl.textContent = full.slice(0, twC);
       let delay = twDel ? 40 : 70;
       if (!twDel && twC === full.length) { delay = 1600; twDel = true; }
-      else if (twDel && twC === 0) { twDel = false; twP = (twP + 1) % twPhrases.length; delay = 400; }
+      else if (twDel && twC === 0) { twDel = false; twP = (twP + 1) % T.typed.length; delay = 400; }
       setTimeout(typewriter, delay);
     }
     typewriter();
@@ -591,7 +692,7 @@
         document.documentElement.style.setProperty('--accent2', p.b);
         document.querySelectorAll('.swatch').forEach(x => x.classList.remove('active'));
         s.classList.add('active');
-        showToast('Paleta: ' + p.name);
+        showToast(T.toast_palette + p.name);
       });
       palBox.appendChild(s);
     });
@@ -612,8 +713,16 @@
 
     /* ---------- Keyboard shortcut: T toggles theme ---------- */
     window.addEventListener('keydown', e => {
-      if (e.key.toLowerCase() === 't' && !e.target.matches('input,textarea')) themeBtn.click();
+      if (e.key.toLowerCase() === 't' && !e.target.matches('input,textarea,select')) themeBtn.click();
     });
+
+    /* ---------- Language switcher ---------- */
+    langSelect.addEventListener('change', () => {
+      LANG = langSelect.value;
+      localStorage.setItem('lang', LANG);
+      applyLang();
+    });
+    applyLang(); // aplica el idioma inicial
   </script>
 </body>
 </html>
