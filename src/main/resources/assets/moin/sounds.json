@@ -1,0 +1,14 @@
+{
+    "toke": {
+        "subtitle": "subtitles.moin.toke",
+        "sounds": [ "moin:toke" ]
+    },
+    "esnifar": {
+        "subtitle": "subtitles.moin.esnifar",
+        "sounds": [ "moin:esnifar" ]
+    },
+    "viaje": {
+        "subtitle": "subtitles.moin.viaje",
+        "sounds": [ "moin:viaje" ]
+    }
+}

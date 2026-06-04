@@ -1,0 +1,23 @@
+{
+    "itemGroup.moin.moin_tab": "Moin",
+
+    "item.moin.semilla_hierba": "Herb Seeds",
+    "item.moin.cogollo": "Bud",
+    "item.moin.porro": "Joint",
+    "item.moin.polvo_bruto": "Raw Powder",
+    "item.moin.polvo_blanco": "White Powder",
+    "item.moin.hongo_alucinante": "Trippy Mushroom",
+    "item.moin.pastilla": "Pill",
+
+    "block.moin.mesa_procesado": "Processing Table",
+
+    "effect.moin.colocon": "Stoned",
+    "effect.moin.subidon": "High",
+    "effect.moin.viaje": "Trip",
+    "effect.moin.resaca": "Hangover",
+    "effect.moin.euforia": "Euphoria",
+
+    "subtitles.moin.toke": "Someone takes a toke",
+    "subtitles.moin.esnifar": "Someone sniffs",
+    "subtitles.moin.viaje": "Strange noises..."
+}

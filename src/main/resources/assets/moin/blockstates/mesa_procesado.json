@@ -1,0 +1,8 @@
+{
+    "variants": {
+        "facing=north": { "model": "moin:block/mesa_procesado" },
+        "facing=east":  { "model": "moin:block/mesa_procesado", "y": 90 },
+        "facing=south": { "model": "moin:block/mesa_procesado", "y": 180 },
+        "facing=west":  { "model": "moin:block/mesa_procesado", "y": 270 }
+    }
+}

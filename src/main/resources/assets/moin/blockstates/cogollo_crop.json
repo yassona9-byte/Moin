@@ -1,0 +1,12 @@
+{
+    "variants": {
+        "age=0": { "model": "moin:block/cogollo_stage0" },
+        "age=1": { "model": "moin:block/cogollo_stage1" },
+        "age=2": { "model": "moin:block/cogollo_stage2" },
+        "age=3": { "model": "moin:block/cogollo_stage3" },
+        "age=4": { "model": "moin:block/cogollo_stage4" },
+        "age=5": { "model": "moin:block/cogollo_stage5" },
+        "age=6": { "model": "moin:block/cogollo_stage6" },
+        "age=7": { "model": "moin:block/cogollo_stage7" }
+    }
+}
