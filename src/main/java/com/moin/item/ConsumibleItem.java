@@ -1,5 +1,6 @@
 package com.moin.item;
 
+import com.moin.addiction.AddictionEvents;
 import net.minecraft.core.Holder;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.server.level.ServerLevel;
@@ -7,6 +8,7 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.UseAnim;
@@ -27,16 +29,19 @@ public class ConsumibleItem extends Item {
     @Nullable
     private final ParticleOptions particula;
     private final boolean beber;
+    private final int adictividad;
 
     public ConsumibleItem(Properties propiedades,
                           Holder<SoundEvent> sonido,
                           @Nullable ParticleOptions particula,
                           boolean beber,
+                          int adictividad,
                           List<Supplier<MobEffectInstance>> efectos) {
         super(propiedades);
         this.sonido = sonido;
         this.particula = particula;
         this.beber = beber;
+        this.adictividad = adictividad;
         this.efectos = efectos;
     }
 
@@ -61,6 +66,9 @@ public class ConsumibleItem extends Item {
                 servidor.sendParticles(particula,
                         entidad.getX(), entidad.getEyeY(), entidad.getZ(),
                         25, 0.3, 0.3, 0.3, 0.02);
+            }
+            if (entidad instanceof Player jugador) {
+                AddictionEvents.registrarConsumo(jugador, adictividad);
             }
         }
         return resultado;

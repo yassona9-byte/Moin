@@ -35,7 +35,7 @@ public class ModItems {
 
     // ---- Consumibles con efectos ----
     public static final DeferredItem<Item> PORRO = ITEMS.registerItem("porro",
-            props -> new ConsumibleItem(props, ModSounds.TOKE, ParticleTypes.CAMPFIRE_COSY_SMOKE, false, List.of(
+            props -> new ConsumibleItem(props, ModSounds.TOKE, ParticleTypes.CAMPFIRE_COSY_SMOKE, false, 8, List.of(
                     () -> new MobEffectInstance(ModEffects.COLOCON, 1200, 0),
                     () -> new MobEffectInstance(MobEffects.CONFUSION, 300, 0),
                     () -> new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 600, 0),
@@ -43,7 +43,7 @@ public class ModItems {
             comida(2, 0.2F));
 
     public static final DeferredItem<Item> POLVO_BLANCO = ITEMS.registerItem("polvo_blanco",
-            props -> new ConsumibleItem(props, ModSounds.ESNIFAR, ParticleTypes.CLOUD, false, List.of(
+            props -> new ConsumibleItem(props, ModSounds.ESNIFAR, ParticleTypes.CLOUD, false, 15, List.of(
                     () -> new MobEffectInstance(ModEffects.SUBIDON, 600, 0),
                     () -> new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 600, 1),
                     () -> new MobEffectInstance(MobEffects.DIG_SPEED, 600, 1),
@@ -51,7 +51,7 @@ public class ModItems {
             comida(1, 0.1F));
 
     public static final DeferredItem<Item> HONGO_ALUCINANTE = ITEMS.registerItem("hongo_alucinante",
-            props -> new ConsumibleItem(props, ModSounds.VIAJE, ParticleTypes.WITCH, false, List.of(
+            props -> new ConsumibleItem(props, ModSounds.VIAJE, ParticleTypes.WITCH, false, 10, List.of(
                     () -> new MobEffectInstance(ModEffects.VIAJE, 800, 0),
                     () -> new MobEffectInstance(MobEffects.CONFUSION, 800, 0),
                     () -> new MobEffectInstance(MobEffects.GLOWING, 800, 0),
@@ -59,7 +59,7 @@ public class ModItems {
             comida(2, 0.1F));
 
     public static final DeferredItem<Item> PASTILLA = ITEMS.registerItem("pastilla",
-            props -> new ConsumibleItem(props, ModSounds.ESNIFAR, ParticleTypes.HAPPY_VILLAGER, false, List.of(
+            props -> new ConsumibleItem(props, ModSounds.ESNIFAR, ParticleTypes.HAPPY_VILLAGER, false, 18, List.of(
                     () -> new MobEffectInstance(ModEffects.EUFORIA, 900, 0),
                     () -> new MobEffectInstance(MobEffects.REGENERATION, 200, 0),
                     () -> new MobEffectInstance(MobEffects.ABSORPTION, 900, 1),
@@ -68,14 +68,14 @@ public class ModItems {
             comida(1, 0.1F));
 
     public static final DeferredItem<Item> CERVEZA = ITEMS.registerItem("cerveza",
-            props -> new ConsumibleItem(props, ModSounds.ESNIFAR, ParticleTypes.SPLASH, true, List.of(
+            props -> new ConsumibleItem(props, ModSounds.ESNIFAR, ParticleTypes.SPLASH, true, 5, List.of(
                     () -> new MobEffectInstance(ModEffects.BORRACHERA, 900, 0),
                     () -> new MobEffectInstance(MobEffects.CONFUSION, 300, 0),
                     () -> new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 600, 0))),
             comida(3, 0.3F));
 
     public static final DeferredItem<Item> TRIPI = ITEMS.registerItem("tripi",
-            props -> new ConsumibleItem(props, ModSounds.VIAJE, ParticleTypes.ENCHANT, false, List.of(
+            props -> new ConsumibleItem(props, ModSounds.VIAJE, ParticleTypes.ENCHANT, false, 12, List.of(
                     () -> new MobEffectInstance(ModEffects.VIAJE, 2400, 1),
                     () -> new MobEffectInstance(MobEffects.CONFUSION, 1200, 0),
                     () -> new MobEffectInstance(MobEffects.GLOWING, 2400, 0),
@@ -84,7 +84,7 @@ public class ModItems {
             comida(1, 0.0F));
 
     public static final DeferredItem<Item> CRISTAL = ITEMS.registerItem("cristal",
-            props -> new ConsumibleItem(props, ModSounds.ESNIFAR, ParticleTypes.CRIT, false, List.of(
+            props -> new ConsumibleItem(props, ModSounds.ESNIFAR, ParticleTypes.CRIT, false, 25, List.of(
                     () -> new MobEffectInstance(ModEffects.SUBIDON, 1200, 1),
                     () -> new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 1200, 2),
                     () -> new MobEffectInstance(MobEffects.DIG_SPEED, 1200, 2),

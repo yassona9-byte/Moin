@@ -1,5 +1,6 @@
 package com.moin;
 
+import com.moin.addiction.ModAttachments;
 import com.moin.block.entity.ModBlockEntities;
 import com.moin.block.ModBlocks;
 import com.moin.effect.ModEffects;
@@ -34,6 +35,7 @@ public class Moin {
         ModEffects.register(modEventBus);
         ModSounds.register(modEventBus);
         ModCreativeTabs.register(modEventBus);
+        ModAttachments.register(modEventBus);
 
         LOGGER.info("[Moin] Mod cargado correctamente. Recuerda: todo el contenido es ficticio y solo funciona en el juego.");
     }
