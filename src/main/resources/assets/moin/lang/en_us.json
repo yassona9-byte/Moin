@@ -13,6 +13,7 @@
     "item.moin.tripi": "Blotter",
     "item.moin.pastilla": "Pill",
     "item.moin.cerveza": "Beer",
+    "item.moin.pipa": "Pipe",
 
     "block.moin.mesa_procesado": "Processing Table",
 
@@ -28,5 +29,6 @@
     "subtitles.moin.esnifar": "Someone sniffs",
     "subtitles.moin.viaje": "Strange noises...",
 
-    "message.moin.mono": "Withdrawal is kicking in... you need a fix."
+    "message.moin.mono": "Withdrawal is kicking in... you need a fix.",
+    "message.moin.poli": "The cops are onto you! You're carrying too much."
 }

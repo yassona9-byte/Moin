@@ -213,6 +213,24 @@ def t_cerveza():
     return im
 
 
+def t_pipa():
+    im = img()
+    # cazoleta
+    rect(im, 3, 7, 6, 11, (115, 74, 42))
+    rect(im, 3, 6, 6, 7, (95, 58, 32))
+    px(im, 4, 7, (40, 30, 20)); px(im, 5, 7, (40, 30, 20))
+    # boquilla diagonal hacia abajo-derecha
+    for i in range(8):
+        x = 6 + i; y = 10 + i // 2
+        px(im, x, y, (125, 82, 47)); px(im, x, y + 1, (100, 65, 38))
+    px(im, 13, 13, (60, 40, 25)); px(im, 14, 14, (60, 40, 25))
+    # humo
+    px(im, 4, 5, (200, 200, 200, 150)); px(im, 3, 4, (180, 180, 180, 110))
+    px(im, 5, 3, (170, 170, 170, 90))
+    outline(im)
+    return im
+
+
 # ---------------- BLOQUE: mesa de procesado ----------------
 
 def t_mesa_top():
@@ -317,6 +335,7 @@ def main():
     save(t_tripi(), f"{BASE}/item/tripi.png")
     save(t_pastilla(), f"{BASE}/item/pastilla.png")
     save(t_cerveza(), f"{BASE}/item/cerveza.png")
+    save(t_pipa(), f"{BASE}/item/pipa.png")
 
     # bloque
     save(t_mesa_top(), f"{BASE}/block/mesa_top.png")

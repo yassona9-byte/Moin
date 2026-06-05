@@ -13,6 +13,7 @@
     "item.moin.tripi": "Tripi",
     "item.moin.pastilla": "Pastilla",
     "item.moin.cerveza": "Cerveza",
+    "item.moin.pipa": "Pipa",
 
     "block.moin.mesa_procesado": "Mesa de Procesado",
 
@@ -28,5 +29,6 @@
     "subtitles.moin.esnifar": "Alguien esnifa",
     "subtitles.moin.viaje": "Sonidos extraños...",
 
-    "message.moin.mono": "Te está entrando el mono... necesitas consumir."
+    "message.moin.mono": "Te está entrando el mono... necesitas consumir.",
+    "message.moin.poli": "¡La poli te ha fichado! Llevas demasiada mercancía encima."
 }

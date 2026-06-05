@@ -92,6 +92,10 @@ public class ModItems {
                     () -> new MobEffectInstance(ModEffects.MONO, 2400, 0))),
             comida(1, 0.0F));
 
+    // ---- Pipa reutilizable (con durabilidad) ----
+    public static final DeferredItem<Item> PIPA = ITEMS.registerItem("pipa",
+            PipaItem::new, new Item.Properties().durability(64));
+
     // ---- Item del bloque de la mesa de procesado ----
     public static final DeferredItem<net.minecraft.world.item.BlockItem> MESA_PROCESADO =
             ITEMS.registerSimpleBlockItem("mesa_procesado", ModBlocks.MESA_PROCESADO);

@@ -30,6 +30,7 @@ public class ModCreativeTabs {
                         salida.accept(ModItems.TRIPI.get());
                         salida.accept(ModItems.PASTILLA.get());
                         salida.accept(ModItems.CERVEZA.get());
+                        salida.accept(ModItems.PIPA.get());
                         salida.accept(ModItems.MESA_PROCESADO.get());
                     })
                     .build());

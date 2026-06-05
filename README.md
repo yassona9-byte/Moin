@@ -32,6 +32,13 @@ Bloque con interfaz propia que transforma ingredientes con el tiempo:
 - Polvo Bruto → Polvo Blanco
 - Polvo Blanco → Pastilla
 
+### Sistemas de juego
+- **Adicción:** consumir sube tu nivel de enganche; si lo dejas estando muy adicto, te entra el **mono** (efecto MONO) hasta que vuelvas a consumir. Aguantar sin consumir te desengancha poco a poco. Se guarda por jugador.
+- **Dinero y trapicheo:** los aldeanos te compran la mercancía por esmeraldas. El **granjero** la materia prima (cogollo, hoja de coca) y el **clérigo** ("camello") los productos procesados, más caros.
+- **La poli:** si llevas mucha mercancía encima (16+), aparecen **"Polis"** que te persiguen y atacan. Cuanta más lleves, más probable.
+- **Distorsión de pantalla:** la vista se tiñe/late según el efecto (viaje psicodélico, subidón amarillo, colocón verde, etc.).
+- **Pipa reutilizable:** item con durabilidad para fumar muchas veces sin gastarlo de golpe.
+
 ### Crafteos
 - **Semilla de Hierba** = Semillas de trigo + Tinte verde
 - **Polvo Bruto** (x2) = Azúcar + Pólvora
