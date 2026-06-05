@@ -15,6 +15,9 @@ public class ModWandererTrades {
 
     @SubscribeEvent
     public static void registrarOfertas(WandererTradesEvent evento) {
+        if (!com.moin.Config.TRAPICHEO.get()) {
+            return;
+        }
         var genericas = evento.getGenericTrades();
         genericas.add(new CompraListing(2, ModItems.SEMILLA_HIERBA.get(), 1, 8, 1));
         genericas.add(new CompraListing(2, ModItems.SEMILLA_COCA.get(), 1, 8, 1));

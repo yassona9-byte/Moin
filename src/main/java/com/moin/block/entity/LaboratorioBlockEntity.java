@@ -29,7 +29,7 @@ public class LaboratorioBlockEntity extends BlockEntity {
     }
 
     public void serverTick(Level level, BlockPos pos, BlockState estado) {
-        if (stock >= STOCK_MAX) {
+        if (!com.moin.Config.LAB_PRODUCE.get() || stock >= STOCK_MAX) {
             return;
         }
         progreso++;

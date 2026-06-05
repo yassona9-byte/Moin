@@ -12,6 +12,7 @@ import com.moin.sound.ModSounds;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.config.ModConfig;
 import org.slf4j.Logger;
 import com.mojang.logging.LogUtils;
 
@@ -38,6 +39,9 @@ public class Moin {
         ModCreativeTabs.register(modEventBus);
         ModAttachments.register(modEventBus);
         ModEntities.register(modEventBus);
+
+        // Config editable en config/moin-common.toml
+        modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
 
         LOGGER.info("[Moin] Mod cargado correctamente. Recuerda: todo el contenido es ficticio y solo funciona en el juego.");
     }

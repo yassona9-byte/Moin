@@ -34,6 +34,18 @@ public class AddictionEvents {
             return;
         }
 
+        // La toxicidad baja poco a poco (si la sobredosis esta activa).
+        if (com.moin.Config.SOBREDOSIS.get()) {
+            int toxicidad = jugador.getData(ModAttachments.TOXICIDAD.get());
+            if (toxicidad > 0) {
+                jugador.setData(ModAttachments.TOXICIDAD.get(), Math.max(0, toxicidad - 3));
+            }
+        }
+
+        if (!com.moin.Config.ADICCION.get()) {
+            return;
+        }
+
         int adiccion = jugador.getData(ModAttachments.ADICCION.get());
         int saciedad = jugador.getData(ModAttachments.SACIEDAD.get());
 
@@ -58,12 +70,6 @@ public class AddictionEvents {
         if (adiccion > 0) {
             jugador.setData(ModAttachments.ADICCION.get(), adiccion - 1);
         }
-
-        // La toxicidad baja poco a poco con el tiempo.
-        int toxicidad = jugador.getData(ModAttachments.TOXICIDAD.get());
-        if (toxicidad > 0) {
-            jugador.setData(ModAttachments.TOXICIDAD.get(), Math.max(0, toxicidad - 3));
-        }
     }
 
     /** Provoca una sobredosis: efectos graves y un buen golpe de dano. */
@@ -83,18 +89,22 @@ public class AddictionEvents {
 
     /** Llamado desde el item al consumir: sube la adiccion, la toxicidad y sacia el mono. */
     public static void registrarConsumo(Player jugador, int adictividad) {
-        int adiccion = Math.min(100, jugador.getData(ModAttachments.ADICCION.get()) + adictividad);
-        jugador.setData(ModAttachments.ADICCION.get(), adiccion);
-        // Cuanto mas enganchado, antes vuelve el mono (saciedad mas corta).
-        int saciedad = Math.max(400, 1600 - adiccion * 10);
-        jugador.setData(ModAttachments.SACIEDAD.get(), saciedad);
-        jugador.removeEffect(ModEffects.MONO);
+        if (com.moin.Config.ADICCION.get()) {
+            int adiccion = Math.min(100, jugador.getData(ModAttachments.ADICCION.get()) + adictividad);
+            jugador.setData(ModAttachments.ADICCION.get(), adiccion);
+            // Cuanto mas enganchado, antes vuelve el mono (saciedad mas corta).
+            int saciedad = Math.max(400, 1600 - adiccion * 10);
+            jugador.setData(ModAttachments.SACIEDAD.get(), saciedad);
+            jugador.removeEffect(ModEffects.MONO);
+        }
 
         // Toxicidad: las cosas mas fuertes (mas adictivas) intoxican mas.
-        int toxicidad = jugador.getData(ModAttachments.TOXICIDAD.get()) + Math.max(4, adictividad);
-        jugador.setData(ModAttachments.TOXICIDAD.get(), toxicidad);
-        if (toxicidad >= UMBRAL_SOBREDOSIS) {
-            sobredosis(jugador);
+        if (com.moin.Config.SOBREDOSIS.get()) {
+            int toxicidad = jugador.getData(ModAttachments.TOXICIDAD.get()) + Math.max(4, adictividad);
+            jugador.setData(ModAttachments.TOXICIDAD.get(), toxicidad);
+            if (toxicidad >= UMBRAL_SOBREDOSIS) {
+                sobredosis(jugador);
+            }
         }
     }
 

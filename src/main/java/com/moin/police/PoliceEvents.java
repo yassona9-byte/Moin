@@ -46,14 +46,18 @@ public class PoliceEvents {
         if (nivel.getDifficulty() == Difficulty.PEACEFUL || jugador.tickCount % INTERVALO != 0) {
             return;
         }
+        if (!com.moin.Config.POLICIA.get()) {
+            return;
+        }
 
+        int umbral = com.moin.Config.UMBRAL_POLI.get();
         int mercancia = Contrabando.contar(jugador);
 
         AABB zona = jugador.getBoundingBox().inflate(RADIO_BUSQUEDA);
         List<PoliEntity> cerca = nivel.getEntitiesOfClass(PoliEntity.class, zona);
 
         // Si vas limpio, la poli pierde el interes y se larga poco a poco.
-        if (mercancia < UMBRAL) {
+        if (mercancia < umbral) {
             if (mercancia == 0 && !cerca.isEmpty()) {
                 cerca.get(0).discard();
             }
@@ -61,17 +65,18 @@ public class PoliceEvents {
         }
 
         // REDADA: solo con muchisima mercancia, sin follon ya montado y de vez en cuando.
-        if (mercancia >= UMBRAL_REDADA && cerca.isEmpty() && nivel.random.nextFloat() < 0.25F) {
+        if (com.moin.Config.REDADAS.get() && mercancia >= com.moin.Config.UMBRAL_REDADA.get()
+                && cerca.isEmpty() && nivel.random.nextFloat() < 0.25F) {
             redada(nivel, jugador);
             return;
         }
 
-        if (cerca.size() >= MAX_POLIS_CERCA) {
+        if (cerca.size() >= com.moin.Config.MAX_POLIS_CERCA.get()) {
             return;
         }
 
         // Probabilidad baja y con tope suave.
-        float probabilidad = Math.min(0.30F, (mercancia - UMBRAL) * 0.01F + 0.06F);
+        float probabilidad = Math.min(0.30F, (mercancia - umbral) * 0.01F + 0.06F);
         if (nivel.random.nextFloat() <= probabilidad) {
             PoliEntity poli = aparecerPoli(nivel, jugador, false);
             if (poli != null) {

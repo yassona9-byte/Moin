@@ -21,6 +21,9 @@ public class ModVillagerTrades {
 
     @SubscribeEvent
     public static void registrarOfertas(VillagerTradesEvent evento) {
+        if (!com.moin.Config.TRAPICHEO.get()) {
+            return;
+        }
         var ofertas = evento.getTrades();
 
         if (evento.getType() == VillagerProfession.FARMER) {

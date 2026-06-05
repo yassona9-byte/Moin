@@ -15,6 +15,9 @@ public class ColocadoOverlay implements LayeredDraw.Layer {
 
     @Override
     public void render(GuiGraphics g, DeltaTracker delta) {
+        if (!com.moin.Config.DISTORSION_PANTALLA.get()) {
+            return;
+        }
         Minecraft mc = Minecraft.getInstance();
         LocalPlayer p = mc.player;
         if (p == null || mc.options.hideGui) {
