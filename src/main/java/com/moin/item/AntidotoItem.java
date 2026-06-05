@@ -35,7 +35,7 @@ public class AntidotoItem extends Item {
             AddictionEvents.limpiar(jugador);
             jugador.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 100, 0));
             level.playSound(null, jugador.getX(), jugador.getY(), jugador.getZ(),
-                    SoundEvents.GENERIC_DRINK.value(), SoundSource.PLAYERS, 1.0F, 1.0F);
+                    SoundEvents.GENERIC_DRINK, SoundSource.PLAYERS, 1.0F, 1.0F);
             if (level instanceof ServerLevel servidor) {
                 servidor.sendParticles(ParticleTypes.HEART,
                         jugador.getX(), jugador.getEyeY(), jugador.getZ(),
