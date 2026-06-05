@@ -1,0 +1,8 @@
+{
+    "parent": "minecraft:block/cube_bottom_top",
+    "textures": {
+        "top": "moin:block/lab_top",
+        "bottom": "moin:block/lab_top",
+        "side": "moin:block/lab_side"
+    }
+}

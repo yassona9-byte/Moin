@@ -16,6 +16,10 @@ public class ModBlockEntities {
             BLOCK_ENTITIES.register("mesa_procesado",
                     () -> BlockEntityType.Builder.of(MesaProcesadoBlockEntity::new, ModBlocks.MESA_PROCESADO.get()).build(null));
 
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<LaboratorioBlockEntity>> LABORATORIO =
+            BLOCK_ENTITIES.register("laboratorio",
+                    () -> BlockEntityType.Builder.of(LaboratorioBlockEntity::new, ModBlocks.LABORATORIO.get()).build(null));
+
     public static void register(IEventBus bus) {
         BLOCK_ENTITIES.register(bus);
     }

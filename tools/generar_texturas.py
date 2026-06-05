@@ -251,6 +251,28 @@ def t_vial(color):
     return im
 
 
+def t_antidoto():
+    im = img()
+    # jeringuilla en diagonal (abajo-izq a arriba-der)
+    for i in range(7):
+        x = 4 + i; y = 11 - i
+        px(im, x, y, (235, 240, 245)); px(im, x, y + 1, (210, 215, 222))
+    # liquido azul dentro
+    for i in range(4):
+        x = 5 + i; y = 10 - i
+        px(im, x, y, (90, 170, 230))
+    # embolo
+    px(im, 3, 12, (180, 180, 185)); px(im, 4, 12, (180, 180, 185))
+    px(im, 2, 13, (120, 120, 125))
+    # aguja
+    px(im, 11, 4, (200, 200, 205)); px(im, 12, 3, (220, 220, 225)); px(im, 13, 2, (235, 235, 240))
+    # cruz roja (medicina)
+    px(im, 7, 8, (220, 40, 40)); px(im, 7, 7, (220, 40, 40)); px(im, 7, 9, (220, 40, 40))
+    px(im, 6, 8, (220, 40, 40)); px(im, 8, 8, (220, 40, 40))
+    outline(im)
+    return im
+
+
 def t_escaner():
     im = img()
     # cuerpo
@@ -310,6 +332,39 @@ def t_mesa_side():
         for x in range(1, 15):
             px(im, x, y, (84, 60, 42))
     rect(im, 1, 13, 2, 15, (70, 50, 35)); rect(im, 13, 13, 14, 15, (70, 50, 35))
+    return im
+
+
+def t_lab_top():
+    im = img()
+    rect(im, 0, 0, 15, 15, (70, 74, 82))       # metal
+    rect(im, 1, 1, 14, 14, (90, 95, 104))
+    # matraces
+    rect(im, 3, 4, 5, 7, (200, 220, 230)); rect(im, 3, 6, 5, 7, (90, 200, 110))
+    rect(im, 9, 3, 11, 7, (200, 220, 230)); rect(im, 9, 5, 11, 7, (220, 90, 90))
+    rect(im, 6, 9, 8, 12, (200, 220, 230)); rect(im, 6, 11, 8, 12, (210, 200, 90))
+    # rejilla
+    for i in range(2, 14, 3):
+        for x in range(1, 15):
+            px(im, x, i, (78, 82, 90))
+    return im
+
+
+def t_lab_side():
+    im = img()
+    rect(im, 0, 0, 15, 15, (66, 70, 78))
+    rect(im, 1, 1, 14, 14, (84, 89, 98))
+    # panel de control
+    rect(im, 3, 4, 12, 10, (45, 48, 54))
+    # lucecitas
+    px(im, 5, 6, (90, 220, 110)); px(im, 7, 6, (220, 200, 70)); px(im, 9, 6, (220, 80, 80))
+    px(im, 5, 8, (80, 160, 230)); px(im, 7, 8, (200, 200, 210))
+    # tuberias
+    rect(im, 2, 12, 13, 12, (110, 90, 60))
+    rect(im, 11, 2, 12, 12, (120, 120, 130))
+    # tornillos
+    px(im, 2, 2, (60, 64, 70)); px(im, 13, 2, (60, 64, 70))
+    px(im, 2, 13, (60, 64, 70)); px(im, 13, 13, (60, 64, 70))
     return im
 
 
@@ -375,6 +430,7 @@ def main():
     save(t_cerveza(), f"{BASE}/item/cerveza.png")
     save(t_pipa(), f"{BASE}/item/pipa.png")
     save(t_escaner(), f"{BASE}/item/escaner.png")
+    save(t_antidoto(), f"{BASE}/item/antidoto.png")
 
     # mezclas (viales de colores)
     mezclas = {
@@ -394,6 +450,8 @@ def main():
     save(t_mesa_top(), f"{BASE}/block/mesa_top.png")
     save(t_mesa_front(), f"{BASE}/block/mesa_front.png")
     save(t_mesa_side(), f"{BASE}/block/mesa_side.png")
+    save(t_lab_top(), f"{BASE}/block/lab_top.png")
+    save(t_lab_side(), f"{BASE}/block/lab_side.png")
 
     # cultivos
     for s in range(8):

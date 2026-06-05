@@ -1,0 +1,10 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [ "III", "GBG", "III" ],
+    "key": {
+        "I": { "item": "minecraft:iron_ingot" },
+        "G": { "item": "minecraft:glass" },
+        "B": { "item": "minecraft:brewing_stand" }
+    },
+    "result": { "id": "moin:laboratorio", "count": 1 }
+}

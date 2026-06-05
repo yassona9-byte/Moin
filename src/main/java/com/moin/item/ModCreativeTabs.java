@@ -42,7 +42,9 @@ public class ModCreativeTabs {
                         // utiles
                         salida.accept(ModItems.PIPA.get());
                         salida.accept(ModItems.ESCANER.get());
+                        salida.accept(ModItems.ANTIDOTO.get());
                         salida.accept(ModItems.MESA_PROCESADO.get());
+                        salida.accept(ModItems.LABORATORIO.get());
                     })
                     .build());
 

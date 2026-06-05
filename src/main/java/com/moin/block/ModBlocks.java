@@ -25,6 +25,13 @@ public class ModBlocks {
                     .sound(SoundType.WOOD)
                     .noOcclusion()));
 
+    public static final DeferredBlock<LaboratorioBlock> LABORATORIO = BLOCKS.register("laboratorio",
+            () -> new LaboratorioBlock(BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.METAL)
+                    .strength(3.0F)
+                    .sound(SoundType.METAL)
+                    .noOcclusion()));
+
     public static void register(IEventBus bus) {
         BLOCKS.register(bus);
     }

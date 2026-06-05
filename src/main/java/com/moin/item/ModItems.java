@@ -159,13 +159,21 @@ public class ModItems {
     public static final DeferredItem<Item> ESCANER = ITEMS.registerItem("escaner",
             EscanerItem::new, new Item.Properties().stacksTo(1));
 
+    // ---- Antidoto (naloxona): cura la sobredosis y limpia efectos ----
+    public static final DeferredItem<Item> ANTIDOTO = ITEMS.registerItem("antidoto",
+            AntidotoItem::new, new Item.Properties().food(new net.minecraft.world.food.FoodProperties.Builder()
+                    .nutrition(0).saturationModifier(0F).alwaysEdible().build()));
+
     // ---- Pipa reutilizable (con durabilidad) ----
     public static final DeferredItem<Item> PIPA = ITEMS.registerItem("pipa",
             PipaItem::new, new Item.Properties().durability(64));
 
-    // ---- Item del bloque de la mesa de procesado ----
+    // ---- Items de los bloques ----
     public static final DeferredItem<net.minecraft.world.item.BlockItem> MESA_PROCESADO =
             ITEMS.registerSimpleBlockItem("mesa_procesado", ModBlocks.MESA_PROCESADO);
+
+    public static final DeferredItem<net.minecraft.world.item.BlockItem> LABORATORIO =
+            ITEMS.registerSimpleBlockItem("laboratorio", ModBlocks.LABORATORIO);
 
     private static DeferredItem<Item> mezcla(String nombre, Holder<SoundEvent> sonido,
                                              ParticleOptions particula, int adictividad,

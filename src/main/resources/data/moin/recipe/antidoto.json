@@ -1,0 +1,5 @@
+{
+    "type": "minecraft:crafting_shapeless",
+    "ingredients": [ { "item": "minecraft:glass_bottle" }, { "item": "minecraft:milk_bucket" }, { "item": "minecraft:glow_berries" } ],
+    "result": { "id": "moin:antidoto", "count": 1 }
+}

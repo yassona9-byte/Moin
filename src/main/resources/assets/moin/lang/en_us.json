@@ -15,6 +15,7 @@
     "item.moin.cerveza": "Beer",
     "item.moin.pipa": "Pipe",
     "item.moin.escaner": "Drug Scanner",
+    "item.moin.antidoto": "Antidote (Naloxone)",
 
     "item.moin.speedball": "Speedball",
     "item.moin.maria_dorada": "Golden Mary",
@@ -26,6 +27,7 @@
     "item.moin.electrica": "Electric Mix",
 
     "block.moin.mesa_procesado": "Processing Table",
+    "block.moin.laboratorio": "Clandestine Lab",
 
     "effect.moin.colocon": "Stoned",
     "effect.moin.subidon": "High",
@@ -42,5 +44,8 @@
     "message.moin.mono": "Withdrawal is kicking in... you need a fix.",
     "message.moin.poli": "The cops are onto you! You're carrying too much.",
     "message.moin.redada": "RAID! The cops came for you.",
-    "message.moin.escaner": "Scanner — %1$s: %2$s contraband (%3$s)"
+    "message.moin.escaner": "Scanner — %1$s: %2$s contraband (%3$s)",
+    "message.moin.sobredosis": "☠ OVERDOSE! You went way too far...",
+    "message.moin.lab_vacio": "The lab hasn't produced anything yet.",
+    "message.moin.lab_recoger": "You collect %1$s raw powder from the lab."
 }

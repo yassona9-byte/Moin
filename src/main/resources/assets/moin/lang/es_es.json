@@ -15,6 +15,7 @@
     "item.moin.cerveza": "Cerveza",
     "item.moin.pipa": "Pipa",
     "item.moin.escaner": "Escáner Antidroga",
+    "item.moin.antidoto": "Antídoto (Naloxona)",
 
     "item.moin.speedball": "Speedball",
     "item.moin.maria_dorada": "María Dorada",
@@ -26,6 +27,7 @@
     "item.moin.electrica": "Eléctrica",
 
     "block.moin.mesa_procesado": "Mesa de Procesado",
+    "block.moin.laboratorio": "Laboratorio Clandestino",
 
     "effect.moin.colocon": "Colocón",
     "effect.moin.subidon": "Subidón",
@@ -42,5 +44,8 @@
     "message.moin.mono": "Te está entrando el mono... necesitas consumir.",
     "message.moin.poli": "¡La poli te ha fichado! Llevas demasiada mercancía encima.",
     "message.moin.redada": "¡REDADA! La poli ha venido a por ti.",
-    "message.moin.escaner": "Escáner — %1$s: %2$s de mercancía (%3$s)"
+    "message.moin.escaner": "Escáner — %1$s: %2$s de mercancía (%3$s)",
+    "message.moin.sobredosis": "☠ ¡SOBREDOSIS! Te has pasado de la raya...",
+    "message.moin.lab_vacio": "El laboratorio aún no ha producido nada.",
+    "message.moin.lab_recoger": "Recoges %1$s de polvo bruto del laboratorio."
 }
