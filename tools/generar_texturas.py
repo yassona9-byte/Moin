@@ -7,6 +7,7 @@ BASE = "src/main/resources/assets/moin/textures"
 os.makedirs(f"{BASE}/item", exist_ok=True)
 os.makedirs(f"{BASE}/block", exist_ok=True)
 os.makedirs(f"{BASE}/mob_effect", exist_ok=True)
+os.makedirs(f"{BASE}/entity", exist_ok=True)
 
 T = (0, 0, 0, 0)  # transparente
 
@@ -397,6 +398,62 @@ def crop_sprite(stage, max_stage, bud_color, leaf=(60, 150, 60)):
     return im
 
 
+# ---------------- SKIN DE LA ENTIDAD POLI (64x64) ----------------
+
+def t_poli_skin():
+    im = img(64, 64)
+    navy = (36, 48, 96); navy_d = (26, 34, 72)
+    skin = (228, 184, 146); skin_d = (190, 140, 108)
+    black = (30, 30, 38); shoe = (20, 20, 24)
+    badge = (240, 210, 80); eye = (40, 42, 70); white = (238, 238, 242)
+
+    # ---- CABEZA ----
+    rect(im, 8, 0, 15, 7, navy)      # arriba (gorra)
+    rect(im, 16, 0, 23, 7, skin)     # abajo (barbilla)
+    for (x0, x1) in [(0, 7), (8, 15), (16, 23), (24, 31)]:
+        rect(im, x0, 8, x1, 10, navy)    # banda de la gorra
+        rect(im, x0, 11, x1, 15, skin)   # cara/piel
+    rect(im, 8, 11, 15, 11, navy_d)      # visera (frente)
+    # ojos y boca (cara frontal)
+    px(im, 10, 13, white); px(im, 11, 13, eye)
+    px(im, 13, 13, white); px(im, 12, 13, eye)
+    px(im, 11, 15, skin_d); px(im, 12, 15, skin_d)
+    px(im, 11, 9, badge)             # insignia en la gorra
+
+    # ---- CUERPO (uniforme) ----
+    rect(im, 20, 16, 27, 19, navy); rect(im, 28, 16, 35, 19, navy)
+    rect(im, 16, 20, 19, 31, navy); rect(im, 20, 20, 27, 31, navy)
+    rect(im, 28, 20, 31, 31, navy); rect(im, 32, 20, 39, 31, navy)
+    # placa de policia en el pecho
+    px(im, 23, 22, badge); px(im, 22, 23, badge); px(im, 23, 23, badge)
+    px(im, 24, 23, badge); px(im, 23, 24, badge)
+    # botones
+    px(im, 23, 25, (210, 210, 220)); px(im, 23, 27, (210, 210, 220))
+    # cinturon
+    rect(im, 20, 29, 27, 29, black); px(im, 23, 29, badge)
+
+    # ---- BRAZO DERECHO ----
+    rect(im, 44, 16, 47, 19, navy); rect(im, 48, 16, 51, 19, skin)
+    rect(im, 40, 20, 55, 31, navy)
+    rect(im, 40, 29, 55, 31, skin)   # mano
+
+    # ---- BRAZO IZQUIERDO ----
+    rect(im, 36, 48, 39, 51, navy); rect(im, 40, 48, 43, 51, skin)
+    rect(im, 32, 52, 47, 63, navy)
+    rect(im, 32, 61, 47, 63, skin)   # mano
+
+    # ---- PIERNA DERECHA ----
+    rect(im, 4, 16, 7, 19, navy); rect(im, 8, 16, 11, 19, black)
+    rect(im, 0, 20, 15, 31, black)
+    rect(im, 0, 30, 15, 31, shoe)    # zapato
+
+    # ---- PIERNA IZQUIERDA ----
+    rect(im, 20, 48, 23, 51, navy); rect(im, 24, 48, 27, 51, black)
+    rect(im, 16, 52, 31, 63, black)
+    rect(im, 16, 62, 31, 63, shoe)   # zapato
+    return im
+
+
 # ---------------- ICONOS DE EFECTOS (18x18) ----------------
 
 def effect_icon(color, symbol=None):
@@ -458,6 +515,9 @@ def main():
         save(crop_sprite(s, 7, (90, 190, 90)), f"{BASE}/block/cogollo_stage{s}.png")
     for s in range(4):
         save(crop_sprite(s, 3, (200, 90, 90), leaf=(70, 160, 70)), f"{BASE}/block/coca_stage{s}.png")
+
+    # entidad poli
+    save(t_poli_skin(), f"{BASE}/entity/poli.png")
 
     # iconos de efectos
     save(effect_icon((106, 168, 79)), f"{BASE}/mob_effect/colocon.png")

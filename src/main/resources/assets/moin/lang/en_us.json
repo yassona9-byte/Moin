@@ -29,6 +29,8 @@
     "block.moin.mesa_procesado": "Processing Table",
     "block.moin.laboratorio": "Clandestine Lab",
 
+    "entity.moin.poli": "Cop",
+
     "effect.moin.colocon": "Stoned",
     "effect.moin.subidon": "High",
     "effect.moin.viaje": "Trip",
