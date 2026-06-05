@@ -20,18 +20,19 @@ import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import java.util.List;
 
 /**
- * La poli reacciona a la mercancia que llevas encima:
- *  - Mercancia media: aparecen "Polis" sueltos que te persiguen.
- *  - Mercancia muy alta: salta una REDADA (varios polis + un capitan a la vez).
+ * La poli reacciona a la mercancia que llevas encima, pero con calma:
+ *  - Mercancia media: rara vez aparece algun "Poli" suelto que te persigue.
+ *  - Mercancia muy alta: puede saltar una REDADA (un par de polis + un capitan).
+ *  - Si te quedas limpio (sueltas la mercancia), los polis pierden interes y se van.
  */
 @EventBusSubscriber(modid = Moin.MODID)
 public class PoliceEvents {
 
-    private static final int INTERVALO = 100;        // revisa cada 5 segundos
-    private static final int UMBRAL = 16;            // poli suelto
-    private static final int UMBRAL_REDADA = 40;     // redada
-    private static final int MAX_POLIS_CERCA = 4;
-    private static final double RADIO_BUSQUEDA = 28.0;
+    private static final int INTERVALO = 200;        // revisa cada 10 segundos
+    private static final int UMBRAL = 24;            // poli suelto
+    private static final int UMBRAL_REDADA = 64;     // redada
+    private static final int MAX_POLIS_CERCA = 2;
+    private static final double RADIO_BUSQUEDA = 40.0;
 
     @SubscribeEvent
     public static void onPlayerTick(PlayerTickEvent.Post evento) {
@@ -47,15 +48,20 @@ public class PoliceEvents {
         }
 
         int mercancia = Contrabando.contar(jugador);
-        if (mercancia < UMBRAL) {
-            return;
-        }
 
         AABB zona = jugador.getBoundingBox().inflate(RADIO_BUSQUEDA);
         List<Vindicator> cerca = nivel.getEntitiesOfClass(Vindicator.class, zona, Vindicator::hasCustomName);
 
-        // REDADA: si llevas muchisimo y no hay ya un follon montado.
-        if (mercancia >= UMBRAL_REDADA && cerca.size() < 2 && nivel.random.nextFloat() < 0.5F) {
+        // Si vas limpio, la poli pierde el interes y se larga poco a poco.
+        if (mercancia < UMBRAL) {
+            if (mercancia == 0 && !cerca.isEmpty()) {
+                cerca.get(0).discard();
+            }
+            return;
+        }
+
+        // REDADA: solo con muchisima mercancia, sin follon ya montado y de vez en cuando.
+        if (mercancia >= UMBRAL_REDADA && cerca.isEmpty() && nivel.random.nextFloat() < 0.25F) {
             redada(nivel, jugador);
             return;
         }
@@ -64,7 +70,8 @@ public class PoliceEvents {
             return;
         }
 
-        float probabilidad = Math.min(0.8F, (mercancia - UMBRAL) * 0.04F + 0.15F);
+        // Probabilidad baja y con tope suave.
+        float probabilidad = Math.min(0.30F, (mercancia - UMBRAL) * 0.01F + 0.06F);
         if (nivel.random.nextFloat() <= probabilidad) {
             Vindicator poli = aparecerPoli(nivel, jugador, false);
             if (poli != null) {
@@ -75,7 +82,7 @@ public class PoliceEvents {
     }
 
     private static void redada(ServerLevel nivel, Player jugador) {
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < 2; i++) {
             aparecerPoli(nivel, jugador, false);
         }
         aparecerPoli(nivel, jugador, true); // el capitan
@@ -88,7 +95,7 @@ public class PoliceEvents {
 
     private static Vindicator aparecerPoli(ServerLevel nivel, Player jugador, boolean capitan) {
         double ang = nivel.random.nextDouble() * Math.PI * 2;
-        double dist = 8 + nivel.random.nextDouble() * 5;
+        double dist = 10 + nivel.random.nextDouble() * 6;
         BlockPos pos = BlockPos.containing(
                 jugador.getX() + Math.cos(ang) * dist,
                 jugador.getY(),
