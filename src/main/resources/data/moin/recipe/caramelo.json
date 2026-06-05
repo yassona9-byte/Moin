@@ -1,0 +1,5 @@
+{
+    "type": "minecraft:crafting_shapeless",
+    "ingredients": [ { "item": "moin:pastilla" }, { "item": "minecraft:sugar" } ],
+    "result": { "id": "moin:caramelo", "count": 1 }
+}

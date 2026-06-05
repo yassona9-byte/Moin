@@ -30,7 +30,18 @@ public class ModCreativeTabs {
                         salida.accept(ModItems.TRIPI.get());
                         salida.accept(ModItems.PASTILLA.get());
                         salida.accept(ModItems.CERVEZA.get());
+                        // mezclas
+                        salida.accept(ModItems.SPEEDBALL.get());
+                        salida.accept(ModItems.MARIA_DORADA.get());
+                        salida.accept(ModItems.POLVO_ANGEL.get());
+                        salida.accept(ModItems.CARAMELO.get());
+                        salida.accept(ModItems.BOMBA_MENTAL.get());
+                        salida.accept(ModItems.TRIPI_DOBLE.get());
+                        salida.accept(ModItems.MIEL_LOCA.get());
+                        salida.accept(ModItems.ELECTRICA.get());
+                        // utiles
                         salida.accept(ModItems.PIPA.get());
+                        salida.accept(ModItems.ESCANER.get());
                         salida.accept(ModItems.MESA_PROCESADO.get());
                     })
                     .build());

@@ -14,6 +14,16 @@
     "item.moin.pastilla": "Pill",
     "item.moin.cerveza": "Beer",
     "item.moin.pipa": "Pipe",
+    "item.moin.escaner": "Drug Scanner",
+
+    "item.moin.speedball": "Speedball",
+    "item.moin.maria_dorada": "Golden Mary",
+    "item.moin.polvo_angel": "Angel Dust",
+    "item.moin.caramelo": "Candy",
+    "item.moin.bomba_mental": "Mind Bomb",
+    "item.moin.tripi_doble": "Double Blotter",
+    "item.moin.miel_loca": "Crazy Honey",
+    "item.moin.electrica": "Electric Mix",
 
     "block.moin.mesa_procesado": "Processing Table",
 
@@ -30,5 +40,7 @@
     "subtitles.moin.viaje": "Strange noises...",
 
     "message.moin.mono": "Withdrawal is kicking in... you need a fix.",
-    "message.moin.poli": "The cops are onto you! You're carrying too much."
+    "message.moin.poli": "The cops are onto you! You're carrying too much.",
+    "message.moin.redada": "RAID! The cops came for you.",
+    "message.moin.escaner": "Scanner — %1$s: %2$s contraband (%3$s)"
 }

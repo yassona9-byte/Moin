@@ -4,7 +4,10 @@ import com.moin.Moin;
 import com.moin.block.ModBlocks;
 import com.moin.effect.ModEffects;
 import com.moin.sound.ModSounds;
+import net.minecraft.core.Holder;
+import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.food.FoodProperties;
@@ -92,6 +95,70 @@ public class ModItems {
                     () -> new MobEffectInstance(ModEffects.MONO, 2400, 0))),
             comida(1, 0.0F));
 
+    // ---- Mezclas (estilo Schedule 1: base + ingrediente = mezcla con efectos combinados) ----
+    public static final DeferredItem<Item> SPEEDBALL = mezcla("speedball",
+            ModSounds.ESNIFAR, ParticleTypes.CRIT, 30, List.of(
+                    () -> new MobEffectInstance(ModEffects.SUBIDON, 1200, 1),
+                    () -> new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 1200, 2),
+                    () -> new MobEffectInstance(MobEffects.DIG_SPEED, 1200, 2),
+                    () -> new MobEffectInstance(MobEffects.DAMAGE_BOOST, 1200, 0),
+                    () -> new MobEffectInstance(ModEffects.RESACA, 2400, 1),
+                    () -> new MobEffectInstance(ModEffects.MONO, 2400, 0)));
+
+    public static final DeferredItem<Item> MARIA_DORADA = mezcla("maria_dorada",
+            ModSounds.TOKE, ParticleTypes.HAPPY_VILLAGER, 12, List.of(
+                    () -> new MobEffectInstance(ModEffects.COLOCON, 1800, 0),
+                    () -> new MobEffectInstance(MobEffects.REGENERATION, 200, 0),
+                    () -> new MobEffectInstance(MobEffects.GLOWING, 1200, 0),
+                    () -> new MobEffectInstance(MobEffects.SATURATION, 1, 1)));
+
+    public static final DeferredItem<Item> POLVO_ANGEL = mezcla("polvo_angel",
+            ModSounds.ESNIFAR, ParticleTypes.FLAME, 22, List.of(
+                    () -> new MobEffectInstance(ModEffects.SUBIDON, 900, 0),
+                    () -> new MobEffectInstance(MobEffects.DAMAGE_BOOST, 900, 1),
+                    () -> new MobEffectInstance(MobEffects.FIRE_RESISTANCE, 900, 0),
+                    () -> new MobEffectInstance(ModEffects.RESACA, 1200, 0)));
+
+    public static final DeferredItem<Item> CARAMELO = mezcla("caramelo",
+            ModSounds.ESNIFAR, ParticleTypes.HEART, 16, List.of(
+                    () -> new MobEffectInstance(ModEffects.EUFORIA, 900, 0),
+                    () -> new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 900, 0),
+                    () -> new MobEffectInstance(MobEffects.JUMP, 900, 1),
+                    () -> new MobEffectInstance(MobEffects.REGENERATION, 100, 0)));
+
+    public static final DeferredItem<Item> BOMBA_MENTAL = mezcla("bomba_mental",
+            ModSounds.ESNIFAR, ParticleTypes.EXPLOSION, 28, List.of(
+                    () -> new MobEffectInstance(ModEffects.SUBIDON, 1200, 1),
+                    () -> new MobEffectInstance(MobEffects.CONFUSION, 600, 0),
+                    () -> new MobEffectInstance(MobEffects.WEAKNESS, 1200, 0),
+                    () -> new MobEffectInstance(ModEffects.RESACA, 2400, 1),
+                    () -> new MobEffectInstance(ModEffects.MONO, 2400, 0)));
+
+    public static final DeferredItem<Item> TRIPI_DOBLE = mezcla("tripi_doble",
+            ModSounds.VIAJE, ParticleTypes.ENCHANT, 18, List.of(
+                    () -> new MobEffectInstance(ModEffects.VIAJE, 3600, 1),
+                    () -> new MobEffectInstance(MobEffects.CONFUSION, 1800, 1),
+                    () -> new MobEffectInstance(MobEffects.GLOWING, 3600, 0),
+                    () -> new MobEffectInstance(MobEffects.JUMP, 3600, 2)));
+
+    public static final DeferredItem<Item> MIEL_LOCA = mezcla("miel_loca",
+            ModSounds.TOKE, ParticleTypes.FALLING_HONEY, 10, List.of(
+                    () -> new MobEffectInstance(ModEffects.COLOCON, 1200, 0),
+                    () -> new MobEffectInstance(MobEffects.SATURATION, 1, 2),
+                    () -> new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 600, 1),
+                    () -> new MobEffectInstance(MobEffects.ABSORPTION, 1200, 0)));
+
+    public static final DeferredItem<Item> ELECTRICA = mezcla("electrica",
+            ModSounds.ESNIFAR, ParticleTypes.ELECTRIC_SPARK, 20, List.of(
+                    () -> new MobEffectInstance(ModEffects.SUBIDON, 900, 0),
+                    () -> new MobEffectInstance(MobEffects.DIG_SPEED, 900, 2),
+                    () -> new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 900, 1),
+                    () -> new MobEffectInstance(MobEffects.GLOWING, 900, 0)));
+
+    // ---- Escaner antidroga (detector) ----
+    public static final DeferredItem<Item> ESCANER = ITEMS.registerItem("escaner",
+            EscanerItem::new, new Item.Properties().stacksTo(1));
+
     // ---- Pipa reutilizable (con durabilidad) ----
     public static final DeferredItem<Item> PIPA = ITEMS.registerItem("pipa",
             PipaItem::new, new Item.Properties().durability(64));
@@ -99,6 +166,14 @@ public class ModItems {
     // ---- Item del bloque de la mesa de procesado ----
     public static final DeferredItem<net.minecraft.world.item.BlockItem> MESA_PROCESADO =
             ITEMS.registerSimpleBlockItem("mesa_procesado", ModBlocks.MESA_PROCESADO);
+
+    private static DeferredItem<Item> mezcla(String nombre, Holder<SoundEvent> sonido,
+                                             ParticleOptions particula, int adictividad,
+                                             List<java.util.function.Supplier<net.minecraft.world.effect.MobEffectInstance>> efectos) {
+        return ITEMS.registerItem(nombre,
+                props -> new ConsumibleItem(props, sonido, particula, false, adictividad, efectos),
+                comida(1, 0.1F));
+    }
 
     private static Item.Properties comida(int nutricion, float saturacion) {
         return new Item.Properties().food(new FoodProperties.Builder()

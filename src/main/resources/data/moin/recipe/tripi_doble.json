@@ -1,0 +1,5 @@
+{
+    "type": "minecraft:crafting_shapeless",
+    "ingredients": [ { "item": "moin:tripi" }, { "item": "minecraft:fermented_spider_eye" } ],
+    "result": { "id": "moin:tripi_doble", "count": 1 }
+}

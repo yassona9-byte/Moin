@@ -231,6 +231,44 @@ def t_pipa():
     return im
 
 
+def t_vial(color):
+    """Vial de cristal con liquido de color (para las mezclas)."""
+    im = img()
+    dark = tuple(int(c * 0.7) for c in color[:3])
+    light = tuple(min(255, int(c * 1.25)) for c in color[:3])
+    # cristal
+    rect(im, 5, 2, 10, 13, (205, 220, 230, 90))
+    # tapon
+    rect(im, 5, 1, 10, 2, (90, 70, 50))
+    rect(im, 6, 0, 9, 1, (110, 85, 60))
+    # liquido
+    rect(im, 6, 6, 9, 12, color)
+    rect(im, 6, 12, 9, 12, dark)
+    # brillo y burbujas
+    px(im, 6, 7, light); px(im, 8, 9, light); px(im, 7, 11, dark)
+    px(im, 6, 3, (255, 255, 255, 160))
+    outline(im)
+    return im
+
+
+def t_escaner():
+    im = img()
+    # cuerpo
+    rect(im, 4, 3, 11, 14, (55, 58, 64))
+    rect(im, 4, 3, 11, 4, (75, 78, 85))
+    # pantalla verde
+    rect(im, 5, 5, 10, 9, (30, 40, 35))
+    rect(im, 6, 6, 9, 8, (90, 220, 120))
+    px(im, 7, 7, (200, 255, 200))
+    # botones
+    px(im, 6, 11, (200, 70, 70)); px(im, 8, 11, (70, 200, 90))
+    px(im, 6, 13, (120, 120, 130)); px(im, 9, 13, (120, 120, 130))
+    # antena
+    rect(im, 9, 0, 9, 3, (90, 90, 100)); px(im, 9, 0, (220, 80, 80))
+    outline(im)
+    return im
+
+
 # ---------------- BLOQUE: mesa de procesado ----------------
 
 def t_mesa_top():
@@ -336,6 +374,21 @@ def main():
     save(t_pastilla(), f"{BASE}/item/pastilla.png")
     save(t_cerveza(), f"{BASE}/item/cerveza.png")
     save(t_pipa(), f"{BASE}/item/pipa.png")
+    save(t_escaner(), f"{BASE}/item/escaner.png")
+
+    # mezclas (viales de colores)
+    mezclas = {
+        "speedball": (255, 120, 60),
+        "maria_dorada": (230, 190, 60),
+        "polvo_angel": (255, 205, 150),
+        "caramelo": (240, 120, 170),
+        "bomba_mental": (200, 50, 40),
+        "tripi_doble": (170, 80, 220),
+        "miel_loca": (235, 170, 40),
+        "electrica": (80, 210, 230),
+    }
+    for nombre, color in mezclas.items():
+        save(t_vial(color), f"{BASE}/item/{nombre}.png")
 
     # bloque
     save(t_mesa_top(), f"{BASE}/block/mesa_top.png")

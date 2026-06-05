@@ -1,0 +1,5 @@
+{
+    "type": "minecraft:crafting_shapeless",
+    "ingredients": [ { "item": "moin:porro" }, { "item": "minecraft:glowstone_dust" } ],
+    "result": { "id": "moin:maria_dorada", "count": 1 }
+}

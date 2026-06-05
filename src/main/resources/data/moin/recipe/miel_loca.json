@@ -1,0 +1,5 @@
+{
+    "type": "minecraft:crafting_shapeless",
+    "ingredients": [ { "item": "moin:porro" }, { "item": "minecraft:honey_bottle" } ],
+    "result": { "id": "moin:miel_loca", "count": 1 }
+}

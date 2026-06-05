@@ -1,0 +1,5 @@
+{
+    "type": "minecraft:crafting_shapeless",
+    "ingredients": [ { "item": "moin:cristal" }, { "item": "minecraft:gunpowder" } ],
+    "result": { "id": "moin:bomba_mental", "count": 1 }
+}

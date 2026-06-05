@@ -14,6 +14,16 @@
     "item.moin.pastilla": "Pastilla",
     "item.moin.cerveza": "Cerveza",
     "item.moin.pipa": "Pipa",
+    "item.moin.escaner": "Escáner Antidroga",
+
+    "item.moin.speedball": "Speedball",
+    "item.moin.maria_dorada": "María Dorada",
+    "item.moin.polvo_angel": "Polvo Ángel",
+    "item.moin.caramelo": "Caramelo",
+    "item.moin.bomba_mental": "Bomba Mental",
+    "item.moin.tripi_doble": "Tripi Doble",
+    "item.moin.miel_loca": "Miel Loca",
+    "item.moin.electrica": "Eléctrica",
 
     "block.moin.mesa_procesado": "Mesa de Procesado",
 
@@ -30,5 +40,7 @@
     "subtitles.moin.viaje": "Sonidos extraños...",
 
     "message.moin.mono": "Te está entrando el mono... necesitas consumir.",
-    "message.moin.poli": "¡La poli te ha fichado! Llevas demasiada mercancía encima."
+    "message.moin.poli": "¡La poli te ha fichado! Llevas demasiada mercancía encima.",
+    "message.moin.redada": "¡REDADA! La poli ha venido a por ti.",
+    "message.moin.escaner": "Escáner — %1$s: %2$s de mercancía (%3$s)"
 }

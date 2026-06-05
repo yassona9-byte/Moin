@@ -1,0 +1,5 @@
+{
+    "type": "minecraft:crafting_shapeless",
+    "ingredients": [ { "item": "moin:polvo_blanco" }, { "item": "minecraft:blaze_powder" } ],
+    "result": { "id": "moin:polvo_angel", "count": 1 }
+}

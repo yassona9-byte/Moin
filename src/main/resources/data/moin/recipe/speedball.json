@@ -1,0 +1,5 @@
+{
+    "type": "minecraft:crafting_shapeless",
+    "ingredients": [ { "item": "moin:polvo_blanco" }, { "item": "minecraft:redstone" } ],
+    "result": { "id": "moin:speedball", "count": 1 }
+}
