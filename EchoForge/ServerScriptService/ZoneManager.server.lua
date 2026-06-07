@@ -67,7 +67,16 @@ local function construirPuerta(zona)
 	local puerta = Instance.new("Part")
 	puerta.Name = "Puerta_" .. zona.id
 	puerta.Size = Vector3.new(zona.radio * 2, 14, 2)
-	puerta.Position = zona.centro + Vector3.new(0, 7, zona.radio)
+	-- La puerta va en el borde de la zona que MIRA AL HUB (centro
+	-- del mapa) y se gira para encararlo. Calculamos la dirección
+	-- desde el hub (0,0,0) hasta la zona y retrocedemos un radio.
+	local dir = Vector3.new(zona.centro.X, 0, zona.centro.Z)
+	dir = (dir.Magnitude > 0) and dir.Unit or Vector3.new(0, 0, 1)
+	local entrada = zona.centro - dir * zona.radio
+	entrada = Vector3.new(entrada.X, 7, entrada.Z)
+	-- CFrame.lookAt coloca y orienta de una vez: la cara ancha de
+	-- la puerta queda mirando al centro del mapa.
+	puerta.CFrame = CFrame.lookAt(entrada, Vector3.new(0, 7, 0))
 	puerta.Anchored = true
 	puerta.CanCollide = false
 	puerta.Material = Enum.Material.ForceField

@@ -5,58 +5,49 @@
   Tipo:   ModuleScript
   Lugar:  ReplicatedStorage
 ============================================================
-  La "fuente de verdad" de las zonas del mapa. La leen el
-  EcoSpawner (para saber dónde y de qué valor aparecen los
-  Ecos), el ZoneManager (para construir las puertas) y el
-  DataManager (para guardar qué zonas tienes desbloqueadas).
+  Distribución HUB + ZONAS: el hub está en el centro (0,0,0)
+  y las zonas se reparten ALREDEDOR (no en línea), cada una
+  en una dirección distinta. El MapBuilder construye cada
+  bioma en su 'centro' y el ZoneManager pone la puerta en el
+  borde que mira al hub.
 
-  Para AÑADIR una zona nueva, solo copia un bloque aquí y
-  ajústalo. Todo el resto del juego se adapta solo.
+  Para AÑADIR una zona: copia un bloque y dale un 'centro'
+  en otra dirección. Todo lo demás se adapta solo.
 ============================================================
 ]]
 
 local Zonas = {}
 
--- Las zonas van en LÍNEA hacia el fondo (eje Z negativo),
--- separadas para que no se solapen.
---   id       = nombre interno (para guardar datos). SIN espacios.
---   nombre   = texto bonito para la puerta.
---   centro   = punto central de la zona en el mundo 3D.
---   radio    = cómo de grande es (los Ecos aparecen dentro).
---   valorEco = cuántos Ecos te da cada orbe de esta zona.
---   color    = color de los orbes de esta zona.
---   precio   = Moneda para desbloquearla (0 = gratis, inicial).
---   maxEcos  = cuántos orbes puede haber a la vez en la zona.
 Zonas.Lista = {
 	{
 		id = "Pradera",
-		nombre = "Pradera",
-		centro = Vector3.new(0, 3, 0),
-		radio = 40,
+		nombre = "Meadow",
+		centro = Vector3.new(0, 3, 200),       -- al norte del hub
+		radio = 60,
 		valorEco = 1,
-		color = Color3.fromRGB(80, 200, 255),   -- azul
+		color = Color3.fromRGB(80, 200, 255),
 		precio = 0,
-		maxEcos = 20,
+		maxEcos = 30,
 	},
 	{
 		id = "Cuevas",
-		nombre = "Cuevas de Cristal",
-		centro = Vector3.new(0, 3, -130),
-		radio = 40,
+		nombre = "Crystal Caves",
+		centro = Vector3.new(-173, 3, -100),   -- suroeste
+		radio = 60,
 		valorEco = 5,
-		color = Color3.fromRGB(150, 100, 255),   -- morado
+		color = Color3.fromRGB(150, 100, 255),
 		precio = 5000,
-		maxEcos = 20,
+		maxEcos = 30,
 	},
 	{
 		id = "Volcan",
-		nombre = "Cráter Volcánico",
-		centro = Vector3.new(0, 3, -260),
-		radio = 40,
+		nombre = "Volcanic Crater",
+		centro = Vector3.new(173, 3, -100),    -- sureste
+		radio = 60,
 		valorEco = 25,
-		color = Color3.fromRGB(255, 90, 40),     -- naranja fuego
+		color = Color3.fromRGB(255, 90, 40),
 		precio = 50000,
-		maxEcos = 20,
+		maxEcos = 30,
 	},
 }
 
