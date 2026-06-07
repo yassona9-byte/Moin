@@ -7,70 +7,78 @@
 ============================================================
   Qué hace, en una frase:
   "Es el ÚNICO dueño de los datos del jugador: los carga de
-   la nube cuando entra, los mantiene en su leaderstats
-   mientras juega, y los guarda cuando se va o se apaga el
-   servidor — todo con red de seguridad para no perder nada."
+   la nube cuando entra, los mantiene mientras juega, y los
+   guarda cuando se va o se apaga el servidor — con red de
+   seguridad para no perder nada."
+
+  Actualizado en el Sistema 3: ahora también crea y guarda
+  la lista de Reliquias del jugador (cuántas tiene de cada
+  rareza).
 ============================================================
-  ⚠️  IMPORTANTE ANTES DE PROBAR:
-  El DataStore NO funciona en Studio hasta que actives:
-  Game Settings (Configuración del juego) → Security →
-  "Enable Studio Access to API Services" (activado).
-  Te explico el paso a paso en el chat.
+  ⚠️  El DataStore necesita "Enable Studio Access to API
+  Services" activado (Game Settings → Security) y el juego
+  publicado. Ya lo tienes hecho.
 ============================================================
 ]]
 
 -- ┌──────────────────────────────────────────────────────┐
--- │ 1. SERVICIOS                                          │
+-- │ 1. SERVICIOS Y CONFIGURACIÓN COMPARTIDA               │
 -- └──────────────────────────────────────────────────────┘
 local Players = game:GetService("Players")
--- DataStoreService = la puerta a la "caja fuerte" en la nube.
 local DataStoreService = game:GetService("DataStoreService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
--- GetDataStore nos da UNA caja fuerte concreta, por nombre.
--- El "_v1" al final es un truco: si algún día cambiamos la
--- forma de los datos y queremos empezar limpio, usamos "_v2"
--- y no chocamos con los datos viejos.
+-- Misma "biblioteca" de rarezas que usa la Forja: así ambos
+-- coinciden siempre en los nombres de rareza.
+local Rarezas = require(ReplicatedStorage:WaitForChild("Rarezas"))
+
 local almacen = DataStoreService:GetDataStore("EchoForge_Datos_v1")
 
 -- ┌──────────────────────────────────────────────────────┐
 -- │ 2. CONFIGURACIÓN                                      │
 -- └──────────────────────────────────────────────────────┘
--- Cada cuánto guardamos automáticamente (por si el juego
--- se cierra de golpe y no da tiempo a guardar al salir).
 local INTERVALO_AUTOGUARDADO = 60  -- segundos
 
--- Con qué valores empieza un jugador totalmente nuevo.
--- Cuando añadamos más cosas (capacidad, velocidad...), las
--- pondremos aquí y se aplicarán solas a los jugadores nuevos.
 local DATOS_INICIALES = {
 	Ecos = 0,
 	Moneda = 0,
+	-- Reliquias se rellena solo a partir de la lista de rarezas.
 }
 
 -- ┌──────────────────────────────────────────────────────┐
 -- │ 3. ESTADO INTERNO                                     │
 -- └──────────────────────────────────────────────────────┘
--- Si al ENTRAR un jugador falla la carga (problema de red),
--- lo apuntamos aquí para NO guardar luego sobre sus datos
--- buenos en la nube (si guardáramos 0 Ecos, ¡le borraríamos
--- el progreso!). Mejor no tocar nada y que reintente al volver.
+-- Jugadores cuya CARGA falló: no los guardamos para no
+-- machacar sus datos buenos de la nube con valores en 0.
 local noGuardar = {}
 
 -- ┌──────────────────────────────────────────────────────┐
 -- │ 4. FUNCIONES AUXILIARES                               │
 -- └──────────────────────────────────────────────────────┘
--- La "clave" única de cada jugador en la caja fuerte.
--- UserId es un número que Roblox da a cada cuenta y nunca
--- cambia (el nombre de usuario sí puede cambiar; el ID no).
 local function clavePara(player)
 	return "Jugador_" .. player.UserId
+end
+
+-- Crea la carpeta "Reliquias" dentro del jugador, con un
+-- contador (IntValue) por cada rareza. "guardadas" es la
+-- tabla recuperada de la nube (o nil si es jugador nuevo).
+local function crearReliquias(player, guardadas)
+	guardadas = guardadas or {}
+	local carpeta = Instance.new("Folder")
+	carpeta.Name = "Reliquias"
+	for _, nombre in ipairs(Rarezas.Lista) do
+		local contador = Instance.new("IntValue")
+		contador.Name = nombre                     -- "Comun", "Rara", ...
+		contador.Value = guardadas[nombre] or 0    -- lo guardado, o 0
+		contador.Parent = carpeta
+	end
+	carpeta.Parent = player
 end
 
 -- ┌──────────────────────────────────────────────────────┐
 -- │ 5. CUANDO UN JUGADOR ENTRA: CARGAR Y MOSTRAR          │
 -- └──────────────────────────────────────────────────────┘
 local function alEntrar(player)
-	-- Creamos el leaderstats (el contador visible en pantalla).
 	local leaderstats = Instance.new("Folder")
 	leaderstats.Name = "leaderstats"
 
@@ -80,32 +88,30 @@ local function alEntrar(player)
 	local moneda = Instance.new("IntValue")
 	moneda.Name = "Moneda"
 
-	-- Intentamos LEER de la nube, con red de seguridad (pcall).
-	-- exito = ¿salió bien la llamada? / datos = lo que devolvió.
+	-- Leemos de la nube con red de seguridad.
 	local exito, datos = pcall(function()
 		return almacen:GetAsync(clavePara(player))
 	end)
 
 	if exito then
-		-- La llamada funcionó. Ahora, ¿había datos guardados?
 		if datos then
-			-- Jugador que vuelve: usamos sus valores guardados.
-			-- "datos.Ecos or 0" = si por algo no existe, usa 0.
+			-- Jugador que vuelve.
 			ecos.Value = datos.Ecos or 0
 			moneda.Value = datos.Moneda or 0
+			crearReliquias(player, datos.Reliquias)  -- sus reliquias guardadas
 		else
-			-- datos es nil => jugador NUEVO: valores iniciales.
+			-- Jugador nuevo.
 			ecos.Value = DATOS_INICIALES.Ecos
 			moneda.Value = DATOS_INICIALES.Moneda
+			crearReliquias(player, nil)              -- todas a 0
 		end
 	else
-		-- La llamada FALLÓ (red, etc.). No arriesgamos: marcamos
-		-- a este jugador para no guardar y avisamos en Output.
+		-- Falló la carga: no arriesgamos a guardar luego.
 		noGuardar[player] = true
+		crearReliquias(player, nil)  -- le damos contadores en 0 para que juegue
 		warn("Echo Forge: error al CARGAR datos de " .. player.Name .. " → " .. tostring(datos))
 	end
 
-	-- Colocamos todo en su sitio (esto hace que aparezca en pantalla).
 	ecos.Parent = leaderstats
 	moneda.Parent = leaderstats
 	leaderstats.Parent = player
@@ -115,23 +121,30 @@ end
 -- │ 6. GUARDAR LOS DATOS DE UN JUGADOR                    │
 -- └──────────────────────────────────────────────────────┘
 local function guardarDatos(player)
-	-- Si su carga falló, NO guardamos (evitamos borrar progreso).
 	if noGuardar[player] then
 		return
 	end
 
 	local leaderstats = player:FindFirstChild("leaderstats")
 	if not leaderstats then
-		return  -- aún no tiene stats (entró hace un instante)
+		return
 	end
 
-	-- Empaquetamos los valores actuales en una tabla.
+	-- Empaquetamos las reliquias en una tabla { Comun=.., Rara=.. }.
+	local reliquias = {}
+	local carpetaReliquias = player:FindFirstChild("Reliquias")
+	if carpetaReliquias then
+		for _, contador in ipairs(carpetaReliquias:GetChildren()) do
+			reliquias[contador.Name] = contador.Value
+		end
+	end
+
 	local datos = {
 		Ecos = leaderstats.Ecos.Value,
 		Moneda = leaderstats.Moneda.Value,
+		Reliquias = reliquias,
 	}
 
-	-- Escribimos en la nube, otra vez con red de seguridad.
 	local exito, err = pcall(function()
 		almacen:SetAsync(clavePara(player), datos)
 	end)
@@ -144,20 +157,16 @@ end
 -- ┌──────────────────────────────────────────────────────┐
 -- │ 7. CONECTAR LOS EVENTOS                               │
 -- └──────────────────────────────────────────────────────┘
--- Cuando alguien entra -> cargar.
 Players.PlayerAdded:Connect(alEntrar)
 
--- Cuando alguien se va -> guardar y olvidar su marca interna.
 Players.PlayerRemoving:Connect(function(player)
 	guardarDatos(player)
-	noGuardar[player] = nil  -- limpiamos para no acumular memoria
+	noGuardar[player] = nil
 end)
 
 -- ┌──────────────────────────────────────────────────────┐
 -- │ 8. AUTOGUARDADO PERIÓDICO                             │
 -- └──────────────────────────────────────────────────────┘
--- task.spawn lanza este bucle "en paralelo", sin frenar el
--- resto del script. Cada minuto guarda a todos los presentes.
 task.spawn(function()
 	while true do
 		task.wait(INTERVALO_AUTOGUARDADO)
@@ -170,9 +179,6 @@ end)
 -- ┌──────────────────────────────────────────────────────┐
 -- │ 9. GUARDAR AL APAGAR EL SERVIDOR                      │
 -- └──────────────────────────────────────────────────────┘
--- BindToClose corre justo antes de que el servidor (o tu
--- sesión de Studio) se cierre. Guardamos a todos para no
--- perder los últimos segundos de juego.
 game:BindToClose(function()
 	for _, player in ipairs(Players:GetPlayers()) do
 		guardarDatos(player)

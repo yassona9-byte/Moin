@@ -25,7 +25,7 @@ Cada subcarpeta = un contenedor de Studio donde debes pegar el script.
 
 - [x] **1. Recolección de Ecos** — `ServerScriptService/EcoSpawner.server.lua`
 - [x] **2. Inventario y datos (DataStore)** — `ServerScriptService/DataManager.server.lua`
-- [ ] 3. Sistema de Forja
+- [x] **3. Sistema de Forja** — `ServerScriptService/ForgeManager.server.lua` + `ReplicatedStorage/Rarezas.lua`
 - [ ] 4. Generación pasiva de moneda (idle)
 - [ ] 5. Tienda de mejoras (GUI)
 - [ ] 6. Desbloqueo de zonas
