@@ -32,6 +32,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 -- coinciden siempre en los nombres de rareza.
 local Rarezas = require(ReplicatedStorage:WaitForChild("Rarezas"))
 local Mejoras = require(ReplicatedStorage:WaitForChild("Mejoras"))
+local Zonas = require(ReplicatedStorage:WaitForChild("Zonas"))
 
 local almacen = DataStoreService:GetDataStore("EchoForge_Datos_v1")
 
@@ -109,6 +110,26 @@ local function crearMejoras(player, guardadas)
 	carpeta.Parent = player
 end
 
+-- Crea la carpeta "ZonasDesbloqueadas" con un BoolValue por
+-- zona (true = desbloqueada). La zona inicial (precio 0)
+-- siempre arranca desbloqueada.
+local function crearZonas(player, guardadas)
+	guardadas = guardadas or {}
+	local carpeta = Instance.new("Folder")
+	carpeta.Name = "ZonasDesbloqueadas"
+	for _, zona in ipairs(Zonas.Lista) do
+		local marca = Instance.new("BoolValue")
+		marca.Name = zona.id
+		if zona.precio == 0 then
+			marca.Value = true                       -- gratis: siempre abierta
+		else
+			marca.Value = guardadas[zona.id] == true -- lo que tuviera guardado
+		end
+		marca.Parent = carpeta
+	end
+	carpeta.Parent = player
+end
+
 -- ┌──────────────────────────────────────────────────────┐
 -- │ 5. CUANDO UN JUGADOR ENTRA: CARGAR Y MOSTRAR          │
 -- └──────────────────────────────────────────────────────┘
@@ -134,6 +155,7 @@ local function alEntrar(player)
 			moneda.Value = datos.Moneda or 0
 			crearReliquias(player, datos.Reliquias)  -- sus reliquias guardadas
 			crearMejoras(player, datos.Mejoras)      -- sus niveles de mejora
+			crearZonas(player, datos.ZonasDesbloqueadas) -- sus zonas abiertas
 
 			-- ── GANANCIAS OFFLINE ──
 			-- Si guardamos cuándo se fue, calculamos lo que ganó
@@ -165,12 +187,14 @@ local function alEntrar(player)
 			moneda.Value = DATOS_INICIALES.Moneda
 			crearReliquias(player, nil)              -- todas a 0
 			crearMejoras(player, nil)                -- niveles a 0
+			crearZonas(player, nil)                  -- solo la inicial
 		end
 	else
 		-- Falló la carga: no arriesgamos a guardar luego.
 		noGuardar[player] = true
 		crearReliquias(player, nil)  -- le damos contadores en 0 para que juegue
 		crearMejoras(player, nil)    -- niveles a 0 para que pueda jugar
+		crearZonas(player, nil)      -- solo la zona inicial
 		warn("Echo Forge: error al CARGAR datos de " .. player.Name .. " → " .. tostring(datos))
 	end
 
@@ -210,11 +234,21 @@ local function guardarDatos(player)
 		end
 	end
 
+	-- Empaquetamos las zonas desbloqueadas { Cuevas=true, ... }.
+	local zonas = {}
+	local carpetaZonas = player:FindFirstChild("ZonasDesbloqueadas")
+	if carpetaZonas then
+		for _, marca in ipairs(carpetaZonas:GetChildren()) do
+			zonas[marca.Name] = marca.Value
+		end
+	end
+
 	local datos = {
 		Ecos = leaderstats.Ecos.Value,
 		Moneda = leaderstats.Moneda.Value,
 		Reliquias = reliquias,
 		Mejoras = mejoras,
+		ZonasDesbloqueadas = zonas,
 		-- Guardamos la hora actual: así, al volver, sabremos
 		-- cuánto tiempo estuvo fuera para pagarle el offline.
 		UltimaConexion = os.time(),

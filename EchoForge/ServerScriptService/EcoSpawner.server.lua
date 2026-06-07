@@ -1,132 +1,121 @@
 --[[
 ============================================================
-  ECHO FORGE — SISTEMA 1: RECOLECCIÓN DE ECOS
+  ECHO FORGE — SISTEMA 1 + 6: RECOLECCIÓN POR ZONAS
   Script: EcoSpawner
   Tipo:   Script (servidor)
   Lugar:  ServerScriptService
 ============================================================
-  Qué hace este script, en una frase:
-  "Hace aparecer orbes de energía (Ecos) por el mapa cada
-   pocos segundos, y cuando el jugador camina sobre uno,
-   lo suma a su contador de Ecos."
+  Qué hace, en una frase:
+  "Hace aparecer Ecos en cada zona del mapa (con su color y
+   valor). Al tocarlos, si tienes esa zona desbloqueada y te
+   cabe en la mochila, suma su valor a tus Ecos."
 ============================================================
 ]]
 
--- ┌──────────────────────────────────────────────────────┐
--- │ 1. SERVICIOS                                          │
--- └──────────────────────────────────────────────────────┘
--- Un "servicio" es una caja de herramientas que Roblox ya
--- nos da hecha. game:GetService(...) nos da acceso a ella.
--- Players  = información de todos los jugadores conectados.
--- Workspace = el mundo 3D que el jugador ve y toca.
 local Players = game:GetService("Players")
 local Workspace = game:GetService("Workspace")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
--- Sistema 5: leemos la ficha de Mejoras para saber la
--- capacidad de mochila de cada jugador según su nivel.
+-- Fichas compartidas: capacidad de mochila y definición de zonas.
 local Mejoras = require(ReplicatedStorage:WaitForChild("Mejoras"))
+local Zonas = require(ReplicatedStorage:WaitForChild("Zonas"))
 
 -- ┌──────────────────────────────────────────────────────┐
--- │ 2. CONFIGURACIÓN (tus "perillas" para tunear el juego)│
+-- │ CONFIGURACIÓN                                         │
 -- └──────────────────────────────────────────────────────┘
--- Cambiar estos números cambia cómo se siente el juego.
--- No necesitas tocar nada más para ajustar el ritmo.
-local INTERVALO_SPAWN = 2     -- segundos entre cada Eco nuevo
-local MAX_ECOS        = 25    -- cuántos Ecos puede haber a la vez
-local AREA            = 100   -- radio del cuadrado donde aparecen (en "studs")
-local ALTURA_SPAWN    = 3     -- altura sobre el suelo (para que floten un poco)
+local INTERVALO_SPAWN = 1   -- cada cuánto intentamos crear orbes
+local ALTURA_SPAWN = 3      -- altura sobre el suelo
 
--- ┌──────────────────────────────────────────────────────┐
--- │ 3. CARPETA PARA ORDENAR LOS ECOS                      │
--- └──────────────────────────────────────────────────────┘
--- Instance.new("Folder") crea una carpeta vacía.
--- La metemos en Workspace para no llenar el mundo de orbes
--- sueltos: todos vivirán dentro de Workspace > Ecos.
+-- Carpeta para mantener todos los Ecos ordenados.
 local carpetaEcos = Instance.new("Folder")
-carpetaEcos.Name = "Ecos"          -- así la verás en el explorador
-carpetaEcos.Parent = Workspace     -- "Parent" = dónde vive el objeto
-
--- NOTA (Sistema 2): el leaderstats con "Ecos" y "Moneda" ya
--- NO se crea aquí. Ahora su dueño es el script DataManager,
--- que además los carga y guarda en la nube (DataStore).
--- Este script solo se encarga de SUMAR Ecos al recoger orbes.
+carpetaEcos.Name = "Ecos"
+carpetaEcos.Parent = Workspace
 
 -- ┌──────────────────────────────────────────────────────┐
--- │ 5. CREAR UN ECO                                       │
+-- │ CONTAR ECOS DE UNA ZONA                               │
 -- └──────────────────────────────────────────────────────┘
-local function crearEco()
-	-- #carpetaEcos:GetChildren() cuenta cuántos Ecos hay ahora.
-	-- Si ya llegamos al máximo, no creamos más (rendimiento).
-	if #carpetaEcos:GetChildren() >= MAX_ECOS then
-		return  -- "return" sale de la función sin hacer nada más
+-- Para no pasarnos del máximo por zona, contamos los que ya
+-- existen leyendo su atributo "Zona".
+local function contarEcosZona(idZona)
+	local total = 0
+	for _, eco in ipairs(carpetaEcos:GetChildren()) do
+		if eco:GetAttribute("Zona") == idZona then
+			total += 1
+		end
+	end
+	return total
+end
+
+-- ┌──────────────────────────────────────────────────────┐
+-- │ CREAR UN ECO EN UNA ZONA                              │
+-- └──────────────────────────────────────────────────────┘
+local function crearEcoEnZona(zona)
+	if contarEcosZona(zona.id) >= zona.maxEcos then
+		return
 	end
 
-	-- Part = un objeto físico 3D. Será nuestro orbe.
 	local eco = Instance.new("Part")
 	eco.Name = "Eco"
-	eco.Shape = Enum.PartType.Ball               -- forma de bola
-	eco.Size = Vector3.new(2, 2, 2)              -- ancho, alto, largo
-	eco.Material = Enum.Material.Neon            -- material que "brilla"
-	eco.Color = Color3.fromRGB(80, 200, 255)     -- azul energía (R, G, B)
-	eco.Anchored = true                          -- no cae con la gravedad
-	eco.CanCollide = false                       -- el jugador lo atraviesa
-	                                             -- (así no tropieza con él)
+	eco.Shape = Enum.PartType.Ball
+	eco.Size = Vector3.new(2, 2, 2)
+	eco.Material = Enum.Material.Neon
+	eco.Color = zona.color        -- cada zona, su color
+	eco.Anchored = true
+	eco.CanCollide = false
 
-	-- math.random(min, max) da un número al azar entre min y max.
-	-- Lo usamos para colocar el Eco en un punto aleatorio del área.
-	local x = math.random(-AREA, AREA)
-	local z = math.random(-AREA, AREA)
+	-- Posición aleatoria DENTRO del círculo de la zona.
+	-- Usamos un ángulo al azar y una distancia al azar desde
+	-- el centro (trigonometría básica: coseno/seno).
+	local angulo = math.random() * 2 * math.pi
+	local distancia = math.random(0, zona.radio)
+	local x = zona.centro.X + math.cos(angulo) * distancia
+	local z = zona.centro.Z + math.sin(angulo) * distancia
 	eco.Position = Vector3.new(x, ALTURA_SPAWN, z)
-	eco.Parent = carpetaEcos                     -- lo metemos en su carpeta
 
-	-- ── Detección de recogida ──
-	-- "recogido" evita que un mismo Eco se cuente dos veces si
-	-- el jugador lo toca con varias partes del cuerpo a la vez.
+	-- Le "pegamos" su info con atributos.
+	eco:SetAttribute("Zona", zona.id)
+	eco:SetAttribute("Valor", zona.valorEco)
+
+	eco.Parent = carpetaEcos
+
+	-- ── Recogida ──
 	local recogido = false
-
-	-- Touched es un evento que se dispara cuando ALGO toca el Eco.
-	-- "hit" es la parte que lo tocó (un pie, una mano, etc.).
 	eco.Touched:Connect(function(hit)
-		if recogido then return end          -- ya se recogió, ignoramos
+		if recogido then return end
 
-		-- hit.Parent es el modelo dueño de esa parte.
-		-- Si ese modelo es el personaje de un jugador,
-		-- GetPlayerFromCharacter nos devuelve a ese jugador.
 		local player = Players:GetPlayerFromCharacter(hit.Parent)
-		if not player then return end        -- no fue un jugador, ignoramos
+		if not player then return end
 
-		-- Buscamos su leaderstats (lo crea el DataManager al entrar).
-		-- FindFirstChild devuelve nil si aún no existe, en vez de
-		-- romper el script: por eso comprobamos antes de usarlo.
 		local leaderstats = player:FindFirstChild("leaderstats")
 		local carpetaMejoras = player:FindFirstChild("Mejoras")
-		if not leaderstats or not carpetaMejoras then return end
+		local zonasDesbloqueadas = player:FindFirstChild("ZonasDesbloqueadas")
+		if not leaderstats or not carpetaMejoras or not zonasDesbloqueadas then
+			return
+		end
 
-		-- Sistema 5: ¿le cabe el Eco en la mochila?
-		-- La capacidad depende de su nivel de mejora "Mochila".
-		local nivelMochila = carpetaMejoras.Mochila.Value
-		local capacidad = Mejoras.capacidadMochila(nivelMochila)
+		-- ¿Tiene esta zona desbloqueada? Si no, NO recoge (el
+		-- orbe se queda como "cebo" hasta que pague la puerta).
+		local desbloqueada = zonasDesbloqueadas:FindFirstChild(zona.id)
+		if not desbloqueada or not desbloqueada.Value then
+			return
+		end
 
+		-- ¿Le cabe en la mochila?
+		local capacidad = Mejoras.capacidadMochila(carpetaMejoras.Mochila.Value)
 		if leaderstats.Ecos.Value < capacidad then
-			-- Hay sitio: recogemos.
 			recogido = true
-			leaderstats.Ecos.Value += 1      -- ¡sumamos 1 Eco!
-			eco:Destroy()                    -- el orbe desaparece
-		else
-			-- Mochila llena: NO recogemos (el orbe se queda).
-			-- Esto empuja al jugador a ir a forjar para hacer hueco.
+			leaderstats.Ecos.Value += zona.valorEco   -- suma el valor de la zona
+			eco:Destroy()
 		end
 	end)
 end
 
 -- ┌──────────────────────────────────────────────────────┐
--- │ 6. BUCLE DE SPAWN (el "latido" del sistema)           │
+-- │ BUCLE DE SPAWN (recorre todas las zonas)              │
 -- └──────────────────────────────────────────────────────┘
--- "while true do ... end" = repite para siempre.
--- task.wait(n) pausa el bucle n segundos sin congelar el juego.
--- Así, cada INTERVALO_SPAWN segundos, intentamos crear un Eco.
 while true do
 	task.wait(INTERVALO_SPAWN)
-	crearEco()
+	for _, zona in ipairs(Zonas.Lista) do
+		crearEcoEnZona(zona)
+	end
 end

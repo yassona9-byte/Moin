@@ -28,7 +28,7 @@ Cada subcarpeta = un contenedor de Studio donde debes pegar el script.
 - [x] **3. Sistema de Forja** — `ServerScriptService/ForgeManager.server.lua` + `ReplicatedStorage/Rarezas.lua`
 - [x] **4. Generación pasiva de moneda (idle)** — `ServerScriptService/IncomeManager.server.lua` (+ ganancias offline en DataManager)
 - [x] **5. Tienda de mejoras (GUI)** — `ReplicatedStorage/Mejoras.lua` + `ServerScriptService/ShopServer.server.lua` + `StarterPlayer/StarterPlayerScripts/ShopGui.client.lua`
-- [ ] 6. Desbloqueo de zonas
+- [x] **6. Desbloqueo de zonas** — `ReplicatedStorage/Zonas.lua` + `ServerScriptService/ZoneManager.server.lua` (EcoSpawner ahora es por zonas)
 - [ ] 7. Interfaz (GUI)
 - [ ] 8. Capa social
 - [ ] 9. Monetización
