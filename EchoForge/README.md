@@ -33,4 +33,4 @@ Cada subcarpeta = un contenedor de Studio donde debes pegar el script.
 - [ ] 8. Capa social
 - [ ] 9. Monetización
 - [ ] (pendiente) Localización / traducción automática (tras Sistema 7)
-- [ ] (pendiente) Construcción del mapa visual
+- [x] **Mapa visual** (temático por zona) — `ServerScriptService/MapBuilder.server.lua`
