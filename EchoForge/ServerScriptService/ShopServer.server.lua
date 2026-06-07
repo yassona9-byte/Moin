@@ -16,6 +16,7 @@
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Mejoras = require(ReplicatedStorage:WaitForChild("Mejoras"))
+local notificar = ReplicatedStorage:WaitForChild("Notificar")
 
 -- ┌──────────────────────────────────────────────────────┐
 -- │ 1. CREAR EL "TELÉFONO" CLIENTE ↔ SERVIDOR             │
@@ -68,6 +69,7 @@ remoteComprar.OnServerEvent:Connect(function(player, nombreMejora)
 
 	-- ¿Tiene suficiente Moneda?
 	if leaderstats.Moneda.Value < costo then
+		notificar:FireClient(player, "Not enough Coins!", Color3.fromRGB(200, 60, 60))
 		return
 	end
 
@@ -75,5 +77,5 @@ remoteComprar.OnServerEvent:Connect(function(player, nombreMejora)
 	leaderstats.Moneda.Value -= costo
 	nivelValue.Value += 1
 
-	print(player.Name .. " mejoró " .. nombreMejora .. " a nivel " .. nivelValue.Value)
+	notificar:FireClient(player, "Upgrade purchased!", Color3.fromRGB(60, 170, 90))
 end)

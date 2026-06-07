@@ -17,6 +17,7 @@ local Workspace = game:GetService("Workspace")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Zonas = require(ReplicatedStorage:WaitForChild("Zonas"))
+local notificar = ReplicatedStorage:WaitForChild("Notificar")
 
 -- ┌──────────────────────────────────────────────────────┐
 -- │ DESBLOQUEAR UNA ZONA PARA UN JUGADOR                  │
@@ -40,13 +41,14 @@ local function desbloquear(player, zona)
 
 	-- ¿Puede pagarla?
 	if leaderstats.Moneda.Value < zona.precio then
+		notificar:FireClient(player, "Not enough Coins!", Color3.fromRGB(200, 60, 60))
 		return
 	end
 
 	-- Cobramos y desbloqueamos.
 	leaderstats.Moneda.Value -= zona.precio
 	marca.Value = true
-	print(player.Name .. " desbloqueó la zona: " .. zona.nombre)
+	notificar:FireClient(player, "Zone unlocked: " .. zona.nombre .. "!", zona.color)
 end
 
 -- ┌──────────────────────────────────────────────────────┐

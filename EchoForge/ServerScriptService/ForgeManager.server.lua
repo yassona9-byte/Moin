@@ -23,6 +23,8 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 -- WaitForChild espera a que exista (por si este script corre
 -- antes de que el módulo termine de cargar).
 local Rarezas = require(ReplicatedStorage:WaitForChild("Rarezas"))
+-- Canal para avisar a la pantalla del jugador (Sistema 7).
+local notificar = ReplicatedStorage:WaitForChild("Notificar")
 
 -- Cuántos Ecos cuesta UNA fundición. Tu elección: 10.
 local COSTE_FORJA = 10
@@ -107,9 +109,8 @@ prompt.Triggered:Connect(function(player)
 
 	-- ¿Tiene suficientes Ecos?
 	if ecos.Value < COSTE_FORJA then
-		-- Por ahora solo avisamos en Output. En el Sistema 7
-		-- esto será una notificación bonita en pantalla.
-		warn(player.Name .. " no tiene suficientes Ecos (necesita " .. COSTE_FORJA .. ")")
+		-- Notificación roja en la pantalla del jugador.
+		notificar:FireClient(player, "Not enough Echoes!", Color3.fromRGB(200, 60, 60))
 		return
 	end
 
@@ -125,6 +126,7 @@ prompt.Triggered:Connect(function(player)
 		contador.Value += 1
 	end
 
-	-- Mensaje en Output para que veas qué salió mientras probamos.
-	print(player.Name .. " forjó una Reliquia: " .. Rarezas.Datos[rareza].nombre)
+	-- 4) ¡Notificación juicy! Cartel del color de la rareza.
+	local ficha = Rarezas.Datos[rareza]
+	notificar:FireClient(player, "You forged a " .. ficha.nombre .. "!", ficha.color)
 end)

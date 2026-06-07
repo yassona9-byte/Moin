@@ -29,6 +29,8 @@ Cada subcarpeta = un contenedor de Studio donde debes pegar el script.
 - [x] **4. Generación pasiva de moneda (idle)** — `ServerScriptService/IncomeManager.server.lua` (+ ganancias offline en DataManager)
 - [x] **5. Tienda de mejoras (GUI)** — `ReplicatedStorage/Mejoras.lua` + `ServerScriptService/ShopServer.server.lua` + `StarterPlayer/StarterPlayerScripts/ShopGui.client.lua`
 - [x] **6. Desbloqueo de zonas** — `ReplicatedStorage/Zonas.lua` + `ServerScriptService/ZoneManager.server.lua` (EcoSpawner ahora es por zonas)
-- [ ] 7. Interfaz (GUI)
+- [x] **7. Interfaz (GUI)** — `ServerScriptService/NotifyServer.server.lua` + `StarterPlayer/StarterPlayerScripts/HudGui.client.lua` + `NotificationsGui.client.lua` (textos en inglés)
 - [ ] 8. Capa social
 - [ ] 9. Monetización
+- [ ] (pendiente) Localización / traducción automática (tras Sistema 7)
+- [ ] (pendiente) Construcción del mapa visual
