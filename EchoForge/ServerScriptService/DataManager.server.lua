@@ -39,6 +39,10 @@ local almacen = DataStoreService:GetDataStore("EchoForge_Datos_v1")
 -- └──────────────────────────────────────────────────────┘
 local INTERVALO_AUTOGUARDADO = 60  -- segundos
 
+-- Tope de ganancias offline: como máximo te pagamos por estas
+-- horas, aunque hayas estado fuera mucho más. Evita números locos.
+local MAX_HORAS_OFFLINE = 8
+
 local DATOS_INICIALES = {
 	Ecos = 0,
 	Moneda = 0,
@@ -75,6 +79,20 @@ local function crearReliquias(player, guardadas)
 	carpeta.Parent = player
 end
 
+-- Calcula el ingreso POR SEGUNDO a partir de una tabla de
+-- reliquias guardada { Comun=.., Rara=.. }. Lo usamos para las
+-- ganancias offline (no podemos leer la carpeta porque el
+-- jugador aún se está cargando).
+local function ingresoDeTabla(reliquias)
+	reliquias = reliquias or {}
+	local total = 0
+	for _, nombre in ipairs(Rarezas.Lista) do
+		local cantidad = reliquias[nombre] or 0
+		total += cantidad * Rarezas.Datos[nombre].ingreso
+	end
+	return total
+end
+
 -- ┌──────────────────────────────────────────────────────┐
 -- │ 5. CUANDO UN JUGADOR ENTRA: CARGAR Y MOSTRAR          │
 -- └──────────────────────────────────────────────────────┘
@@ -99,6 +117,31 @@ local function alEntrar(player)
 			ecos.Value = datos.Ecos or 0
 			moneda.Value = datos.Moneda or 0
 			crearReliquias(player, datos.Reliquias)  -- sus reliquias guardadas
+
+			-- ── GANANCIAS OFFLINE ──
+			-- Si guardamos cuándo se fue, calculamos lo que ganó
+			-- mientras no estaba y se lo sumamos a la Moneda.
+			if datos.UltimaConexion then
+				local segundosFuera = os.time() - datos.UltimaConexion
+
+				-- Aplicamos el tope (en segundos).
+				local tope = MAX_HORAS_OFFLINE * 3600
+				if segundosFuera > tope then
+					segundosFuera = tope
+				end
+
+				if segundosFuera > 0 then
+					local ingresoSeg = ingresoDeTabla(datos.Reliquias)
+					local ganancia = ingresoSeg * segundosFuera
+					if ganancia > 0 then
+						moneda.Value += ganancia
+						-- Por ahora avisamos en Output. En el Sistema 7
+						-- será un cartel bonito de "¡Bienvenido de nuevo!".
+						print("🌙 [OFFLINE] " .. player.Name .. " ganó " .. ganancia ..
+							" Moneda tras " .. segundosFuera .. "s desconectado")
+					end
+				end
+			end
 		else
 			-- Jugador nuevo.
 			ecos.Value = DATOS_INICIALES.Ecos
@@ -143,6 +186,9 @@ local function guardarDatos(player)
 		Ecos = leaderstats.Ecos.Value,
 		Moneda = leaderstats.Moneda.Value,
 		Reliquias = reliquias,
+		-- Guardamos la hora actual: así, al volver, sabremos
+		-- cuánto tiempo estuvo fuera para pagarle el offline.
+		UltimaConexion = os.time(),
 	}
 
 	local exito, err = pcall(function()
