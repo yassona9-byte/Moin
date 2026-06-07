@@ -26,6 +26,7 @@ local rEvent   = remotes:WaitForChild("Event")
 
 local player = Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
+local menuToggle = playerGui:WaitForChild("MenuToggle")
 local carpetaReliquias = player:WaitForChild("Reliquias")
 
 -- Guardamos el último estado para los botones de confirmar.
@@ -53,11 +54,8 @@ local function boton(texto, tamano, posicion, color, padre)
 	return b
 end
 
--- ┌──────────────────────────────────────────────────────┐
--- │ BOTÓN "TRADE" (abajo izquierda, sobre Relics)         │
--- └──────────────────────────────────────────────────────┘
-local botonTrade = boton("🤝 Trade", UDim2.new(0, 130, 0, 55),
-	UDim2.new(0, 20, 1, -210), Color3.fromRGB(200, 120, 60), gui)
+-- (El botón "Trade" lo gestiona ahora la barra de menú de la
+--  derecha, vía "MenuToggle".)
 
 -- ┌──────────────────────────────────────────────────────┐
 -- │ PANEL: LISTA DE JUGADORES                             │
@@ -113,9 +111,13 @@ local function rellenarLista()
 	end
 end
 
-botonTrade.Activated:Connect(function()
-	rellenarLista()
-	listaPanel.Visible = not listaPanel.Visible
+menuToggle.Event:Connect(function(nombre)
+	if nombre == "Trade" then
+		rellenarLista()
+		listaPanel.Visible = not listaPanel.Visible
+	else
+		listaPanel.Visible = false
+	end
 end)
 
 -- ┌──────────────────────────────────────────────────────┐

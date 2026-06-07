@@ -29,6 +29,8 @@ local remoteComprar = ReplicatedStorage:WaitForChild("ComprarMejora")
 -- en el cliente; en el servidor no tendría sentido).
 local player = Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
+-- Canal interno del cliente: la barra de menú nos dice cuándo abrir.
+local menuToggle = playerGui:WaitForChild("MenuToggle")
 
 -- Esperamos a que el DataManager cree sus datos.
 local leaderstats = player:WaitForChild("leaderstats")
@@ -44,30 +46,10 @@ gui.ResetOnSpawn = false   -- que no se borre al reaparecer el personaje
 gui.Parent = playerGui
 
 -- ┌──────────────────────────────────────────────────────┐
--- │ 2. BOTÓN PARA ABRIR/CERRAR LA TIENDA                  │
+-- │ 2. EL PANEL DE LA TIENDA                              │
 -- └──────────────────────────────────────────────────────┘
--- UDim2 = posición/tamaño en pantalla. Tiene 2 partes por eje:
---   (ESCALA, PIXELES). Escala 1 = 100% de la pantalla.
---   Ej.: Position (0, 20, 1, -80) = 20px desde la izquierda,
---   y 80px por encima del borde inferior (abajo-izquierda).
-local botonAbrir = Instance.new("TextButton")
-botonAbrir.Name = "BotonTienda"
-botonAbrir.Size = UDim2.new(0, 130, 0, 55)
-botonAbrir.Position = UDim2.new(0, 20, 1, -80)
-botonAbrir.BackgroundColor3 = Color3.fromRGB(60, 120, 200)
-botonAbrir.TextColor3 = Color3.fromRGB(255, 255, 255)
-botonAbrir.Font = Enum.Font.FredokaOne
-botonAbrir.TextScaled = true
-botonAbrir.Text = "🛒 Tienda"
-botonAbrir.Parent = gui
--- UICorner redondea las esquinas (más bonito y "móvil").
-local botonEsquina = Instance.new("UICorner")
-botonEsquina.CornerRadius = UDim.new(0, 10)
-botonEsquina.Parent = botonAbrir
-
--- ┌──────────────────────────────────────────────────────┐
--- │ 3. EL PANEL DE LA TIENDA                              │
--- └──────────────────────────────────────────────────────┘
+-- (El botón para abrirla ya no vive aquí: lo gestiona la barra
+--  de menú de la derecha, MenuBar, a través de "MenuToggle".)
 local panel = Instance.new("Frame")
 panel.Name = "Panel"
 panel.Size = UDim2.new(0, 340, 0, 320)
@@ -212,11 +194,14 @@ end
 -- ┌──────────────────────────────────────────────────────┐
 -- │ 6. CONECTAR BOTONES Y ACTUALIZACIONES                 │
 -- └──────────────────────────────────────────────────────┘
--- Abrir/cerrar con el botón 🛒.
-botonAbrir.Activated:Connect(function()
-	panel.Visible = not panel.Visible  -- alterna visible/oculto
-	if panel.Visible then
-		refrescar()
+-- La barra de menú nos avisa por "MenuToggle". Si nos toca a
+-- nosotros ("Shop"), alternamos; si abren otro panel, cerramos.
+menuToggle.Event:Connect(function(nombre)
+	if nombre == "Shop" then
+		panel.Visible = not panel.Visible
+		if panel.Visible then refrescar() end
+	else
+		panel.Visible = false
 	end
 end)
 

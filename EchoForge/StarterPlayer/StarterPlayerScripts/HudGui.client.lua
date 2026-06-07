@@ -20,6 +20,7 @@ local Mejoras = require(ReplicatedStorage:WaitForChild("Mejoras"))
 
 local player = Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
+local menuToggle = playerGui:WaitForChild("MenuToggle")
 
 -- Esperamos los datos que crea el DataManager.
 local leaderstats = player:WaitForChild("leaderstats")
@@ -113,22 +114,6 @@ carpetaMejoras.Mochila.Changed:Connect(actualizarEcos)
 moneda.Changed:Connect(actualizarMoneda)
 actualizarEcos()
 actualizarMoneda()
-
--- ┌──────────────────────────────────────────────────────┐
--- │ BOTÓN "RELICS" (abajo izquierda, sobre el de Shop)    │
--- └──────────────────────────────────────────────────────┘
-local botonRelics = Instance.new("TextButton")
-botonRelics.Size = UDim2.new(0, 130, 0, 55)
-botonRelics.Position = UDim2.new(0, 20, 1, -145)  -- encima del botón Shop
-botonRelics.BackgroundColor3 = Color3.fromRGB(120, 80, 190)
-botonRelics.TextColor3 = Color3.fromRGB(255, 255, 255)
-botonRelics.Font = Enum.Font.FredokaOne
-botonRelics.TextScaled = true
-botonRelics.Text = "🎒 Relics"
-botonRelics.Parent = gui
-local brEsquina = Instance.new("UICorner")
-brEsquina.CornerRadius = UDim.new(0, 10)
-brEsquina.Parent = botonRelics
 
 -- ┌──────────────────────────────────────────────────────┐
 -- │ PANEL DE RELIQUIAS                                    │
@@ -225,11 +210,13 @@ local function refrescarReliquias()
 	end
 end
 
--- Abrir/cerrar.
-botonRelics.Activated:Connect(function()
-	panel.Visible = not panel.Visible
-	if panel.Visible then
-		refrescarReliquias()
+-- La barra de menú nos avisa: si es "Relics", alternamos.
+menuToggle.Event:Connect(function(nombre)
+	if nombre == "Relics" then
+		panel.Visible = not panel.Visible
+		if panel.Visible then refrescarReliquias() end
+	else
+		panel.Visible = false
 	end
 end)
 cerrar.Activated:Connect(function()

@@ -20,6 +20,7 @@ local Monetizacion = require(ReplicatedStorage:WaitForChild("Monetizacion"))
 
 local player = Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
+local menuToggle = playerGui:WaitForChild("MenuToggle")
 
 local gui = Instance.new("ScreenGui")
 gui.Name = "StoreGui"
@@ -42,9 +43,7 @@ local function boton(texto, tamano, posicion, color, padre)
 	return b
 end
 
--- Botón "Store" (abajo izquierda, encima de Trade).
-local botonStore = boton("💎 Store", UDim2.new(0, 130, 0, 55),
-	UDim2.new(0, 20, 1, -275), Color3.fromRGB(90, 200, 150), gui)
+-- (El botón "Store" lo gestiona ahora la barra de menú derecha.)
 
 -- Panel.
 local panel = Instance.new("Frame")
@@ -156,6 +155,10 @@ for _, p in ipairs(Monetizacion.Productos) do
 	end
 end
 
-botonStore.Activated:Connect(function()
-	panel.Visible = not panel.Visible
+menuToggle.Event:Connect(function(nombre)
+	if nombre == "Store" then
+		panel.Visible = not panel.Visible
+	else
+		panel.Visible = false
+	end
 end)
