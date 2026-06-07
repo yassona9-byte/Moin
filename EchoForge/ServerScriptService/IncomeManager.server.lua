@@ -68,6 +68,11 @@ while true do
 			local multiplicador = Mejoras.multiplicadorIngreso(nivelIngreso)
 			ingreso = math.floor(ingreso * multiplicador)
 
+			-- Sistema 9: el game pass "Income x2" duplica el ingreso.
+			if player:GetAttribute("IncomeX2") then
+				ingreso *= 2
+			end
+
 			if ingreso > 0 then
 				-- ¡Le pagamos! Su Moneda sube sola.
 				leaderstats.Moneda.Value += ingreso

@@ -102,6 +102,10 @@ local function crearEcoEnZona(zona)
 
 		-- ¿Le cabe en la mochila?
 		local capacidad = Mejoras.capacidadMochila(carpetaMejoras.Mochila.Value)
+		-- Sistema 9: el game pass "Backpack x2" duplica la capacidad.
+		if player:GetAttribute("BackpackX2") then
+			capacidad *= 2
+		end
 		if leaderstats.Ecos.Value < capacidad then
 			recogido = true
 			leaderstats.Ecos.Value += zona.valorEco   -- suma el valor de la zona
