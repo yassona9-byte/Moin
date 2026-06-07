@@ -24,7 +24,7 @@ Cada subcarpeta = un contenedor de Studio donde debes pegar el script.
 ## Sistemas (orden de construcción)
 
 - [x] **1. Recolección de Ecos** — `ServerScriptService/EcoSpawner.server.lua`
-- [ ] 2. Inventario y datos (DataStore)
+- [x] **2. Inventario y datos (DataStore)** — `ServerScriptService/DataManager.server.lua`
 - [ ] 3. Sistema de Forja
 - [ ] 4. Generación pasiva de moneda (idle)
 - [ ] 5. Tienda de mejoras (GUI)

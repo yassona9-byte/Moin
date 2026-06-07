@@ -42,35 +42,10 @@ local carpetaEcos = Instance.new("Folder")
 carpetaEcos.Name = "Ecos"          -- así la verás en el explorador
 carpetaEcos.Parent = Workspace     -- "Parent" = dónde vive el objeto
 
--- ┌──────────────────────────────────────────────────────┐
--- │ 4. EL INVENTARIO VISIBLE (leaderstats)                │
--- └──────────────────────────────────────────────────────┘
--- "leaderstats" es una carpeta MÁGICA: si la llamas así y la
--- metes dentro de un jugador, Roblox muestra automáticamente
--- sus valores en la esquina superior derecha de la pantalla.
--- Es la forma más rápida de tener un contador en pantalla.
---
--- Esto es una FUNCIÓN: un bloque de código con nombre que
--- guardamos para usarlo después. Aún no se ejecuta aquí;
--- solo lo definimos.
-local function alEntrarJugador(player)
-	-- Creamos la carpeta leaderstats DENTRO del jugador.
-	local leaderstats = Instance.new("Folder")
-	leaderstats.Name = "leaderstats"   -- el nombre DEBE ser exactamente este
-	leaderstats.Parent = player
-
-	-- IntValue = una caja que guarda un número entero.
-	-- Aquí guardaremos cuántos Ecos lleva el jugador.
-	local ecos = Instance.new("IntValue")
-	ecos.Name = "Ecos"     -- el texto que se verá en pantalla
-	ecos.Value = 0         -- empieza en 0
-	ecos.Parent = leaderstats
-end
-
--- PlayerAdded es un EVENTO: una señal que Roblox dispara
--- cada vez que alguien entra al juego. :Connect(...) significa
--- "cuando eso pase, ejecuta esta función".
-Players.PlayerAdded:Connect(alEntrarJugador)
+-- NOTA (Sistema 2): el leaderstats con "Ecos" y "Moneda" ya
+-- NO se crea aquí. Ahora su dueño es el script DataManager,
+-- que además los carga y guarda en la nube (DataStore).
+-- Este script solo se encarga de SUMAR Ecos al recoger orbes.
 
 -- ┌──────────────────────────────────────────────────────┐
 -- │ 5. CREAR UN ECO                                       │
@@ -114,11 +89,15 @@ local function crearEco()
 		-- Si ese modelo es el personaje de un jugador,
 		-- GetPlayerFromCharacter nos devuelve a ese jugador.
 		local player = Players:GetPlayerFromCharacter(hit.Parent)
+		if not player then return end        -- no fue un jugador, ignoramos
 
-		if player then                       -- ¿fue un jugador de verdad?
+		-- Buscamos su leaderstats (lo crea el DataManager al entrar).
+		-- FindFirstChild devuelve nil si aún no existe, en vez de
+		-- romper el script: por eso comprobamos antes de usarlo.
+		local leaderstats = player:FindFirstChild("leaderstats")
+		if leaderstats then
 			recogido = true
-			local ecos = player.leaderstats.Ecos
-			ecos.Value = ecos.Value + 1      -- ¡sumamos 1 Eco!
+			leaderstats.Ecos.Value += 1      -- ¡sumamos 1 Eco!
 			eco:Destroy()                    -- el orbe desaparece
 		end
 	end)
