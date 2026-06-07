@@ -30,7 +30,7 @@ Cada subcarpeta = un contenedor de Studio donde debes pegar el script.
 - [x] **5. Tienda de mejoras (GUI)** — `ReplicatedStorage/Mejoras.lua` + `ServerScriptService/ShopServer.server.lua` + `StarterPlayer/StarterPlayerScripts/ShopGui.client.lua`
 - [x] **6. Desbloqueo de zonas** — `ReplicatedStorage/Zonas.lua` + `ServerScriptService/ZoneManager.server.lua` (EcoSpawner ahora es por zonas)
 - [x] **7. Interfaz (GUI)** — `ServerScriptService/NotifyServer.server.lua` + `StarterPlayer/StarterPlayerScripts/HudGui.client.lua` + `NotificationsGui.client.lua` (textos en inglés)
-- [ ] 8. Capa social
+- [x] **8. Capa social** — Trading de Reliquias: `ServerScriptService/TradeServer.server.lua` + `StarterPlayer/StarterPlayerScripts/TradeGui.client.lua`
 - [ ] 9. Monetización
 - [ ] (pendiente) Localización / traducción automática (tras Sistema 7)
 - [x] **Mapa visual** (temático por zona) — `ServerScriptService/MapBuilder.server.lua`
