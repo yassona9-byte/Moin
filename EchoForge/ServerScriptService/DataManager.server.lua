@@ -31,6 +31,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 -- Misma "biblioteca" de rarezas que usa la Forja: así ambos
 -- coinciden siempre en los nombres de rareza.
 local Rarezas = require(ReplicatedStorage:WaitForChild("Rarezas"))
+local Mejoras = require(ReplicatedStorage:WaitForChild("Mejoras"))
 
 local almacen = DataStoreService:GetDataStore("EchoForge_Datos_v1")
 
@@ -93,6 +94,21 @@ local function ingresoDeTabla(reliquias)
 	return total
 end
 
+-- Crea la carpeta "Mejoras" dentro del jugador, con un nivel
+-- (IntValue) por cada mejora de la tienda.
+local function crearMejoras(player, guardadas)
+	guardadas = guardadas or {}
+	local carpeta = Instance.new("Folder")
+	carpeta.Name = "Mejoras"
+	for _, nombre in ipairs(Mejoras.Lista) do
+		local nivel = Instance.new("IntValue")
+		nivel.Name = nombre              -- "Mochila", "Ingreso"
+		nivel.Value = guardadas[nombre] or 0
+		nivel.Parent = carpeta
+	end
+	carpeta.Parent = player
+end
+
 -- ┌──────────────────────────────────────────────────────┐
 -- │ 5. CUANDO UN JUGADOR ENTRA: CARGAR Y MOSTRAR          │
 -- └──────────────────────────────────────────────────────┘
@@ -117,6 +133,7 @@ local function alEntrar(player)
 			ecos.Value = datos.Ecos or 0
 			moneda.Value = datos.Moneda or 0
 			crearReliquias(player, datos.Reliquias)  -- sus reliquias guardadas
+			crearMejoras(player, datos.Mejoras)      -- sus niveles de mejora
 
 			-- ── GANANCIAS OFFLINE ──
 			-- Si guardamos cuándo se fue, calculamos lo que ganó
@@ -147,11 +164,13 @@ local function alEntrar(player)
 			ecos.Value = DATOS_INICIALES.Ecos
 			moneda.Value = DATOS_INICIALES.Moneda
 			crearReliquias(player, nil)              -- todas a 0
+			crearMejoras(player, nil)                -- niveles a 0
 		end
 	else
 		-- Falló la carga: no arriesgamos a guardar luego.
 		noGuardar[player] = true
 		crearReliquias(player, nil)  -- le damos contadores en 0 para que juegue
+		crearMejoras(player, nil)    -- niveles a 0 para que pueda jugar
 		warn("Echo Forge: error al CARGAR datos de " .. player.Name .. " → " .. tostring(datos))
 	end
 
@@ -182,10 +201,20 @@ local function guardarDatos(player)
 		end
 	end
 
+	-- Empaquetamos los niveles de mejora { Mochila=.., Ingreso=.. }.
+	local mejoras = {}
+	local carpetaMejoras = player:FindFirstChild("Mejoras")
+	if carpetaMejoras then
+		for _, nivel in ipairs(carpetaMejoras:GetChildren()) do
+			mejoras[nivel.Name] = nivel.Value
+		end
+	end
+
 	local datos = {
 		Ecos = leaderstats.Ecos.Value,
 		Moneda = leaderstats.Moneda.Value,
 		Reliquias = reliquias,
+		Mejoras = mejoras,
 		-- Guardamos la hora actual: así, al volver, sabremos
 		-- cuánto tiempo estuvo fuera para pagarle el offline.
 		UltimaConexion = os.time(),

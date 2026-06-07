@@ -21,6 +21,11 @@
 -- Workspace = el mundo 3D que el jugador ve y toca.
 local Players = game:GetService("Players")
 local Workspace = game:GetService("Workspace")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+-- Sistema 5: leemos la ficha de Mejoras para saber la
+-- capacidad de mochila de cada jugador según su nivel.
+local Mejoras = require(ReplicatedStorage:WaitForChild("Mejoras"))
 
 -- ┌──────────────────────────────────────────────────────┐
 -- │ 2. CONFIGURACIÓN (tus "perillas" para tunear el juego)│
@@ -95,10 +100,22 @@ local function crearEco()
 		-- FindFirstChild devuelve nil si aún no existe, en vez de
 		-- romper el script: por eso comprobamos antes de usarlo.
 		local leaderstats = player:FindFirstChild("leaderstats")
-		if leaderstats then
+		local carpetaMejoras = player:FindFirstChild("Mejoras")
+		if not leaderstats or not carpetaMejoras then return end
+
+		-- Sistema 5: ¿le cabe el Eco en la mochila?
+		-- La capacidad depende de su nivel de mejora "Mochila".
+		local nivelMochila = carpetaMejoras.Mochila.Value
+		local capacidad = Mejoras.capacidadMochila(nivelMochila)
+
+		if leaderstats.Ecos.Value < capacidad then
+			-- Hay sitio: recogemos.
 			recogido = true
 			leaderstats.Ecos.Value += 1      -- ¡sumamos 1 Eco!
 			eco:Destroy()                    -- el orbe desaparece
+		else
+			-- Mochila llena: NO recogemos (el orbe se queda).
+			-- Esto empuja al jugador a ir a forjar para hacer hueco.
 		end
 	end)
 end
