@@ -21,9 +21,9 @@ local Monetizacion = {}
 --   clave  = nombre del "atributo" que activa el beneficio
 --   nombre / desc = textos para la tienda
 Monetizacion.GamePasses = {
-	{ id = 0, clave = "BackpackX2",  nombre = "🎒 Backpack x2",   desc = "Double backpack capacity" },
-	{ id = 0, clave = "IncomeX2",    nombre = "💰 Income x2",      desc = "Double passive income" },
-	{ id = 0, clave = "AutoCollect", nombre = "🧲 Auto-Collector", desc = "Auto-grabs nearby Echoes" },
+	{ id = 1867231097, clave = "BackpackX2",  nombre = "🎒 Backpack x2",   desc = "Double backpack capacity" },
+	{ id = 1866935532, clave = "IncomeX2",    nombre = "💰 Income x2",      desc = "Double passive income" },
+	{ id = 1868880256, clave = "AutoCollect", nombre = "🧲 Auto-Collector", desc = "Auto-grabs nearby Echoes" },
 }
 
 -- ── DEVELOPER PRODUCTS (se compran muchas veces) ──
