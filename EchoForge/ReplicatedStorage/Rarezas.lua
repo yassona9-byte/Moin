@@ -43,25 +43,25 @@ Rarezas.Datos = {
 		nombre = "Rare",
 		color = Color3.fromRGB(60, 120, 255),    -- azul
 		probabilidad = 25,
-		ingreso = 4,
+		ingreso = 5,
 	},
 	Epica = {
 		nombre = "Epic",
 		color = Color3.fromRGB(170, 70, 255),    -- morado
 		probabilidad = 10,
-		ingreso = 15,
+		ingreso = 25,
 	},
 	Legendaria = {
 		nombre = "Legendary",
 		color = Color3.fromRGB(255, 170, 40),    -- dorado
 		probabilidad = 4,
-		ingreso = 60,
+		ingreso = 125,
 	},
 	Mitica = {
 		nombre = "Mythic",
 		color = Color3.fromRGB(255, 60, 120),    -- rosa intenso
 		probabilidad = 1,
-		ingreso = 250,
+		ingreso = 625,
 	},
 }
 -- Comprobación mental: 60 + 25 + 10 + 4 + 1 = 100 ✓

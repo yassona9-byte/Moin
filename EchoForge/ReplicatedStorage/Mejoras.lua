@@ -31,14 +31,14 @@ Mejoras.Datos = {
 		costeFactor = 1.5,
 		-- propios de la mochila:
 		base = 50,        -- capacidad en nivel 0
-		incremento = 25,  -- +25 de capacidad por nivel
+		incremento = 40,  -- +40 de capacidad por nivel
 	},
 	Ingreso = {
 		nombre = "💰 Income",
 		descripcion = "+10% Coins/sec",
 		nivelMax = 50,
-		costeBase = 250,
-		costeFactor = 1.6,
+		costeBase = 200,
+		costeFactor = 1.5,
 	},
 }
 
