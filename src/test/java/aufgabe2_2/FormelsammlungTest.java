@@ -11,8 +11,9 @@ class FormelsammlungTest {
 
     @Test
     void pqFormel() {
-        // x^2 - 5x + 6 = 0  ->  x1 = 3, x2 = 2
-        assertArrayEquals(new double[]{3.0, 2.0}, Formelsammlung.pqFormel(-5, 6), DELTA);
+        // x^2 - 5x + 6 = 0  ->  x1 = 3 (+Wurzel), x2 = 2 (-Wurzel)
+        assertEquals(3.0, Formelsammlung.pqFormel(-5.0, 6.0, true), DELTA);
+        assertEquals(2.0, Formelsammlung.pqFormel(-5.0, 6.0, false), DELTA);
     }
 
     @Test
