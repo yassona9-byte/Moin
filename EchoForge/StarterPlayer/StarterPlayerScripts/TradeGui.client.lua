@@ -194,10 +194,14 @@ cabecera.Text = "Rarity            You            Them"
 cabecera.Parent = trade
 
 -- Contenedor de filas (una por rareza).
-local filasCont = Instance.new("Frame")
+local filasCont = Instance.new("ScrollingFrame")
 filasCont.Position = UDim2.new(0, 10, 0, 66)
 filasCont.Size = UDim2.new(1, -20, 0, 240)
 filasCont.BackgroundTransparency = 1
+filasCont.BorderSizePixel = 0
+filasCont.ScrollBarThickness = 5
+filasCont.CanvasSize = UDim2.new(0, 0, 0, 0)
+filasCont.AutomaticCanvasSize = Enum.AutomaticSize.Y   -- scroll si hay muchas rarezas
 filasCont.Parent = trade
 local filasLayout = Instance.new("UIListLayout")
 filasLayout.Padding = UDim.new(0, 4)

@@ -36,4 +36,5 @@ Cada subcarpeta = un contenedor de Studio donde debes pegar el script.
 - [x] **Juice** — sonidos + celebraciones: `ReplicatedStorage/Sonidos.lua` + `StarterPlayer/StarterPlayerScripts/JuiceManager.client.lua`
 - [x] **Fusión de Reliquias** — `ServerScriptService/FusionServer.server.lua` (botones en el panel Relics de HudGui)
 - [x] **Rebirth / Prestigio** — `ReplicatedStorage/Rebirth.lua` + `ServerScriptService/RebirthServer.server.lua` + `StarterPlayer/StarterPlayerScripts/RebirthGui.client.lua`
+- [x] **Más contenido** — 2 rarezas nuevas (Divine, Celestial, solo por fusión) + 2 zonas nuevas (Frozen Tundra, Sky Sanctuary)
 - [x] **Mapa visual** (temático por zona) — `ServerScriptService/MapBuilder.server.lua`

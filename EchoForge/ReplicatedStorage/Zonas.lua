@@ -49,6 +49,26 @@ Zonas.Lista = {
 		precio = 50000,
 		maxEcos = 30,
 	},
+	{
+		id = "Tundra",
+		nombre = "Frozen Tundra",
+		centro = Vector3.new(-173, 3, 100),    -- noroeste
+		radio = 60,
+		valorEco = 100,
+		color = Color3.fromRGB(150, 220, 255),  -- azul hielo
+		precio = 500000,
+		maxEcos = 30,
+	},
+	{
+		id = "Cielo",
+		nombre = "Sky Sanctuary",
+		centro = Vector3.new(173, 3, 100),     -- noreste
+		radio = 60,
+		valorEco = 500,
+		color = Color3.fromRGB(255, 240, 170),  -- dorado celestial
+		precio = 5000000,
+		maxEcos = 30,
+	},
 }
 
 return Zonas

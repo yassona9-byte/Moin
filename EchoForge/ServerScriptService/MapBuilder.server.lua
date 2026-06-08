@@ -449,6 +449,108 @@ local function construirVolcan(zona)
 end
 
 -- ┌──────────────────────────────────────────────────────┐
+-- │ 6b. TUNDRA HELADA                                     │
+-- └──────────────────────────────────────────────────────┘
+local function picoHielo(pos)
+	local alto = math.random(6, 14)
+	local c = parte(Vector3.new(2.4, alto, 2.4), pos + Vector3.new(0, alto / 2, 0),
+		Color3.fromRGB(170, 225, 255), Enum.Material.Glass)
+	c.Orientation = Vector3.new(math.random(-12, 12), math.random(0, 360), math.random(-12, 12))
+	c.Transparency = 0.1
+	luz(c, Color3.fromRGB(150, 220, 255), 1.1, 12)
+end
+
+local function monticulo(pos)
+	local s = math.random(6, 14)
+	local m = parte(Vector3.new(s, s, s), pos + Vector3.new(0, -s * 0.4, 0),
+		Color3.fromRGB(232, 240, 255), Enum.Material.Snow)
+	m.Shape = Enum.PartType.Ball
+end
+
+local function construirTundra(zona)
+	local piso = parteCF(Vector3.new(2, zona.radio * 2 + 12, zona.radio * 2 + 12),
+		CFrame.new(zona.centro.X, SUELO - 1, zona.centro.Z) * CFrame.Angles(0, 0, math.rad(90)),
+		Color3.fromRGB(205, 225, 245), Enum.Material.Glacier)
+	piso.Shape = Enum.PartType.Cylinder
+
+	for i = 1, 14 do picoHielo(puntoEnZona(zona)) end
+	for i = 1, 8 do monticulo(puntoEnZona(zona)) end
+
+	-- Charca helada.
+	local charca = parteCF(Vector3.new(2, 28, 28),
+		CFrame.new(zona.centro.X - 18, SUELO, zona.centro.Z + 16) * CFrame.Angles(0, 0, math.rad(90)),
+		Color3.fromRGB(160, 210, 245), Enum.Material.Ice)
+	charca.Shape = Enum.PartType.Cylinder
+	charca.Transparency = 0.2
+
+	-- Nieve cayendo.
+	local pe = Instance.new("Part")
+	pe.Size = Vector3.new(zona.radio * 1.8, 30, zona.radio * 1.8)
+	pe.Position = zona.centro + Vector3.new(0, 18, 0)
+	pe.Transparency = 1; pe.CanCollide = false; pe.Anchored = true; pe.Parent = mapa
+	local e = Instance.new("ParticleEmitter")
+	e.Texture = "rbxasset://textures/particles/sparkles_main.dds"
+	e.Color = ColorSequence.new(Color3.fromRGB(255, 255, 255))
+	e.Lifetime = NumberRange.new(3, 5)
+	e.Rate = 30
+	e.Speed = NumberRange.new(1, 3)
+	e.Acceleration = Vector3.new(0, -4, 0)   -- la nieve cae
+	e.Size = NumberSequence.new(0.5)
+	e.Transparency = NumberSequence.new(0.3)
+	e.Parent = pe
+end
+
+-- ┌──────────────────────────────────────────────────────┐
+-- │ 6c. SANTUARIO CELESTE (Sky)                           │
+-- └──────────────────────────────────────────────────────┘
+local function nube(pos)
+	for i = 1, 3 do
+		local s = math.random(8, 16)
+		local b = parte(Vector3.new(s, s * 0.6, s),
+			pos + Vector3.new(math.random(-6, 6), math.random(0, 4), math.random(-6, 6)),
+			Color3.fromRGB(245, 248, 255), Enum.Material.SmoothPlastic)
+		b.Shape = Enum.PartType.Ball
+		b.Transparency = 0.15
+	end
+end
+
+local function pilarLuz(pos)
+	local p = parte(Vector3.new(3, 40, 3), pos + Vector3.new(0, 20, 0),
+		Color3.fromRGB(255, 240, 170), Enum.Material.Neon)
+	p.Transparency = 0.35
+	luz(p, Color3.fromRGB(255, 235, 160), 1.4, 16)
+end
+
+local function construirCielo(zona)
+	local piso = parteCF(Vector3.new(2, zona.radio * 2 + 12, zona.radio * 2 + 12),
+		CFrame.new(zona.centro.X, SUELO - 1, zona.centro.Z) * CFrame.Angles(0, 0, math.rad(90)),
+		Color3.fromRGB(245, 245, 255), Enum.Material.Marble)
+	piso.Shape = Enum.PartType.Cylinder
+
+	for i = 1, 6 do pilarLuz(puntoEnZona(zona)) end
+	for i = 1, 8 do
+		local p = puntoEnZona(zona, 4)
+		nube(Vector3.new(p.X, SUELO + math.random(6, 22), p.Z))
+	end
+
+	-- Destellos dorados.
+	local pe = Instance.new("Part")
+	pe.Size = Vector3.new(zona.radio * 1.7, 30, zona.radio * 1.7)
+	pe.Position = zona.centro + Vector3.new(0, 16, 0)
+	pe.Transparency = 1; pe.CanCollide = false; pe.Anchored = true; pe.Parent = mapa
+	local e = Instance.new("ParticleEmitter")
+	e.Texture = "rbxasset://textures/particles/sparkles_main.dds"
+	e.Color = ColorSequence.new(Color3.fromRGB(255, 235, 150))
+	e.Lifetime = NumberRange.new(2, 4)
+	e.Rate = 26
+	e.Speed = NumberRange.new(0.3, 1)
+	e.Size = NumberSequence.new(0.5)
+	e.Transparency = NumberSequence.new(0.1)
+	e.LightEmission = 1
+	e.Parent = pe
+end
+
+-- ┌──────────────────────────────────────────────────────┐
 -- │ 7. MONTAÑAS DEL HORIZONTE (enmarcan el mundo)         │
 -- └──────────────────────────────────────────────────────┘
 local function construirHorizonte()
@@ -475,6 +577,10 @@ for _, zona in ipairs(Zonas.Lista) do
 		construirCuevas(zona)
 	elseif zona.id == "Volcan" then
 		construirVolcan(zona)
+	elseif zona.id == "Tundra" then
+		construirTundra(zona)
+	elseif zona.id == "Cielo" then
+		construirCielo(zona)
 	end
 end
 

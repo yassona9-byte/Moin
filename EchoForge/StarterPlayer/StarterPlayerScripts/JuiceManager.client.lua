@@ -145,8 +145,9 @@ for _, nombre in ipairs(Rarezas.Lista) do
 	contador.Changed:Connect(function(nuevo)
 		if nuevo > prev then
 			reproducir(Sonidos.forjar, 0.5)
-			-- Las rarezas top merecen fiesta.
-			if nombre == "Legendaria" or nombre == "Mitica" then
+			-- Las rarezas top merecen fiesta (Legendary y superiores).
+			if nombre == "Legendaria" or nombre == "Mitica"
+				or nombre == "Divina" or nombre == "Celestial" then
 				local ficha = Rarezas.Datos[nombre]
 				celebrar(ficha.nombre, ficha.color)
 				reproducir(Sonidos.rareza_alta, 0.7)

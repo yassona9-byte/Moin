@@ -152,10 +152,14 @@ local ceEsquina = Instance.new("UICorner")
 ceEsquina.CornerRadius = UDim.new(0, 8)
 ceEsquina.Parent = cerrar
 
-local lista = Instance.new("Frame")
+local lista = Instance.new("ScrollingFrame")
 lista.Position = UDim2.new(0, 10, 0, 50)
 lista.Size = UDim2.new(1, -20, 1, -60)
 lista.BackgroundTransparency = 1
+lista.BorderSizePixel = 0
+lista.ScrollBarThickness = 5
+lista.CanvasSize = UDim2.new(0, 0, 0, 0)
+lista.AutomaticCanvasSize = Enum.AutomaticSize.Y   -- crece con las filas
 lista.Parent = panel
 local listaLayout = Instance.new("UIListLayout")
 listaLayout.Padding = UDim.new(0, 6)

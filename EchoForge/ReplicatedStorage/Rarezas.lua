@@ -25,7 +25,7 @@ local Rarezas = {}  -- la tabla que devolveremos al final
 
 -- ORDEN oficial de las rarezas, de menor a mayor.
 -- Lo usamos para recorrerlas siempre en el mismo orden.
-Rarezas.Lista = { "Comun", "Rara", "Epica", "Legendaria", "Mitica" }
+Rarezas.Lista = { "Comun", "Rara", "Epica", "Legendaria", "Mitica", "Divina", "Celestial" }
 
 -- Ficha de cada rareza:
 --   nombre        = texto bonito para mostrar en pantalla
@@ -63,8 +63,22 @@ Rarezas.Datos = {
 		probabilidad = 1,
 		ingreso = 625,
 	},
+	-- ── Rarezas SOLO por fusión (probabilidad 0 al forjar) ──
+	Divina = {
+		nombre = "Divine",
+		color = Color3.fromRGB(120, 255, 230),   -- cian brillante
+		probabilidad = 0,
+		ingreso = 3125,
+	},
+	Celestial = {
+		nombre = "Celestial",
+		color = Color3.fromRGB(255, 225, 120),   -- dorado radiante
+		probabilidad = 0,
+		ingreso = 15625,
+	},
 }
--- Comprobación mental: 60 + 25 + 10 + 4 + 1 = 100 ✓
+-- Comprobación: las FORJABLES suman 60+25+10+4+1 = 100 ✓
+-- (Divine y Celestial valen 0: no salen al forjar, solo al fusionar)
 
 -- "return" entrega la tabla a quien haga require() de este módulo.
 return Rarezas
