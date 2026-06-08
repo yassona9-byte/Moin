@@ -30,9 +30,9 @@ Monetizacion.GamePasses = {
 --   id     = el ProductId (0 = aún no)
 --   moneda = cuánta Moneda da
 Monetizacion.Productos = {
-	{ id = 0, nombre = "🪙 Small Coin Pack",  moneda = 10000 },
-	{ id = 0, nombre = "🪙 Medium Coin Pack", moneda = 60000 },
-	{ id = 0, nombre = "🪙 Large Coin Pack",  moneda = 200000 },
+	{ id = 1869178078, nombre = "🪙 Small Coin Pack",  moneda = 10000 },
+	{ id = 1865326144, nombre = "🪙 Medium Coin Pack", moneda = 60000 },
+	{ id = 1865985998, nombre = "🪙 Large Coin Pack",  moneda = 200000 },
 }
 
 return Monetizacion
