@@ -186,9 +186,9 @@ for orden, nombre in ipairs(Rarezas.Lista) do
 	me.CornerRadius = UDim.new(0, 6)
 	me.Parent = muestra
 
-	-- Texto "Common ........ x3".
+	-- Texto "Common  x3" (más estrecho para dejar sitio al botón).
 	local texto = Instance.new("TextLabel")
-	texto.Size = UDim2.new(1, -50, 1, 0)
+	texto.Size = UDim2.new(1, -160, 1, 0)
 	texto.Position = UDim2.new(0, 44, 0, 0)
 	texto.BackgroundTransparency = 1
 	texto.TextXAlignment = Enum.TextXAlignment.Left
@@ -196,6 +196,34 @@ for orden, nombre in ipairs(Rarezas.Lista) do
 	texto.Font = Enum.Font.FredokaOne
 	texto.TextScaled = true
 	texto.Parent = fila
+
+	-- Botón de FUSIÓN: en todas las rarezas menos la última.
+	if orden < #Rarezas.Lista then
+		local fundir = Instance.new("TextButton")
+		fundir.Size = UDim2.new(0, 104, 0, 30)
+		fundir.Position = UDim2.new(1, -110, 0.5, 0)
+		fundir.AnchorPoint = Vector2.new(0, 0.5)
+		fundir.BackgroundColor3 = Color3.fromRGB(90, 150, 110)
+		fundir.TextColor3 = Color3.fromRGB(255, 255, 255)
+		fundir.Font = Enum.Font.FredokaOne
+		fundir.TextScaled = true
+		fundir.Text = "⚗️ Fuse 5"
+		fundir.Parent = fila
+		local fce = Instance.new("UICorner")
+		fce.CornerRadius = UDim.new(0, 6)
+		fce.Parent = fundir
+		local pad = Instance.new("UIPadding")
+		pad.PaddingLeft = UDim.new(0, 6)
+		pad.PaddingRight = UDim.new(0, 6)
+		pad.Parent = fundir
+
+		fundir.Activated:Connect(function()
+			-- FindFirstChild (NO WaitForChild): si FusionServer
+			-- faltara, el botón no hace nada pero el HUD nunca se cuelga.
+			local r = ReplicatedStorage:FindFirstChild("Fusionar")
+			if r then r:FireServer(nombre) end
+		end)
+	end
 
 	filasReliquias[nombre] = texto
 end

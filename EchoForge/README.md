@@ -33,4 +33,6 @@ Cada subcarpeta = un contenedor de Studio donde debes pegar el script.
 - [x] **8. Capa social** — Trading de Reliquias: `ServerScriptService/TradeServer.server.lua` + `StarterPlayer/StarterPlayerScripts/TradeGui.client.lua`
 - [x] **9. Monetización** — `ReplicatedStorage/Monetizacion.lua` + `ServerScriptService/MonetizationServer.server.lua` + `StarterPlayer/StarterPlayerScripts/StoreGui.client.lua`
 - [x] **Localización** — todo el texto visible en inglés (base); traducción automática se activa en el panel de Localization
+- [x] **Juice** — sonidos + celebraciones: `ReplicatedStorage/Sonidos.lua` + `StarterPlayer/StarterPlayerScripts/JuiceManager.client.lua`
+- [x] **Fusión de Reliquias** — `ServerScriptService/FusionServer.server.lua` (botones en el panel Relics de HudGui)
 - [x] **Mapa visual** (temático por zona) — `ServerScriptService/MapBuilder.server.lua`
