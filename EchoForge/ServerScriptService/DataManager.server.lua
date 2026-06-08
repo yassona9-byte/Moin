@@ -143,6 +143,10 @@ local function alEntrar(player)
 	local moneda = Instance.new("IntValue")
 	moneda.Name = "Moneda"
 
+	-- Rebirths: contador de prestigio (visible y guardado).
+	local rebirths = Instance.new("IntValue")
+	rebirths.Name = "Rebirths"
+
 	-- Leemos de la nube con red de seguridad.
 	local exito, datos = pcall(function()
 		return almacen:GetAsync(clavePara(player))
@@ -153,6 +157,7 @@ local function alEntrar(player)
 			-- Jugador que vuelve.
 			ecos.Value = datos.Ecos or 0
 			moneda.Value = datos.Moneda or 0
+			rebirths.Value = datos.Rebirths or 0
 			crearReliquias(player, datos.Reliquias)  -- sus reliquias guardadas
 			crearMejoras(player, datos.Mejoras)      -- sus niveles de mejora
 			crearZonas(player, datos.ZonasDesbloqueadas) -- sus zonas abiertas
@@ -200,6 +205,7 @@ local function alEntrar(player)
 
 	ecos.Parent = leaderstats
 	moneda.Parent = leaderstats
+	rebirths.Parent = leaderstats
 	leaderstats.Parent = player
 end
 
@@ -246,6 +252,7 @@ local function guardarDatos(player)
 	local datos = {
 		Ecos = leaderstats.Ecos.Value,
 		Moneda = leaderstats.Moneda.Value,
+		Rebirths = leaderstats.Rebirths.Value,
 		Reliquias = reliquias,
 		Mejoras = mejoras,
 		ZonasDesbloqueadas = zonas,

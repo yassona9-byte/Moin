@@ -45,10 +45,11 @@ gui.Parent = playerGui
 -- Lista de botones del menú. El "nombre" debe coincidir con
 -- el que escucha cada panel (Shop / Relics / Trade / Store).
 local items = {
-	{ nombre = "Shop",   icono = "🛒", color = Color3.fromRGB(60, 120, 200) },
-	{ nombre = "Relics", icono = "🎒", color = Color3.fromRGB(120, 80, 190) },
-	{ nombre = "Trade",  icono = "🤝", color = Color3.fromRGB(200, 120, 60) },
-	{ nombre = "Store",  icono = "💎", color = Color3.fromRGB(90, 200, 150) },
+	{ nombre = "Shop",    icono = "🛒", color = Color3.fromRGB(60, 120, 200) },
+	{ nombre = "Relics",  icono = "🎒", color = Color3.fromRGB(120, 80, 190) },
+	{ nombre = "Trade",   icono = "🤝", color = Color3.fromRGB(200, 120, 60) },
+	{ nombre = "Store",   icono = "💎", color = Color3.fromRGB(90, 200, 150) },
+	{ nombre = "Rebirth", icono = "🔄", color = Color3.fromRGB(200, 170, 50) },
 }
 
 local TAM = 58          -- tamaño de cada botón (px)

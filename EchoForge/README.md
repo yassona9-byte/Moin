@@ -35,4 +35,5 @@ Cada subcarpeta = un contenedor de Studio donde debes pegar el script.
 - [x] **Localización** — todo el texto visible en inglés (base); traducción automática se activa en el panel de Localization
 - [x] **Juice** — sonidos + celebraciones: `ReplicatedStorage/Sonidos.lua` + `StarterPlayer/StarterPlayerScripts/JuiceManager.client.lua`
 - [x] **Fusión de Reliquias** — `ServerScriptService/FusionServer.server.lua` (botones en el panel Relics de HudGui)
+- [x] **Rebirth / Prestigio** — `ReplicatedStorage/Rebirth.lua` + `ServerScriptService/RebirthServer.server.lua` + `StarterPlayer/StarterPlayerScripts/RebirthGui.client.lua`
 - [x] **Mapa visual** (temático por zona) — `ServerScriptService/MapBuilder.server.lua`

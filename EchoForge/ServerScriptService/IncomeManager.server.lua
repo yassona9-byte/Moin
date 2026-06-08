@@ -22,6 +22,8 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Rarezas = require(ReplicatedStorage:WaitForChild("Rarezas"))
 -- Sistema 5: para aplicar el multiplicador de la mejora "Ingreso".
 local Mejoras = require(ReplicatedStorage:WaitForChild("Mejoras"))
+-- Rebirth: multiplicador permanente por prestigio.
+local Rebirth = require(ReplicatedStorage:WaitForChild("Rebirth"))
 
 -- Cada cuántos segundos pagamos. 1 = el dinero sube cada segundo.
 local INTERVALO = 1
@@ -71,6 +73,12 @@ while true do
 			-- Sistema 9: el game pass "Income x2" duplica el ingreso.
 			if player:GetAttribute("IncomeX2") then
 				ingreso *= 2
+			end
+
+			-- Rebirth: multiplicador permanente por prestigio.
+			local rebirths = leaderstats:FindFirstChild("Rebirths")
+			if rebirths then
+				ingreso = math.floor(ingreso * Rebirth.multiplicador(rebirths.Value))
 			end
 
 			if ingreso > 0 then
