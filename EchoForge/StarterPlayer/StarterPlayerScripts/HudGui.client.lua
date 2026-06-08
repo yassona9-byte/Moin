@@ -20,7 +20,6 @@ local Mejoras = require(ReplicatedStorage:WaitForChild("Mejoras"))
 
 local player = Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
-local menuToggle = playerGui:WaitForChild("MenuToggle")
 
 -- Esperamos los datos que crea el DataManager.
 local leaderstats = player:WaitForChild("leaderstats")
@@ -208,6 +207,15 @@ local function refrescarReliquias()
 		local cantidad = carpetaReliquias:FindFirstChild(nombre).Value
 		filasReliquias[nombre].Text = ficha.nombre .. "   x" .. cantidad
 	end
+end
+
+-- Canal del menú "a prueba de fallos": si MenuBar no lo creó,
+-- lo creamos aquí para no colgarnos ni perder el HUD.
+local menuToggle = playerGui:FindFirstChild("MenuToggle")
+if not menuToggle then
+	menuToggle = Instance.new("BindableEvent")
+	menuToggle.Name = "MenuToggle"
+	menuToggle.Parent = playerGui
 end
 
 -- La barra de menú nos avisa: si es "Relics", alternamos.

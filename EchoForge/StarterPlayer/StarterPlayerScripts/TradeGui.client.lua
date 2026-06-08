@@ -26,7 +26,6 @@ local rEvent   = remotes:WaitForChild("Event")
 
 local player = Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
-local menuToggle = playerGui:WaitForChild("MenuToggle")
 local carpetaReliquias = player:WaitForChild("Reliquias")
 
 -- Guardamos el último estado para los botones de confirmar.
@@ -109,6 +108,14 @@ local function rellenarLista()
 			end)
 		end
 	end
+end
+
+-- Canal del menú "a prueba de fallos" (obtener o crear).
+local menuToggle = playerGui:FindFirstChild("MenuToggle")
+if not menuToggle then
+	menuToggle = Instance.new("BindableEvent")
+	menuToggle.Name = "MenuToggle"
+	menuToggle.Parent = playerGui
 end
 
 menuToggle.Event:Connect(function(nombre)

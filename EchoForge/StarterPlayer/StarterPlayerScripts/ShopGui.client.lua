@@ -29,8 +29,6 @@ local remoteComprar = ReplicatedStorage:WaitForChild("ComprarMejora")
 -- en el cliente; en el servidor no tendría sentido).
 local player = Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
--- Canal interno del cliente: la barra de menú nos dice cuándo abrir.
-local menuToggle = playerGui:WaitForChild("MenuToggle")
 
 -- Esperamos a que el DataManager cree sus datos.
 local leaderstats = player:WaitForChild("leaderstats")
@@ -194,6 +192,14 @@ end
 -- ┌──────────────────────────────────────────────────────┐
 -- │ 6. CONECTAR BOTONES Y ACTUALIZACIONES                 │
 -- └──────────────────────────────────────────────────────┘
+-- Canal del menú "a prueba de fallos" (obtener o crear).
+local menuToggle = playerGui:FindFirstChild("MenuToggle")
+if not menuToggle then
+	menuToggle = Instance.new("BindableEvent")
+	menuToggle.Name = "MenuToggle"
+	menuToggle.Parent = playerGui
+end
+
 -- La barra de menú nos avisa por "MenuToggle". Si nos toca a
 -- nosotros ("Shop"), alternamos; si abren otro panel, cerramos.
 menuToggle.Event:Connect(function(nombre)

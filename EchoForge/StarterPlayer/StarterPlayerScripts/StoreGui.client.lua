@@ -20,7 +20,6 @@ local Monetizacion = require(ReplicatedStorage:WaitForChild("Monetizacion"))
 
 local player = Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
-local menuToggle = playerGui:WaitForChild("MenuToggle")
 
 local gui = Instance.new("ScreenGui")
 gui.Name = "StoreGui"
@@ -153,6 +152,14 @@ for _, p in ipairs(Monetizacion.Productos) do
 			MarketplaceService:PromptProductPurchase(player, p.id)
 		end)
 	end
+end
+
+-- Canal del menú "a prueba de fallos" (obtener o crear).
+local menuToggle = playerGui:FindFirstChild("MenuToggle")
+if not menuToggle then
+	menuToggle = Instance.new("BindableEvent")
+	menuToggle.Name = "MenuToggle"
+	menuToggle.Parent = playerGui
 end
 
 menuToggle.Event:Connect(function(nombre)

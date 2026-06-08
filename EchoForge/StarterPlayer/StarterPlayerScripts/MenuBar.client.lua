@@ -26,9 +26,13 @@ local playerGui = player:WaitForChild("PlayerGui")
 -- └──────────────────────────────────────────────────────┘
 -- Un BindableEvent comunica scripts DEL MISMO lado (cliente).
 -- Aquí lo creamos; los paneles lo esperan con WaitForChild.
-local menuToggle = Instance.new("BindableEvent")
-menuToggle.Name = "MenuToggle"
-menuToggle.Parent = playerGui
+-- Obtener o crear (por si algún panel lo creó antes que nosotros).
+local menuToggle = playerGui:FindFirstChild("MenuToggle")
+if not menuToggle then
+	menuToggle = Instance.new("BindableEvent")
+	menuToggle.Name = "MenuToggle"
+	menuToggle.Parent = playerGui
+end
 
 -- ┌──────────────────────────────────────────────────────┐
 -- │ LA BARRA                                              │
