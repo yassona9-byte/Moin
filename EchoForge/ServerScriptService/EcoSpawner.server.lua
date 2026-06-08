@@ -63,14 +63,20 @@ local function crearEcoEnZona(zona)
 	eco.Anchored = true
 	eco.CanCollide = false
 
+	-- Posición/tamaño REALES de la zona: si pusiste un marcador
+	-- "Zona_<id>" en el mapa, se usa él; si no, el valor por defecto.
+	local centro, radio = Zonas.posicion(zona)
+
 	-- Posición aleatoria DENTRO del círculo de la zona.
 	-- Usamos un ángulo al azar y una distancia al azar desde
 	-- el centro (trigonometría básica: coseno/seno).
 	local angulo = math.random() * 2 * math.pi
-	local distancia = math.random(0, zona.radio)
-	local x = zona.centro.X + math.cos(angulo) * distancia
-	local z = zona.centro.Z + math.sin(angulo) * distancia
-	eco.Position = Vector3.new(x, ALTURA_SPAWN, z)
+	local distancia = math.random(0, radio)
+	local x = centro.X + math.cos(angulo) * distancia
+	local z = centro.Z + math.sin(angulo) * distancia
+	-- Aparecen un poco por ENCIMA del marcador (que pondrás al
+	-- nivel del suelo de ese bioma).
+	eco.Position = Vector3.new(x, centro.Y + ALTURA_SPAWN, z)
 
 	-- Le "pegamos" su info con atributos.
 	eco:SetAttribute("Zona", zona.id)

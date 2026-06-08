@@ -68,4 +68,28 @@ Zonas.Lista = {
 	},
 }
 
+-- ┌──────────────────────────────────────────────────────┐
+-- │ RESOLVER POSICIÓN POR MARCADOR (mapa a medida)        │
+-- └──────────────────────────────────────────────────────┘
+-- Devuelve el CENTRO y el RADIO reales de una zona.
+-- Si colocas en Workspace un Part llamado "Zona_<id>" (p.ej.
+-- "Zona_Volcan"), o dentro de una carpeta "ZoneMarkers", el
+-- juego usa SU posición (centro) y SU tamaño (radio). Así
+-- puedes usar CUALQUIER mapa: solo arrastras los marcadores
+-- a cada bioma. Si no hay marcador, usa los valores de arriba.
+function Zonas.posicion(zona)
+	local marcador = workspace:FindFirstChild("Zona_" .. zona.id)
+	if not marcador then
+		local carpeta = workspace:FindFirstChild("ZoneMarkers")
+		if carpeta then
+			marcador = carpeta:FindFirstChild("Zona_" .. zona.id)
+		end
+	end
+	if marcador and marcador:IsA("BasePart") then
+		local radio = math.max(marcador.Size.X, marcador.Size.Z) / 2
+		return marcador.Position, radio
+	end
+	return zona.centro, zona.radio
+end
+
 return Zonas

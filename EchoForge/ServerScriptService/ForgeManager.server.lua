@@ -35,10 +35,19 @@ local COSTE_FORJA = 10
 -- └──────────────────────────────────────────────────────┘
 -- Creamos la pieza desde el script para que no tengas que
 -- colocar nada a mano en el explorador.
+-- ¿Dónde va la forja? Si pones un Part llamado "ForgeSpot" en
+-- el mapa, la forja se coloca ahí (encima de él). Si no, va a
+-- una posición por defecto cerca del spawn.
+local forgeSpot = Workspace:FindFirstChild("ForgeSpot")
+local posForja = Vector3.new(0, 3, -20)
+if forgeSpot and forgeSpot:IsA("BasePart") then
+	posForja = forgeSpot.Position + Vector3.new(0, 3, 0)
+end
+
 local forja = Instance.new("Part")
 forja.Name = "Forja"
 forja.Size = Vector3.new(6, 6, 6)
-forja.Position = Vector3.new(0, 3, -20)   -- cerca del spawn, visible
+forja.Position = posForja
 forja.Anchored = true                     -- fija, no se cae
 forja.Material = Enum.Material.Metal
 forja.Color = Color3.fromRGB(90, 60, 40)  -- marrón metálico
