@@ -18,6 +18,7 @@
 local Players = game:GetService("Players")
 local Workspace = game:GetService("Workspace")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Debris = game:GetService("Debris")
 
 -- require(...) trae la "biblioteca" de rarezas que creamos.
 -- WaitForChild espera a que exista (por si este script corre
@@ -93,6 +94,33 @@ local function elegirRareza()
 end
 
 -- ┌──────────────────────────────────────────────────────┐
+-- │ EFECTO VISUAL AL FORJAR (explosión de chispas)        │
+-- └──────────────────────────────────────────────────────┘
+-- Lo crea el servidor, así lo ven todos. Se autodestruye.
+local function efectoForja()
+	local chispa = Instance.new("Part")
+	chispa.Anchored = true
+	chispa.CanCollide = false
+	chispa.Transparency = 1
+	chispa.Position = forja.Position + Vector3.new(0, 4, 0)
+	chispa.Parent = Workspace
+
+	local e = Instance.new("ParticleEmitter")
+	e.Texture = "rbxasset://textures/particles/sparkles_main.dds"
+	e.Color = ColorSequence.new(Color3.fromRGB(255, 220, 150))
+	e.Lifetime = NumberRange.new(0.4, 0.9)
+	e.Speed = NumberRange.new(9, 16)
+	e.SpreadAngle = Vector2.new(180, 180)   -- en todas direcciones
+	e.Rate = 0                              -- no continuo: solo el "Emit"
+	e.LightEmission = 1
+	e.Size = NumberSequence.new(0.7)
+	e.Parent = chispa
+
+	e:Emit(35)                              -- ¡fogonazo de 35 chispas!
+	Debris:AddItem(chispa, 1.2)
+end
+
+-- ┌──────────────────────────────────────────────────────┐
 -- │ 5. QUÉ PASA AL ACTIVAR LA FORJA                       │
 -- └──────────────────────────────────────────────────────┘
 -- Triggered se dispara EN EL SERVIDOR cuando un jugador
@@ -129,4 +157,7 @@ prompt.Triggered:Connect(function(player)
 	-- 4) ¡Notificación juicy! Cartel del color de la rareza.
 	local ficha = Rarezas.Datos[rareza]
 	notificar:FireClient(player, "You forged a " .. ficha.nombre .. "!", ficha.color)
+
+	-- 5) Fogonazo de chispas en la forja (lo ven todos).
+	efectoForja()
 end)
