@@ -32,5 +32,5 @@ Cada subcarpeta = un contenedor de Studio donde debes pegar el script.
 - [x] **7. Interfaz (GUI)** — `ServerScriptService/NotifyServer.server.lua` + `StarterPlayer/StarterPlayerScripts/HudGui.client.lua` + `NotificationsGui.client.lua` (textos en inglés)
 - [x] **8. Capa social** — Trading de Reliquias: `ServerScriptService/TradeServer.server.lua` + `StarterPlayer/StarterPlayerScripts/TradeGui.client.lua`
 - [x] **9. Monetización** — `ReplicatedStorage/Monetizacion.lua` + `ServerScriptService/MonetizationServer.server.lua` + `StarterPlayer/StarterPlayerScripts/StoreGui.client.lua`
-- [ ] (pendiente) Localización / traducción automática (tras Sistema 7)
+- [x] **Localización** — todo el texto visible en inglés (base); traducción automática se activa en el panel de Localization
 - [x] **Mapa visual** (temático por zona) — `ServerScriptService/MapBuilder.server.lua`

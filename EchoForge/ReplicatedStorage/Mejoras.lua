@@ -24,8 +24,8 @@ Mejoras.Lista = { "Mochila", "Ingreso" }
 --   costeFactor         = cuánto se encarece cada nivel (x1.5 = +50%)
 Mejoras.Datos = {
 	Mochila = {
-		nombre = "🎒 Mochila",
-		descripcion = "Más Ecos a la vez",
+		nombre = "🎒 Backpack",
+		descripcion = "Carry more Echoes",
 		nivelMax = 25,
 		costeBase = 100,
 		costeFactor = 1.5,
@@ -34,8 +34,8 @@ Mejoras.Datos = {
 		incremento = 25,  -- +25 de capacidad por nivel
 	},
 	Ingreso = {
-		nombre = "💰 Ingreso",
-		descripcion = "+10% Moneda/seg",
+		nombre = "💰 Income",
+		descripcion = "+10% Coins/sec",
 		nivelMax = 50,
 		costeBase = 250,
 		costeFactor = 1.6,

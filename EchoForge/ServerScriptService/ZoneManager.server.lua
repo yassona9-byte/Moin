@@ -102,7 +102,7 @@ local function construirPuerta(zona)
 
 	-- Botón de desbloqueo.
 	local prompt = Instance.new("ProximityPrompt")
-	prompt.ActionText = "Desbloquear (" .. zona.precio .. " 🪙)"
+	prompt.ActionText = "Unlock (" .. zona.precio .. " 🪙)"
 	prompt.ObjectText = zona.nombre
 	prompt.HoldDuration = 0.4
 	prompt.MaxActivationDistance = 16

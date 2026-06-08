@@ -53,7 +53,7 @@ cartel.Parent = forja
 local texto = Instance.new("TextLabel")
 texto.Size = UDim2.new(1, 0, 1, 0)
 texto.BackgroundTransparency = 1
-texto.Text = "🔨 FORJA"
+texto.Text = "🔨 FORGE"
 texto.TextColor3 = Color3.fromRGB(255, 220, 150)
 texto.TextScaled = true
 texto.Font = Enum.Font.FredokaOne
@@ -66,8 +66,8 @@ texto.Parent = cartel
 -- al acercarte. En MÓVIL sale solo como botón táctil. Es la
 -- forma más cómoda y universal de interactuar con algo.
 local prompt = Instance.new("ProximityPrompt")
-prompt.ActionText = "Forjar (" .. COSTE_FORJA .. " Ecos)"  -- texto del botón
-prompt.ObjectText = "Forja"                -- título encima del botón
+prompt.ActionText = "Forge (" .. COSTE_FORJA .. " Echoes)"  -- texto del botón
+prompt.ObjectText = "Forge"                -- título encima del botón
 prompt.KeyboardKeyCode = Enum.KeyCode.E    -- tecla en PC
 prompt.HoldDuration = 0.2                  -- mantener pulsado un pelín
 prompt.MaxActivationDistance = 12          -- a qué distancia aparece

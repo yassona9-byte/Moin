@@ -71,7 +71,7 @@ titulo.TextXAlignment = Enum.TextXAlignment.Left
 titulo.TextColor3 = Color3.fromRGB(255, 255, 255)
 titulo.Font = Enum.Font.FredokaOne
 titulo.TextScaled = true
-titulo.Text = "🛒 Tienda de Mejoras"
+titulo.Text = "🛒 Upgrades Shop"
 titulo.Parent = panel
 
 -- Botón cerrar (la X).
@@ -168,19 +168,19 @@ local function refrescar()
 		-- Texto del efecto actual según la mejora.
 		local efecto = ficha.descripcion
 		if nombre == "Mochila" then
-			efecto = "Capacidad: " .. Mejoras.capacidadMochila(nivel)
+			efecto = "Capacity: " .. Mejoras.capacidadMochila(nivel)
 		elseif nombre == "Ingreso" then
-			efecto = "Multiplicador: x" .. string.format("%.1f", Mejoras.multiplicadorIngreso(nivel))
+			efecto = "Multiplier: x" .. string.format("%.1f", Mejoras.multiplicadorIngreso(nivel))
 		end
-		f.info.Text = ficha.nombre .. "  (Nivel " .. nivel .. ")\n" .. efecto
+		f.info.Text = ficha.nombre .. "  (Level " .. nivel .. ")\n" .. efecto
 
 		if nivel >= ficha.nivelMax then
 			-- Ya está al máximo.
-			f.comprar.Text = "MÁX"
+			f.comprar.Text = "MAX"
 			f.comprar.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
 		else
 			local costo = Mejoras.costo(nombre, nivel)
-			f.comprar.Text = "Comprar\n" .. costo .. " 🪙"
+			f.comprar.Text = "Buy\n" .. costo .. " 🪙"
 			-- Verde si puedes pagar, rojizo si no (pista visual).
 			if moneda.Value >= costo then
 				f.comprar.BackgroundColor3 = Color3.fromRGB(60, 170, 90)
