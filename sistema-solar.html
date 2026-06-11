@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>SISTEMA SOLAR — 3D en tiempo real</title>
+<style>
+  html, body {
+    margin: 0; padding: 0; overflow: hidden; height: 100%;
+    background: #000; font-family: 'Segoe UI', system-ui, sans-serif;
+    cursor: grab; user-select: none; -webkit-user-select: none;
+  }
+  body.dragging { cursor: grabbing; }
+  canvas { display: block; width: 100vw; height: 100vh; }
+  .ui { position: fixed; color: #fff; z-index: 10; }
+  #title {
+    top: 22px; left: 26px; pointer-events: none;
+    font-size: 13px; letter-spacing: 6px; font-weight: 300;
+    text-transform: uppercase; opacity: 0.9;
+    text-shadow: 0 0 18px rgba(255,200,120,0.6);
+  }
+  #title b { font-weight: 700; }
+  #hint {
+    bottom: 18px; left: 0; right: 0; text-align: center; pointer-events: none;
+    font-size: 12px; letter-spacing: 2px; opacity: 0.5; transition: opacity 2s;
+  }
+  #hint.fade { opacity: 0; }
+  #clock {
+    top: 22px; right: 26px; text-align: right; pointer-events: none;
+    font-size: 11px; letter-spacing: 1px; opacity: 0.65;
+    font-variant-numeric: tabular-nums;
+  }
+  #controls {
+    bottom: 52px; left: 0; right: 0; display: flex; gap: 14px;
+    align-items: center; justify-content: center; font-size: 12px;
+  }
+  #controls input[type=range] {
+    width: 180px; accent-color: #f0a050; cursor: pointer;
+  }
+  #pauseBtn {
+    background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.25);
+    color: #fff; border-radius: 6px; padding: 4px 12px; cursor: pointer;
+    font-size: 13px;
+  }
+  #pauseBtn:hover { background: rgba(255,255,255,0.18); }
+  #speedLabel { opacity: 0.7; min-width: 90px; font-variant-numeric: tabular-nums; }
+  .label {
+    position: fixed; color: rgba(255,255,255,0.75); font-size: 11px;
+    letter-spacing: 1.5px; transform: translate(-50%, -130%);
+    cursor: pointer; z-index: 5; text-shadow: 0 0 6px #000;
+    transition: color 0.2s;
+  }
+  .label:hover { color: #ffd28a; }
+  #card {
+    left: 26px; bottom: 90px; max-width: 300px;
+    background: rgba(10,10,20,0.75); border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 12px; padding: 16px 18px; backdrop-filter: blur(6px);
+    display: none;
+  }
+  #card h2 { margin: 0 0 6px; font-size: 18px; letter-spacing: 3px; font-weight: 600; }
+  #card p { margin: 6px 0; font-size: 12.5px; line-height: 1.5; opacity: 0.85; }
+  #card .data { font-size: 11px; opacity: 0.6; margin-top: 10px; line-height: 1.7; }
+  #card button {
+    margin-top: 12px; background: none; border: 1px solid rgba(255,255,255,0.3);
+    color: #fff; border-radius: 6px; padding: 4px 10px; cursor: pointer; font-size: 11px;
+  }
+  #card button:hover { background: rgba(255,255,255,0.12); }
+  #nogl {
+    display: none; position: fixed; inset: 0; color: #fff;
+    align-items: center; justify-content: center; text-align: center; padding: 20px;
+  }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div class="ui" id="title"><b>SISTEMA SOLAR</b> · webgl en tiempo real</div>
+<div class="ui" id="clock"></div>
+<div class="ui" id="hint">arrastra para girar · rueda para zoom · haz clic en un planeta para visitarlo</div>
+<div class="ui" id="controls">
+  <button id="pauseBtn">⏸</button>
+  <input type="range" id="speed" min="0" max="100" value="50">
+  <span id="speedLabel"></span>
+</div>
+<div class="ui" id="card">
+  <h2 id="cardName"></h2>
+  <p id="cardFact"></p>
+  <div class="data" id="cardData"></div>
+  <button id="cardBack">← vista general</button>
+</div>
+<div id="nogl">Tu navegador no soporta WebGL 😢</div>
+
+<script>
+'use strict';
+const canvas = document.getElementById('c');
+const gl = canvas.getContext('webgl', { antialias: true, alpha: false });
+if (!gl) { document.getElementById('nogl').style.display = 'flex'; throw new Error('no webgl'); }
+
+// ============================== shaders ==============================
+const PRE = `
+#ifdef GL_FRAGMENT_PRECISION_HIGH
+precision highp float;
+#else
+precision mediump float;
+#endif
+`;
+
+const NOISE = `
+float hash(vec3 p) {
+  p = fract(p * 0.3183099 + vec3(0.1, 0.2, 0.3));
+  p *= 17.0;
+  return fract(p.x * p.y * p.z * (p.x + p.y + p.z));
+}
+float noise(vec3 x) {
+  vec3 i = floor(x), f = fract(x);
+  f = f * f * (3.0 - 2.0 * f);
+  return mix(mix(mix(hash(i), hash(i + vec3(1,0,0)), f.x),
+                 mix(hash(i + vec3(0,1,0)), hash(i + vec3(1,1,0)), f.x), f.y),
+             mix(mix(hash(i + vec3(0,0,1)), hash(i + vec3(1,0,1)), f.x),
+                 mix(hash(i + vec3(0,1,1)), hash(i + vec3(1,1,1)), f.x), f.y), f.z);
+}
+float fbm(vec3 p) {
+  float v = 0.0, a = 0.5;
+  for (int i = 0; i < 5; i++) { v += a * noise(p); p *= 2.03; a *= 0.5; }
+  return v;
+}
+`;
+
+const PLANET_VS = `
+attribute vec3 aPos;
+uniform mat4 uProj, uView, uModel;
+varying vec3 vObj, vWorld, vNormal;
+void main() {
+  vObj = aPos;
+  vec4 w = uModel * vec4(aPos, 1.0);
+  vWorld = w.xyz;
+  vNormal = normalize((uModel * vec4(aPos, 0.0)).xyz);
+  gl_Position = uProj * uView * w;
+}
+`;
+
+const PLANET_FS = PRE + NOISE + `
+uniform float uType, uTime, uAtmosStr, uNoise, uCaps, uSpot;
+uniform vec3 uColA, uColB, uColC, uAtmos, uCamPos;
+varying vec3 vObj, vWorld, vNormal;
+
+void main() {
+  vec3 N = normalize(vNormal);
+  vec3 V = normalize(uCamPos - vWorld);
+  vec3 L = normalize(-vWorld);          // el sol está en el origen
+  vec3 surf;
+  float specMask = 0.0;
+
+  if (uType < 0.5) {
+    // ---- SOL: plasma turbulento, emisivo ----
+    float n = fbm(vObj * 3.5 + vec3(uTime * 0.08, uTime * 0.05, 0.0));
+    n += 0.5 * fbm(vObj * 9.0 - vec3(0.0, uTime * 0.12, 0.0));
+    vec3 col = mix(vec3(1.0, 0.40, 0.04), vec3(1.0, 0.92, 0.55), clamp(n * 0.9, 0.0, 1.0));
+    float limb = clamp(dot(N, V), 0.0, 1.0);
+    col *= 0.55 + 0.7 * limb;
+    col += vec3(1.0, 0.55, 0.15) * pow(1.0 - limb, 2.0) * 0.9;
+    gl_FragColor = vec4(col, 1.0);
+    return;
+  } else if (uType < 1.5) {
+    // ---- ROCOSO: terreno fbm + cráteres ----
+    float h = fbm(vObj * uNoise);
+    surf = mix(uColB, uColA, h);
+    float cr = smoothstep(0.60, 0.75, fbm(vObj * uNoise * 2.7 + vec3(5.0)));
+    surf *= 1.0 - 0.28 * cr;
+    float cap = smoothstep(0.80, 0.88, abs(vObj.y) + fbm(vObj * 5.0) * 0.10);
+    surf = mix(surf, vec3(0.92, 0.93, 0.95), cap * uCaps);
+  } else if (uType < 2.5) {
+    // ---- TIERRA: océanos, continentes, casquetes y nubes ----
+    float h = fbm(vObj * 3.2 + vec3(7.0));
+    float landM = smoothstep(0.47, 0.52, h);
+    vec3 land = mix(vec3(0.12, 0.34, 0.10), vec3(0.55, 0.45, 0.24), fbm(vObj * 8.0 + vec3(3.0)));
+    vec3 ocean = mix(vec3(0.02, 0.08, 0.30), vec3(0.05, 0.22, 0.50), clamp(h * 1.6, 0.0, 1.0));
+    surf = mix(ocean, land, landM);
+    float cap = smoothstep(0.80, 0.88, abs(vObj.y) + fbm(vObj * 5.0) * 0.10);
+    surf = mix(surf, vec3(0.95), cap);
+    float ca = uTime * 0.04;
+    vec3 cp = vec3(cos(ca) * vObj.x - sin(ca) * vObj.z, vObj.y, sin(ca) * vObj.x + cos(ca) * vObj.z);
+    float cl = smoothstep(0.50, 0.72, fbm(cp * 4.0 + vec3(11.0)));
+    surf = mix(surf, vec3(1.0), cl * 0.85);
+    specMask = (1.0 - landM) * (1.0 - cl);
+  } else if (uType < 3.5) {
+    // ---- GIGANTE GASEOSO: bandas turbulentas + tormenta ----
+    float warp = fbm(vObj * vec3(3.0, 6.0, 3.0) + vec3(0.0, uTime * 0.02, 0.0));
+    float band = 0.5 + 0.5 * sin(vObj.y * 14.0 + warp * 2.8);
+    surf = mix(uColA, uColB, band);
+    surf = mix(surf, uColC, smoothstep(0.60, 0.90, fbm(vObj * 5.0 + vec3(9.0))) * 0.45);
+    float d = distance(vObj, normalize(vec3(0.9, -0.35, 0.4)));
+    float spot = smoothstep(0.30, 0.10, d) * uSpot;
+    surf = mix(surf, vec3(0.78, 0.28, 0.14), spot);
+  } else {
+    // ---- NUBOSO SUAVE: Venus / gigantes de hielo ----
+    float n = fbm(vObj * 2.5 + vec3(0.0, uTime * 0.015, 0.0));
+    float band = 0.5 + 0.5 * sin(vObj.y * 5.0 + n * 3.2);
+    surf = mix(uColA, uColB, clamp(band * 0.6 + n * 0.5, 0.0, 1.0));
+  }
+
+  // iluminación solar con terminador suave
+  float dif = clamp(dot(N, L), 0.0, 1.0);
+  vec3 col = surf * (0.05 + 1.15 * dif);
+
+  // brillo especular (océanos)
+  float spec = pow(clamp(dot(reflect(-L, N), V), 0.0, 1.0), 50.0) * specMask * dif;
+  col += vec3(1.0, 0.95, 0.8) * spec * 0.7;
+
+  // halo atmosférico en el borde, sólo en el lado iluminado
+  float fre = pow(clamp(1.0 - dot(N, V), 0.0, 1.0), 2.6);
+  col += uAtmos * fre * uAtmosStr * (0.15 + 0.85 * dif);
+
+  gl_FragColor = vec4(col, 1.0);
+}
+`;
+
+const RING_FS = PRE + NOISE + `
+uniform mat4 uModel;
+uniform vec3 uCamPos;
+varying vec3 vObj, vWorld, vNormal;
+void main() {
+  float r = length(vObj.xz);
+  float t = clamp((r - 1.35) / 1.05, 0.0, 1.0);
+  float bands = 0.4 + 0.6 * noise(vec3(t * 30.0, 0.5, 0.7));
+  bands *= 0.55 + 0.45 * noise(vec3(t * 95.0, 3.0, 5.0));
+  float alpha = bands;
+  alpha *= smoothstep(0.0, 0.06, t) * smoothstep(1.0, 0.92, t);
+  alpha *= 0.35 + 0.65 * smoothstep(0.03, 0.09, abs(t - 0.62));   // división de Cassini
+  vec3 col = mix(vec3(0.42, 0.38, 0.30), vec3(0.88, 0.82, 0.70), bands);
+  vec3 N = normalize((uModel * vec4(0.0, 1.0, 0.0, 0.0)).xyz);
+  vec3 L = normalize(-vWorld);
+  col *= 0.22 + 0.95 * abs(dot(N, L));
+  gl_FragColor = vec4(col, alpha * 0.92);
+}
+`;
+
+const PLAIN_VS = `
+attribute vec3 aPos;
+uniform mat4 uProj, uView, uModel;
+void main() { gl_Position = uProj * uView * uModel * vec4(aPos, 1.0); }
+`;
+const PLAIN_FS = PRE + `
+uniform vec4 uColor;
+void main() { gl_FragColor = uColor; }
+`;
+
+const POINT_VS = `
+attribute vec3 aPos;
+attribute float aSize, aPhase;
+uniform mat4 uProj, uView, uModel;
+uniform float uTime;
+varying float vTw;
+void main() {
+  gl_Position = uProj * uView * uModel * vec4(aPos, 1.0);
+  vTw = 0.55 + 0.45 * sin(uTime * 1.5 + aPhase);
+  gl_PointSize = aSize;
+}
+`;
+const POINT_FS = PRE + `
+uniform vec3 uTint;
+varying float vTw;
+void main() {
+  float a = smoothstep(0.5, 0.0, length(gl_PointCoord - 0.5));
+  gl_FragColor = vec4(uTint * vTw, a * vTw);
+}
+`;
+
+const GLOW_VS = `
+attribute vec2 aCorner;
+uniform mat4 uProj, uView;
+uniform vec3 uRight, uUp;
+uniform float uSize;
+varying vec2 vUv;
+void main() {
+  vUv = aCorner;
+  vec3 w = (uRight * aCorner.x + uUp * aCorner.y) * uSize;
+  gl_Position = uProj * uView * vec4(w, 1.0);
+}
+`;
+const GLOW_FS = PRE + `
+uniform float uTime;
+varying vec2 vUv;
+void main() {
+  float r = length(vUv);
+  float rays = 1.0 + 0.18 * sin(atan(vUv.y, vUv.x) * 14.0 + uTime * 0.5)
+                   * smoothstep(0.0, 0.5, r);
+  float a = exp(-r * 4.0) * 1.6 + exp(-r * 12.0) * 2.0;
+  vec3 col = (vec3(1.0, 0.62, 0.22) * a + vec3(1.0, 0.9, 0.6) * exp(-r * 18.0) * 3.0) * rays;
+  gl_FragColor = vec4(col, 1.0);
+}
+`;
+
+function compile(type, src) {
+  const s = gl.createShader(type);
+  gl.shaderSource(s, src); gl.compileShader(s);
+  if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(s));
+  return s;
+}
+function program(vs, fs, attrs, unis) {
+  const p = gl.createProgram();
+  gl.attachShader(p, compile(gl.VERTEX_SHADER, vs));
+  gl.attachShader(p, compile(gl.FRAGMENT_SHADER, fs));
+  gl.linkProgram(p);
+  if (!gl.getProgramParameter(p, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(p));
+  const o = { p, a: {}, u: {} };
+  for (const a of attrs) o.a[a] = gl.getAttribLocation(p, a);
+  for (const u of unis) o.u[u] = gl.getUniformLocation(p, u);
+  return o;
+}
+
+const progPlanet = program(PLANET_VS, PLANET_FS, ['aPos'],
+  ['uProj','uView','uModel','uCamPos','uTime','uType','uColA','uColB','uColC','uAtmos','uAtmosStr','uNoise','uCaps','uSpot']);
+const progRing = program(PLANET_VS, RING_FS, ['aPos'], ['uProj','uView','uModel','uCamPos']);
+const progPlain = program(PLAIN_VS, PLAIN_FS, ['aPos'], ['uProj','uView','uModel','uColor']);
+const progPoint = program(POINT_VS, POINT_FS, ['aPos','aSize','aPhase'], ['uProj','uView','uModel','uTime','uTint']);
+const progGlow = program(GLOW_VS, GLOW_FS, ['aCorner'], ['uProj','uView','uRight','uUp','uSize','uTime']);
+
+// ============================== geometría ==============================
+function buffer(data, target = gl.ARRAY_BUFFER) {
+  const b = gl.createBuffer();
+  gl.bindBuffer(target, b);
+  gl.bufferData(target, data, gl.STATIC_DRAW);
+  return b;
+}
+
+// esfera unitaria
+const LA = 44, LO = 60;
+const spherePos = [], sphereIdx = [];
+for (let i = 0; i <= LA; i++) {
+  const phi = i / LA * Math.PI;
+  for (let j = 0; j <= LO; j++) {
+    const th = j / LO * 2 * Math.PI;
+    spherePos.push(Math.sin(phi) * Math.cos(th), Math.cos(phi), Math.sin(phi) * Math.sin(th));
+  }
+}
+for (let i = 0; i < LA; i++) for (let j = 0; j < LO; j++) {
+  const a = i * (LO + 1) + j, b = a + LO + 1;
+  sphereIdx.push(a, b, a + 1, b, b + 1, a + 1);
+}
+const sphereVB = buffer(new Float32Array(spherePos));
+const sphereIB = buffer(new Uint16Array(sphereIdx), gl.ELEMENT_ARRAY_BUFFER);
+const sphereN = sphereIdx.length;
+
+// anillo (corona plana, radios 1.35–2.40 en unidades de radio del planeta)
+const ringPos = [], ringIdx = [];
+const RSEG = 160;
+for (let i = 0; i <= RSEG; i++) {
+  const a = i / RSEG * 2 * Math.PI, c = Math.cos(a), s = Math.sin(a);
+  ringPos.push(1.35 * c, 0, 1.35 * s, 2.40 * c, 0, 2.40 * s);
+  if (i < RSEG) { const k = i * 2; ringIdx.push(k, k + 1, k + 2, k + 1, k + 3, k + 2); }
+}
+const ringVB = buffer(new Float32Array(ringPos));
+const ringIB = buffer(new Uint16Array(ringIdx), gl.ELEMENT_ARRAY_BUFFER);
+const ringN = ringIdx.length;
+
+// círculo unitario para órbitas
+const circPos = [];
+const CSEG = 256;
+for (let i = 0; i < CSEG; i++) {
+  const a = i / CSEG * 2 * Math.PI;
+  circPos.push(Math.cos(a), 0, Math.sin(a));
+}
+const circVB = buffer(new Float32Array(circPos));
+
+// estrellas
+const NSTARS = 1600;
+const starPos = [], starSize = [], starPhase = [];
+for (let i = 0; i < NSTARS; i++) {
+  const u = Math.random() * 2 - 1, th = Math.random() * 2 * Math.PI;
+  const r = Math.sqrt(1 - u * u);
+  starPos.push(600 * r * Math.cos(th), 600 * u, 600 * r * Math.sin(th));
+  starSize.push(0.6 + Math.random() * 2.0);
+  starPhase.push(Math.random() * 50);
+}
+const starVB = buffer(new Float32Array(starPos));
+const starSizeVB = buffer(new Float32Array(starSize));
+const starPhaseVB = buffer(new Float32Array(starPhase));
+
+// cinturón de asteroides
+const NAST = 1300;
+const astPos = [], astSize = [], astPhase = [];
+for (let i = 0; i < NAST; i++) {
+  const a = Math.random() * 2 * Math.PI;
+  const r = 26.5 + Math.random() * 3.2;
+  astPos.push(r * Math.cos(a), (Math.random() - 0.5) * 0.9, r * Math.sin(a));
+  astSize.push(0.8 + Math.random() * 1.6);
+  astPhase.push(Math.random() * 50);
+}
+const astVB = buffer(new Float32Array(astPos));
+const astSizeVB = buffer(new Float32Array(astSize));
+const astPhaseVB = buffer(new Float32Array(astPhase));
+
+// quad para el resplandor solar
+const glowVB = buffer(new Float32Array([-1,-1, 1,-1, -1,1, 1,-1, 1,1, -1,1]));
+
+// ============================== matemáticas ==============================
+const m4 = () => new Float32Array(16);
+function m4ident() { const m = m4(); m[0] = m[5] = m[10] = m[15] = 1; return m; }
+function m4mul(a, b) {
+  const o = m4();
+  for (let c = 0; c < 4; c++) for (let r = 0; r < 4; r++) {
+    let s = 0;
+    for (let k = 0; k < 4; k++) s += a[k * 4 + r] * b[c * 4 + k];
+    o[c * 4 + r] = s;
+  }
+  return o;
+}
+function m4translate(x, y, z) { const m = m4ident(); m[12] = x; m[13] = y; m[14] = z; return m; }
+function m4scale(s) { const m = m4(); m[0] = m[5] = m[10] = s; m[15] = 1; return m; }
+function m4rotX(a) { const m = m4ident(), c = Math.cos(a), s = Math.sin(a); m[5] = c; m[6] = s; m[9] = -s; m[10] = c; return m; }
+function m4rotY(a) { const m = m4ident(), c = Math.cos(a), s = Math.sin(a); m[0] = c; m[2] = -s; m[8] = s; m[10] = c; return m; }
+function m4rotZ(a) { const m = m4ident(), c = Math.cos(a), s = Math.sin(a); m[0] = c; m[1] = s; m[4] = -s; m[5] = c; return m; }
+function m4persp(fov, aspect, n, f) {
+  const t = 1 / Math.tan(fov / 2), m = m4();
+  m[0] = t / aspect; m[5] = t; m[10] = (f + n) / (n - f); m[11] = -1; m[14] = 2 * f * n / (n - f);
+  return m;
+}
+const vsub = (a, b) => [a[0] - b[0], a[1] - b[1], a[2] - b[2]];
+const vdot = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+const vcross = (a, b) => [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]];
+function vnorm(a) { const l = Math.hypot(a[0], a[1], a[2]) || 1; return [a[0] / l, a[1] / l, a[2] / l]; }
+function m4lookAt(e, c, up) {
+  const f = vnorm(vsub(c, e)), s = vnorm(vcross(f, up)), v = vcross(s, f);
+  return new Float32Array([
+    s[0], v[0], -f[0], 0,
+    s[1], v[1], -f[1], 0,
+    s[2], v[2], -f[2], 0,
+    -vdot(s, e), -vdot(v, e), vdot(f, e), 1
+  ]);
+}
+
+// ============================== datos ==============================
+// distancias y tamaños comprimidos para que se vea bien (la escala real es inutilizable)
+const BODIES = [
+  { name: 'Sol', r: 4.0, orbit: 0, period: 1, spin: 27, tilt: 0, type: 0, phase: 0,
+    colA: [1,1,1], colB: [1,1,1], colC: [1,1,1], atmos: [1,0.6,0.2], atmosStr: 0, noise: 4, caps: 0, spot: 0,
+    fact: 'Contiene el 99,86 % de toda la masa del sistema solar. Cada segundo fusiona 600 millones de toneladas de hidrógeno.',
+    data: 'Diámetro: 1.392.700 km · Tipo: enana amarilla · Edad: 4.600 M de años' },
+  { name: 'Mercurio', r: 0.38, orbit: 10, period: 88, spin: 58.6, tilt: 0.001, type: 1, phase: 1.1,
+    colA: [0.58,0.54,0.50], colB: [0.34,0.31,0.29], colC: [0,0,0], atmos: [0,0,0], atmosStr: 0, noise: 6, caps: 0, spot: 0,
+    fact: 'Su día solar (176 días terrestres) dura el doble que su año (88). De día 430 °C, de noche −180 °C.',
+    data: 'Diámetro: 4.879 km · Distancia: 57,9 M km · Año: 88 días' },
+  { name: 'Venus', r: 0.58, orbit: 14, period: 225, spin: -243, tilt: 0.05, type: 4, phase: 2.7,
+    colA: [0.88,0.77,0.55], colB: [0.70,0.55,0.36], colC: [0,0,0], atmos: [0.9,0.8,0.55], atmosStr: 0.6, noise: 4, caps: 0, spot: 0,
+    fact: 'Gira al revés y tan despacio que su día dura más que su año. Es el planeta más caliente: 465 °C por efecto invernadero.',
+    data: 'Diámetro: 12.104 km · Distancia: 108,2 M km · Año: 225 días' },
+  { name: 'Tierra', r: 0.6, orbit: 18, period: 365.25, spin: 1, tilt: 0.41, type: 2, phase: 4.2,
+    colA: [0,0,0], colB: [0,0,0], colC: [0,0,0], atmos: [0.3,0.55,1.0], atmosStr: 0.9, noise: 4, caps: 1, spot: 0,
+    fact: 'El único lugar del universo donde sabemos que hay vida (y café). El 71 % de su superficie es agua.',
+    data: 'Diámetro: 12.742 km · Distancia: 149,6 M km · Año: 365,25 días' },
+  { name: 'Luna', r: 0.16, orbit: 1.5, period: 27.3, spin: 27.3, tilt: 0.03, type: 1, phase: 0.8, parent: 3,
+    colA: [0.62,0.62,0.64], colB: [0.30,0.30,0.32], colC: [0,0,0], atmos: [0,0,0], atmosStr: 0, noise: 7, caps: 0, spot: 0,
+    fact: 'Se aleja de la Tierra 3,8 cm cada año. Siempre nos enseña la misma cara.',
+    data: 'Diámetro: 3.474 km · Distancia a la Tierra: 384.400 km · Órbita: 27,3 días' },
+  { name: 'Marte', r: 0.45, orbit: 23, period: 687, spin: 1.03, tilt: 0.44, type: 1, phase: 5.6,
+    colA: [0.78,0.40,0.20], colB: [0.45,0.20,0.10], colC: [0,0,0], atmos: [0.9,0.55,0.3], atmosStr: 0.35, noise: 5, caps: 0.8, spot: 0,
+    fact: 'El monte Olimpo mide 22 km de altura, casi tres veces el Everest. Sus puestas de sol son azules.',
+    data: 'Diámetro: 6.779 km · Distancia: 227,9 M km · Año: 687 días' },
+  { name: 'Júpiter', r: 1.8, orbit: 33, period: 4333, spin: 0.41, tilt: 0.05, type: 3, phase: 0.4,
+    colA: [0.85,0.72,0.55], colB: [0.55,0.39,0.28], colC: [0.93,0.88,0.80], atmos: [0.8,0.7,0.5], atmosStr: 0.3, noise: 4, caps: 0, spot: 1,
+    fact: 'Dentro caben 1.300 Tierras. Su Gran Mancha Roja es una tormenta más grande que nuestro planeta, activa desde hace siglos.',
+    data: 'Diámetro: 139.820 km · Distancia: 778,5 M km · Año: 11,9 años' },
+  { name: 'Saturno', r: 1.5, orbit: 43, period: 10759, spin: 0.44, tilt: 0.47, type: 3, phase: 2.0, rings: true,
+    colA: [0.87,0.79,0.62], colB: [0.66,0.56,0.40], colC: [0.93,0.89,0.78], atmos: [0.85,0.78,0.6], atmosStr: 0.25, noise: 4, caps: 0, spot: 0,
+    fact: 'Su densidad es menor que la del agua: flotaría en una bañera (gigante). Sus anillos son hielo y roca de pocos metros de grosor.',
+    data: 'Diámetro: 116.460 km · Distancia: 1.434 M km · Año: 29,5 años' },
+  { name: 'Urano', r: 1.0, orbit: 53, period: 30687, spin: -0.72, tilt: 1.71, type: 4, phase: 3.6,
+    colA: [0.58,0.80,0.84], colB: [0.45,0.68,0.76], colC: [0,0,0], atmos: [0.6,0.85,0.9], atmosStr: 0.5, noise: 3, caps: 0, spot: 0,
+    fact: 'Rueda tumbado: su eje está inclinado 98°, probablemente por un impacto colosal. Aquí lo verás girar "de lado".',
+    data: 'Diámetro: 50.724 km · Distancia: 2.871 M km · Año: 84 años' },
+  { name: 'Neptuno', r: 0.97, orbit: 62, period: 60190, spin: 0.67, tilt: 0.49, type: 4, phase: 5.0,
+    colA: [0.25,0.42,0.88], colB: [0.13,0.24,0.60], colC: [0,0,0], atmos: [0.4,0.55,1.0], atmosStr: 0.6, noise: 3, caps: 0, spot: 0,
+    fact: 'Vientos de 2.100 km/h, los más rápidos del sistema solar. Se descubrió con matemáticas antes de verlo por telescopio.',
+    data: 'Diámetro: 49.244 km · Distancia: 4.495 M km · Año: 165 años' },
+  { name: 'Plutón', r: 0.18, orbit: 71, period: 90560, spin: 6.4, tilt: 1.0, type: 1, phase: 1.9, incline: 0.30,
+    colA: [0.75,0.65,0.55], colB: [0.45,0.38,0.33], colC: [0,0,0], atmos: [0,0,0], atmosStr: 0, noise: 5, caps: 0.5, spot: 0,
+    fact: 'Ya no es oficialmente un planeta, pero aquí lo seguimos invitando. Tiene un corazón de hielo de nitrógeno de 1.000 km.',
+    data: 'Diámetro: 2.377 km · Distancia: 5.906 M km · Año: 248 años' },
+];
+
+// ============================== estado ==============================
+let yaw = 0.9, pitch = 0.45, dist = 75;
+let tYaw = yaw, tPitch = pitch, tDist = dist;
+let selected = 0;                       // índice en BODIES (0 = Sol → vista general)
+let simDays = 0, paused = false;
+let dragging = false, lastX = 0, lastY = 0, downX = 0, downY = 0;
+const FOV = 50 * Math.PI / 180;
+const positions = BODIES.map(() => [0, 0, 0]);
+
+const hint = document.getElementById('hint');
+const clockEl = document.getElementById('clock');
+const speedEl = document.getElementById('speed');
+const speedLabel = document.getElementById('speedLabel');
+const pauseBtn = document.getElementById('pauseBtn');
+const card = document.getElementById('card');
+
+function speedDaysPerSec() {
+  const v = +speedEl.value;
+  return v === 0 ? 0 : Math.pow(10, v / 25 - 1);   // 0,1 → 1.000 días/s (log)
+}
+function fmtSpeed() {
+  const s = speedDaysPerSec();
+  speedLabel.textContent = paused ? 'pausado' :
+    s >= 365 ? (s / 365.25).toFixed(1) + ' años/s' :
+    s >= 1 ? s.toFixed(0) + ' días/s' : (s * 24).toFixed(1) + ' h/s';
+}
+speedEl.addEventListener('input', fmtSpeed);
+pauseBtn.addEventListener('click', togglePause);
+function togglePause() { paused = !paused; pauseBtn.textContent = paused ? '▶' : '⏸'; fmtSpeed(); }
+addEventListener('keydown', e => { if (e.code === 'Space') { e.preventDefault(); togglePause(); } });
+fmtSpeed();
+
+// etiquetas HTML
+const labels = BODIES.map((b, i) => {
+  const el = document.createElement('div');
+  el.className = 'label';
+  el.textContent = b.name;
+  el.addEventListener('click', () => select(i));
+  document.body.appendChild(el);
+  return el;
+});
+
+function select(i) {
+  selected = i;
+  const b = BODIES[i];
+  hint.classList.add('fade');
+  if (i === 0) {
+    card.style.display = 'none';
+    tDist = 75;
+  } else {
+    document.getElementById('cardName').textContent = b.name.toUpperCase();
+    document.getElementById('cardFact').textContent = b.fact;
+    document.getElementById('cardData').innerHTML = b.data.split(' · ').join('<br>');
+    card.style.display = 'block';
+    tDist = Math.max(b.r * 6, 2.2);
+  }
+}
+document.getElementById('cardBack').addEventListener('click', () => select(0));
+
+// interacción de cámara
+function pdown(x, y) { dragging = true; lastX = downX = x; lastY = downY = y; document.body.classList.add('dragging'); }
+function pmove(x, y) {
+  if (!dragging) return;
+  tYaw += (x - lastX) * 0.005;
+  tPitch += (y - lastY) * 0.005;
+  tPitch = Math.max(-1.5, Math.min(1.5, tPitch));
+  lastX = x; lastY = y;
+}
+function pup(x, y) {
+  if (dragging && Math.hypot(x - downX, y - downY) < 5) pick(x, y);
+  dragging = false;
+  document.body.classList.remove('dragging');
+}
+canvas.addEventListener('mousedown', e => pdown(e.clientX, e.clientY));
+addEventListener('mousemove', e => pmove(e.clientX, e.clientY));
+addEventListener('mouseup', e => pup(e.clientX, e.clientY));
+canvas.addEventListener('touchstart', e => { e.preventDefault(); pdown(e.touches[0].clientX, e.touches[0].clientY); }, { passive: false });
+canvas.addEventListener('touchmove', e => { e.preventDefault(); pmove(e.touches[0].clientX, e.touches[0].clientY); }, { passive: false });
+canvas.addEventListener('touchend', e => { const t = e.changedTouches[0]; pup(t.clientX, t.clientY); });
+canvas.addEventListener('wheel', e => {
+  e.preventDefault();
+  tDist *= Math.exp(e.deltaY * 0.0012);
+  const minD = selected === 0 ? 8 : BODIES[selected].r * 2.2;
+  tDist = Math.max(minD, Math.min(220, tDist));
+  hint.classList.add('fade');
+}, { passive: false });
+
+let camPos = [0, 0, 75], camBasis = null;
+function pick(x, y) {
+  if (!camBasis) return;
+  const ndcX = (x / innerWidth) * 2 - 1, ndcY = 1 - (y / innerHeight) * 2;
+  const tanF = Math.tan(FOV / 2), aspect = innerWidth / innerHeight;
+  const { fwd, right, up } = camBasis;
+  const rd = vnorm([
+    fwd[0] + right[0] * ndcX * tanF * aspect + up[0] * ndcY * tanF,
+    fwd[1] + right[1] * ndcX * tanF * aspect + up[1] * ndcY * tanF,
+    fwd[2] + right[2] * ndcX * tanF * aspect + up[2] * ndcY * tanF
+  ]);
+  let best = -1, bestT = 1e9;
+  for (let i = 0; i < BODIES.length; i++) {
+    const R = Math.max(BODIES[i].r * 1.6, 0.7);
+    const oc = vsub(camPos, positions[i]);
+    const b = vdot(oc, rd), c = vdot(oc, oc) - R * R;
+    const h = b * b - c;
+    if (h < 0) continue;
+    const t = -b - Math.sqrt(h);
+    if (t > 0 && t < bestT) { bestT = t; best = i; }
+  }
+  if (best >= 0 && best !== selected) select(best);
+}
+
+// ============================== render ==============================
+const dpr = Math.min(devicePixelRatio || 1, 1.5);
+function resize() {
+  canvas.width = Math.round(innerWidth * dpr);
+  canvas.height = Math.round(innerHeight * dpr);
+  gl.viewport(0, 0, canvas.width, canvas.height);
+}
+addEventListener('resize', resize);
+resize();
+
+gl.enable(gl.DEPTH_TEST);
+gl.clearColor(0.004, 0.004, 0.012, 1);
+
+function bindSphere(prog) {
+  gl.bindBuffer(gl.ARRAY_BUFFER, sphereVB);
+  gl.enableVertexAttribArray(prog.a.aPos);
+  gl.vertexAttribPointer(prog.a.aPos, 3, gl.FLOAT, false, 0, 0);
+  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, sphereIB);
+}
+
+let prev = performance.now();
+function frame(now) {
+  const dt = Math.min((now - prev) / 1000, 0.1);
+  prev = now;
+  if (!paused) simDays += dt * speedDaysPerSec();
+
+  // posiciones orbitales
+  for (let i = 0; i < BODIES.length; i++) {
+    const b = BODIES[i];
+    if (b.orbit === 0) { positions[i] = [0, 0, 0]; continue; }
+    const a = 2 * Math.PI * simDays / b.period + b.phase;
+    let p = [Math.cos(a) * b.orbit, 0, Math.sin(a) * b.orbit];
+    if (b.incline) {
+      const ci = Math.cos(b.incline), si = Math.sin(b.incline);
+      p = [p[0], -si * p[2], ci * p[2]];
+    }
+    if (b.parent !== undefined) {
+      const pp = positions[b.parent];
+      p = [pp[0] + p[0], pp[1] + p[1], pp[2] + p[2]];
+    }
+    positions[i] = p;
+  }
+
+  // cámara: sigue al cuerpo seleccionado
+  const k = 1 - Math.exp(-dt * 6);
+  yaw += (tYaw - yaw) * k;
+  pitch += (tPitch - pitch) * k;
+  dist += (tDist - dist) * k;
+  const target = positions[selected];
+  const cp = Math.cos(pitch), sp = Math.sin(pitch);
+  camPos = [
+    target[0] + dist * Math.cos(yaw) * cp,
+    target[1] + dist * sp,
+    target[2] + dist * Math.sin(yaw) * cp
+  ];
+  const view = m4lookAt(camPos, target, [0, 1, 0]);
+  const proj = m4persp(FOV, innerWidth / innerHeight, 0.1, 1500);
+  const fwd = vnorm(vsub(target, camPos));
+  const right = vnorm(vcross(fwd, [0, 1, 0]));
+  const up = vcross(right, fwd);
+  camBasis = { fwd, right, up };
+
+  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+  // --- estrellas ---
+  gl.useProgram(progPoint.p);
+  gl.depthMask(false);
+  gl.enable(gl.BLEND);
+  gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
+  gl.uniformMatrix4fv(progPoint.u.uProj, false, proj);
+  gl.uniformMatrix4fv(progPoint.u.uView, false, view);
+  gl.uniform1f(progPoint.u.uTime, now / 1000);
+  function drawPoints(vb, sb, pb, n, model, tint) {
+    gl.uniformMatrix4fv(progPoint.u.uModel, false, model);
+    gl.uniform3fv(progPoint.u.uTint, tint);
+    gl.bindBuffer(gl.ARRAY_BUFFER, vb);
+    gl.enableVertexAttribArray(progPoint.a.aPos);
+    gl.vertexAttribPointer(progPoint.a.aPos, 3, gl.FLOAT, false, 0, 0);
+    gl.bindBuffer(gl.ARRAY_BUFFER, sb);
+    gl.enableVertexAttribArray(progPoint.a.aSize);
+    gl.vertexAttribPointer(progPoint.a.aSize, 1, gl.FLOAT, false, 0, 0);
+    gl.bindBuffer(gl.ARRAY_BUFFER, pb);
+    gl.enableVertexAttribArray(progPoint.a.aPhase);
+    gl.vertexAttribPointer(progPoint.a.aPhase, 1, gl.FLOAT, false, 0, 0);
+    gl.drawArrays(gl.POINTS, 0, n);
+  }
+  drawPoints(starVB, starSizeVB, starPhaseVB, NSTARS, m4ident(), [0.85, 0.88, 1.0]);
+  drawPoints(astVB, astSizeVB, astPhaseVB, NAST,
+    m4rotY(2 * Math.PI * simDays / 1700), [0.55, 0.5, 0.45]);
+
+  // --- líneas de órbita ---
+  gl.useProgram(progPlain.p);
+  gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+  gl.uniformMatrix4fv(progPlain.u.uProj, false, proj);
+  gl.uniformMatrix4fv(progPlain.u.uView, false, view);
+  gl.bindBuffer(gl.ARRAY_BUFFER, circVB);
+  gl.enableVertexAttribArray(progPlain.a.aPos);
+  gl.vertexAttribPointer(progPlain.a.aPos, 3, gl.FLOAT, false, 0, 0);
+  for (let i = 1; i < BODIES.length; i++) {
+    const b = BODIES[i];
+    let model = m4scale(b.orbit);
+    if (b.incline) model = m4mul(m4rotX(b.incline), model);
+    if (b.parent !== undefined) {
+      const pp = positions[b.parent];
+      model = m4mul(m4translate(pp[0], pp[1], pp[2]), model);
+    }
+    gl.uniformMatrix4fv(progPlain.u.uModel, false, model);
+    gl.uniform4f(progPlain.u.uColor, 1, 1, 1, i === selected ? 0.30 : 0.10);
+    gl.drawArrays(gl.LINE_LOOP, 0, CSEG);
+  }
+
+  // --- planetas (opacos) ---
+  gl.depthMask(true);
+  gl.disable(gl.BLEND);
+  gl.useProgram(progPlanet.p);
+  gl.uniformMatrix4fv(progPlanet.u.uProj, false, proj);
+  gl.uniformMatrix4fv(progPlanet.u.uView, false, view);
+  gl.uniform3fv(progPlanet.u.uCamPos, camPos);
+  gl.uniform1f(progPlanet.u.uTime, now / 1000);
+  bindSphere(progPlanet);
+  const models = [];
+  for (let i = 0; i < BODIES.length; i++) {
+    const b = BODIES[i], p = positions[i];
+    const spinA = 2 * Math.PI * simDays / b.spin;
+    let model = m4mul(m4rotY(spinA), m4scale(b.r));
+    model = m4mul(m4rotZ(b.tilt), model);
+    model = m4mul(m4translate(p[0], p[1], p[2]), model);
+    models[i] = model;
+    gl.uniformMatrix4fv(progPlanet.u.uModel, false, model);
+    gl.uniform1f(progPlanet.u.uType, b.type);
+    gl.uniform3fv(progPlanet.u.uColA, b.colA);
+    gl.uniform3fv(progPlanet.u.uColB, b.colB);
+    gl.uniform3fv(progPlanet.u.uColC, b.colC);
+    gl.uniform3fv(progPlanet.u.uAtmos, b.atmos);
+    gl.uniform1f(progPlanet.u.uAtmosStr, b.atmosStr);
+    gl.uniform1f(progPlanet.u.uNoise, b.noise);
+    gl.uniform1f(progPlanet.u.uCaps, b.caps);
+    gl.uniform1f(progPlanet.u.uSpot, b.spot);
+    gl.drawElements(gl.TRIANGLES, sphereN, gl.UNSIGNED_SHORT, 0);
+  }
+
+  // --- anillos de Saturno ---
+  gl.useProgram(progRing.p);
+  gl.enable(gl.BLEND);
+  gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+  gl.depthMask(false);
+  gl.uniformMatrix4fv(progRing.u.uProj, false, proj);
+  gl.uniformMatrix4fv(progRing.u.uView, false, view);
+  gl.uniform3fv(progRing.u.uCamPos, camPos);
+  gl.bindBuffer(gl.ARRAY_BUFFER, ringVB);
+  gl.enableVertexAttribArray(progRing.a.aPos);
+  gl.vertexAttribPointer(progRing.a.aPos, 3, gl.FLOAT, false, 0, 0);
+  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, ringIB);
+  for (let i = 0; i < BODIES.length; i++) {
+    if (!BODIES[i].rings) continue;
+    gl.uniformMatrix4fv(progRing.u.uModel, false, models[i]);
+    gl.drawElements(gl.TRIANGLES, ringN, gl.UNSIGNED_SHORT, 0);
+  }
+
+  // --- resplandor del Sol ---
+  gl.useProgram(progGlow.p);
+  gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
+  gl.uniformMatrix4fv(progGlow.u.uProj, false, proj);
+  gl.uniformMatrix4fv(progGlow.u.uView, false, view);
+  gl.uniform3fv(progGlow.u.uRight, right);
+  gl.uniform3fv(progGlow.u.uUp, up);
+  gl.uniform1f(progGlow.u.uSize, 13.0);
+  gl.uniform1f(progGlow.u.uTime, now / 1000);
+  gl.bindBuffer(gl.ARRAY_BUFFER, glowVB);
+  gl.enableVertexAttribArray(progGlow.a.aCorner);
+  gl.vertexAttribPointer(progGlow.a.aCorner, 2, gl.FLOAT, false, 0, 0);
+  gl.drawArrays(gl.TRIANGLES, 0, 6);
+  gl.depthMask(true);
+  gl.disable(gl.BLEND);
+
+  // --- etiquetas HTML proyectadas ---
+  const vp = m4mul(proj, view);
+  for (let i = 0; i < BODIES.length; i++) {
+    const p = positions[i], b = BODIES[i];
+    const x = p[0], y = p[1] + b.r * 1.3, z = p[2];
+    const cw = vp[3] * x + vp[7] * y + vp[11] * z + vp[15];
+    const el = labels[i];
+    if (cw < 0.1) { el.style.display = 'none'; continue; }
+    const cx = (vp[0] * x + vp[4] * y + vp[8] * z + vp[12]) / cw;
+    const cy = (vp[1] * x + vp[5] * y + vp[9] * z + vp[13]) / cw;
+    if (cx < -1.1 || cx > 1.1 || cy < -1.1 || cy > 1.1) { el.style.display = 'none'; continue; }
+    el.style.display = 'block';
+    el.style.left = ((cx * 0.5 + 0.5) * innerWidth) + 'px';
+    el.style.top = ((0.5 - cy * 0.5) * innerHeight) + 'px';
+    const d = Math.hypot(p[0] - camPos[0], p[1] - camPos[1], p[2] - camPos[2]);
+    el.style.opacity = i === selected ? 0.95 : Math.max(0.25, Math.min(0.8, 60 / d * 0.6));
+  }
+
+  // reloj de simulación
+  const years = Math.floor(simDays / 365.25);
+  const days = Math.floor(simDays - years * 365.25);
+  clockEl.textContent = `tiempo simulado: ${years} años, ${days} días`;
+
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>
