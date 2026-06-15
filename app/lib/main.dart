@@ -171,9 +171,9 @@ class _MenuScreenState extends State<MenuScreen> {
         constraints: const BoxConstraints(maxWidth: 380),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.06),
+            color: Colors.white.withOpacity(0.06),
             borderRadius: BorderRadius.circular(18),
-            border: Border.all(color: Colors.white.withValues(alpha: 0.12))),
+            border: Border.all(color: Colors.white.withOpacity(0.12))),
         child: child,
       );
 
@@ -221,7 +221,7 @@ class _MenuScreenState extends State<MenuScreen> {
                 decoration: BoxDecoration(
                   color: s
                       ? const Color(0x3021d4fd)
-                      : Colors.white.withValues(alpha: 0.08),
+                      : Colors.white.withOpacity(0.08),
                   borderRadius: BorderRadius.circular(10),
                   border: Border.all(
                       color: s ? const Color(0xFF21d4fd) : Colors.transparent,
@@ -586,7 +586,7 @@ class World {
     }
     if (up != null) up.user = true;
     for (final p in players) {
-      if (p.cooldown > 0) p.cooldown = math.max(0, p.cooldown - dt);
+      if (p.cooldown > 0) p.cooldown = math.max(0.0, p.cooldown - dt);
     }
 
     // Movimiento del usuario
@@ -889,7 +889,7 @@ class _GameScreenState extends State<GameScreen>
         margin: const EdgeInsets.only(top: 8),
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
         decoration: BoxDecoration(
-            color: Colors.black.withValues(alpha: 0.55),
+            color: Colors.black.withOpacity(0.55),
             borderRadius: BorderRadius.circular(14)),
         child: Row(
           mainAxisSize: MainAxisSize.min,
@@ -914,7 +914,7 @@ class _GameScreenState extends State<GameScreen>
               padding:
                   const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
               decoration: BoxDecoration(
-                  color: Colors.black.withValues(alpha: 0.5),
+                  color: Colors.black.withOpacity(0.5),
                   borderRadius: BorderRadius.circular(8)),
               child: Text('$mins:$secs',
                   style: const TextStyle(
@@ -961,7 +961,7 @@ class _GameScreenState extends State<GameScreen>
       msg = 'Repartieron los puntos.';
     }
     return Container(
-      color: Colors.black.withValues(alpha: 0.8),
+      color: Colors.black.withOpacity(0.8),
       child: Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -1038,7 +1038,7 @@ class FieldPainter extends CustomPainter {
     _pitch(canvas);
     _nets(canvas);
 
-    final shadow = Paint()..color = Colors.black.withValues(alpha: 0.25);
+    final shadow = Paint()..color = Colors.black.withOpacity(0.25);
     for (final p in world.players) {
       canvas.drawOval(
           Rect.fromCenter(
@@ -1088,10 +1088,10 @@ class FieldPainter extends CustomPainter {
             ..color = even ? const Color(0xFF15a04a) : const Color(0xFF129143));
     }
     final line = Paint()
-      ..color = Colors.white.withValues(alpha: 0.85)
+      ..color = Colors.white.withOpacity(0.85)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 4;
-    final fill = Paint()..color = Colors.white.withValues(alpha: 0.85);
+    final fill = Paint()..color = Colors.white.withOpacity(0.85);
     canvas.drawRect(const Rect.fromLTWH(left, top, kW, kH), line);
     canvas.drawLine(const Offset(left, top + kH / 2),
         const Offset(left + kW, top + kH / 2), line);
@@ -1110,7 +1110,7 @@ class FieldPainter extends CustomPainter {
     final gxL = kMargin + kW / 2 - kGoalW / 2;
     const depth = 34.0;
     final frame = Paint()
-      ..color = Colors.white.withValues(alpha: 0.95)
+      ..color = Colors.white.withOpacity(0.95)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 3;
     canvas.drawRect(
@@ -1118,7 +1118,7 @@ class FieldPainter extends CustomPainter {
     canvas.drawRect(
         Rect.fromLTWH(gxL, kMargin + kH, kGoalW, depth), frame);
     final net = Paint()
-      ..color = Colors.white.withValues(alpha: 0.3)
+      ..color = Colors.white.withOpacity(0.3)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1;
     for (double i = 0; i <= kGoalW; i += 14) {
@@ -1177,18 +1177,18 @@ class FieldPainter extends CustomPainter {
           base,
           60,
           Paint()
-            ..color = Colors.white.withValues(alpha: 0.08));
+            ..color = Colors.white.withOpacity(0.08));
       canvas.drawCircle(
           base,
           60,
           Paint()
-            ..color = Colors.white.withValues(alpha: 0.35)
+            ..color = Colors.white.withOpacity(0.35)
             ..style = PaintingStyle.stroke
             ..strokeWidth = 3);
       var d = joyCurrent - joyOrigin;
       if (d.distance > joyRadius) d = d * (joyRadius / d.distance);
       canvas.drawCircle(base + d, 28,
-          Paint()..color = Colors.white.withValues(alpha: 0.55));
+          Paint()..color = Colors.white.withOpacity(0.55));
     }
     // Botones
     _button(canvas, sprintRect, const Color(0xFFe0a013), 'CORRER',
@@ -1203,7 +1203,7 @@ class FieldPainter extends CustomPainter {
         r.center,
         r.width / 2,
         Paint()
-          ..color = Colors.white.withValues(alpha: 0.35)
+          ..color = Colors.white.withOpacity(0.35)
           ..style = PaintingStyle.stroke
           ..strokeWidth = 3);
     _text(canvas, label, r.center, r.width > 80 ? 13 : 11, tcol);
