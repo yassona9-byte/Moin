@@ -1,0 +1,49 @@
+name: Build iOS (Moin Soccer)
+
+# Compila la app para iPhone (sin firmar). OJO: para INSTALARLA en un iPhone
+# real necesitas un Mac y una cuenta de desarrollador de Apple para firmarla;
+# este artefacto sin firma sirve para comprobar que el codigo compila en iOS.
+# Solo se ejecuta a mano (Actions -> Build iOS -> Run workflow).
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-ios:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: 3.24.5
+
+      - name: Generate iOS platform files
+        working-directory: app
+        run: |
+          flutter create --org com.moin --project-name moin_soccer --platforms=ios /tmp/scaffold
+          cp -r /tmp/scaffold/ios ./ios
+
+      - name: Get dependencies
+        working-directory: app
+        run: flutter pub get
+
+      - name: Build iOS (no codesign)
+        working-directory: app
+        run: flutter build ios --release --no-codesign
+
+      - name: Package .app
+        working-directory: app
+        run: |
+          cd build/ios/iphoneos
+          zip -r Runner.app.zip Runner.app
+
+      - name: Upload iOS build
+        uses: actions/upload-artifact@v4
+        with:
+          name: moin-soccer-ios-unsigned
+          path: app/build/ios/iphoneos/Runner.app.zip
+          if-no-files-found: error

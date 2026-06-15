@@ -1,0 +1,60 @@
+name: Build Android APK (Moin Soccer)
+
+# Compila la app Flutter (carpeta app/) a un APK instalable y lo sube como
+# artefacto descargable. Se ejecuta al hacer push (main o ramas claude/**) y
+# tambien manualmente desde la pestana Actions (Run workflow).
+
+on:
+  push:
+    branches: [main, 'claude/**']
+    paths:
+      - 'app/**'
+      - '.github/workflows/android-apk.yml'
+  workflow_dispatch:
+
+jobs:
+  build-apk:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: 3.24.5
+
+      - name: Flutter version
+        run: flutter --version
+
+      - name: Generate Android platform files
+        working-directory: app
+        run: |
+          # Genera el andamiaje nativo (android/) en un dir temporal y lo copia,
+          # sin tocar nuestro pubspec.yaml ni lib/.
+          flutter create --org com.moin --project-name moin_soccer --platforms=android /tmp/scaffold
+          cp -r /tmp/scaffold/android ./android
+          # Nombre visible de la app
+          sed -i 's/android:label="moin_soccer"/android:label="Moin Soccer"/' android/app/src/main/AndroidManifest.xml || true
+
+      - name: Get dependencies
+        working-directory: app
+        run: flutter pub get
+
+      - name: Build release APK
+        working-directory: app
+        run: flutter build apk --release
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: moin-soccer-apk
+          path: app/build/app/outputs/flutter-apk/app-release.apk
+          if-no-files-found: error
