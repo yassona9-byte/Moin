@@ -1,0 +1,15 @@
+{
+  "name": "Moin Soccer",
+  "short_name": "Moin Soccer",
+  "description": "Juego de fútbol arcade para móvil estilo Dream League Soccer.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "fullscreen",
+  "orientation": "portrait",
+  "background_color": "#05241a",
+  "theme_color": "#0b8a3c",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}
