@@ -1,0 +1,46 @@
+name: Deploy Moin Soccer to GitHub Pages
+
+# Publica el juego (carpeta futbol/) como sitio web en GitHub Pages.
+# Requisito una sola vez: en el repo, Settings -> Pages -> Build and deployment
+# -> Source: "GitHub Actions". Después, cada push a main que toque futbol/ lo
+# vuelve a publicar. También se puede lanzar a mano desde la pestaña Actions.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'futbol/**'
+      - '.github/workflows/pages.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload game as Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          # Sirve la carpeta del juego como raíz del sitio
+          path: ./futbol
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

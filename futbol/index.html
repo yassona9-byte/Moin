@@ -65,6 +65,20 @@
   .muted { color:#9fbdb0; font-size:13px; line-height:1.5; }
   .resultScore { font-size:54px; font-weight:900; letter-spacing:2px; }
 
+  /* ---------- Cuadro de torneo ---------- */
+  .brk-round { margin:10px 0; }
+  .brk-round h4 { font-size:12px; letter-spacing:2px; color:#7fd6a8; margin-bottom:6px; text-transform:uppercase; }
+  .brk-match { display:flex; align-items:center; justify-content:space-between; gap:8px;
+               background:rgba(255,255,255,.06); border-radius:10px; padding:8px 12px; margin:5px 0; font-weight:700; font-size:14px; }
+  .brk-match.live { border:2px solid #21d4fd; background:rgba(33,212,253,.12); }
+  .brk-match.done { opacity:.75; }
+  .brk-side { display:flex; align-items:center; gap:7px; flex:1; }
+  .brk-side.right { justify-content:flex-end; }
+  .brk-side .dot { width:13px; height:13px; }
+  .brk-side.win { color:#7CFC8A; }
+  .brk-side.lose { color:#c9a; text-decoration:line-through; opacity:.7; }
+  .brk-sc { font-variant-numeric:tabular-nums; min-width:54px; text-align:center; color:#fff; font-weight:900; }
+
   /* ---------- Overlay GOL ---------- */
   #goalFx { position:fixed; inset:0; z-index:30; display:flex; align-items:center; justify-content:center; pointer-events:none; opacity:0; }
   #goalFx.show { animation:goalpop 1.6s ease forwards; }
@@ -108,6 +122,12 @@
 <div id="menu" class="screen">
   <div class="logo">MOIN SOCCER<small>⚽ FÚTBOL MÓVIL</small></div>
   <div class="card">
+    <div class="row"><label>Modo</label>
+      <div class="opts" id="modeOpts">
+        <div class="opt sel" data-mode="match">⚡ Partido</div>
+        <div class="opt" data-mode="cup">🏆 Torneo</div>
+      </div>
+    </div>
     <div class="row"><label>Tu equipo</label><span id="homeNameLbl" style="font-weight:800">VERDES</span></div>
     <div class="row"><label>Color</label><div class="swatches" id="homeSwatches"></div></div>
     <div class="row"><label>Rival</label><span id="awayNameLbl" style="font-weight:800">ROJOS</span></div>
@@ -126,9 +146,24 @@
         <div class="opt" data-len="8">Largo</div>
       </div>
     </div>
+    <div class="row"><label>Sonido</label>
+      <div class="opts" id="sndOpts">
+        <div class="opt sel" data-snd="1">🔊 Sí</div>
+        <div class="opt" data-snd="0">🔇 No</div>
+      </div>
+    </div>
   </div>
   <button class="btn" id="playBtn">JUGAR ▶</button>
   <p class="muted">Joystick (izq) para moverte · TIRO para disparar (mantén para potencia) · PASE para pasar / cambiar de jugador · CORRER para esprintar</p>
+</div>
+
+<!-- TORNEO (cuadro de la copa) -->
+<div id="cup" class="screen hidden">
+  <div id="cupTitle" class="big">🏆 COPA MOIN</div>
+  <div id="cupBracket" class="card" style="max-width:420px"></div>
+  <div id="cupMsg" class="muted"></div>
+  <button class="btn" id="cupNextBtn">JUGAR ▶</button>
+  <button class="btn alt" id="cupQuitBtn">SALIR AL MENÚ</button>
 </div>
 
 <!-- FIN -->
@@ -174,6 +209,46 @@ let lastTs = 0;
 let kickoffTeam = 'home';
 let kickoffTimer = 0;
 let possessionTeam = 'home';
+let soundOn = true;
+let gameMode = 'match';   // match | cup
+
+/* ============================================================
+   Audio — sintetizado con Web Audio (sin archivos externos)
+   ============================================================ */
+const Sound = (() => {
+  let ac = null;
+  function ctx(){ if(!ac){ try{ ac = new (window.AudioContext||window.webkitAudioContext)(); }catch(e){ ac=null; } }
+    if(ac && ac.state==='suspended') ac.resume(); return ac; }
+  function tone(freq, dur, type='sine', vol=0.25, slideTo=null){
+    if(!soundOn) return; const a=ctx(); if(!a) return;
+    const o=a.createOscillator(), g=a.createGain();
+    o.type=type; o.frequency.setValueAtTime(freq, a.currentTime);
+    if(slideTo) o.frequency.exponentialRampToValueAtTime(slideTo, a.currentTime+dur);
+    g.gain.setValueAtTime(vol, a.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, a.currentTime+dur);
+    o.connect(g); g.connect(a.destination); o.start(); o.stop(a.currentTime+dur);
+  }
+  function noise(dur, vol=0.3){
+    if(!soundOn) return; const a=ctx(); if(!a) return;
+    const n=a.sampleRate*dur, buf=a.createBuffer(1,n,a.sampleRate), d=buf.getChannelData(0);
+    for(let i=0;i<n;i++) d[i]=(Math.random()*2-1)*(1-i/n);
+    const s=a.createBufferSource(); s.buffer=buf; const g=a.createGain();
+    g.gain.value=vol; s.connect(g); g.connect(a.destination); s.start();
+  }
+  return {
+    unlock(){ ctx(); },
+    kick(){ tone(180,0.08,'square',0.18,90); },
+    pass(){ tone(330,0.10,'triangle',0.16,260); },
+    shoot(){ tone(240,0.14,'sawtooth',0.22,120); noise(0.06,0.15); },
+    save(){ tone(150,0.10,'square',0.18); noise(0.05,0.12); },
+    post(){ tone(900,0.06,'square',0.2,700); },
+    whistle(){ tone(2000,0.18,'sine',0.18,2300); setTimeout(()=>tone(2100,0.14,'sine',0.16,2000),120); },
+    goal(){ if(!soundOn) return; const notes=[523,659,784,1047]; notes.forEach((f,i)=>setTimeout(()=>tone(f,0.18,'square',0.22),i*90));
+            setTimeout(()=>noise(0.4,0.12),360); },
+    win(){ if(!soundOn) return; [523,659,784,1047,1319].forEach((f,i)=>setTimeout(()=>tone(f,0.22,'triangle',0.22),i*110)); },
+    lose(){ if(!soundOn) return; [400,330,260,180].forEach((f,i)=>setTimeout(()=>tone(f,0.25,'sawtooth',0.2),i*140)); }
+  };
+})();
 
 /* ----- Equipos ----- */
 const COLORS = [
@@ -309,6 +384,7 @@ function resetPositions(koTeam){
   if(taker){ taker.x=MARGIN+W/2 - 16; taker.y=MARGIN+H/2 + (koTeam==='home'?22:-22); }
   state='kickoff'; kickoffTimer=1.0;
   possessionTeam = koTeam;
+  Sound.whistle();
 }
 
 /* ============================================================
@@ -342,7 +418,7 @@ function tryCapture(){
   for(const p of players){ if(p.cooldown>0) continue;
     const d=dist(p.x,p.y,ball.x,ball.y);
     if(d<bd){ bd=d; best=p; } }
-  if(best){ ball.owner=best; ball.lastTouch=best; possessionTeam=best.team; }
+  if(best){ const changed = best.team!==possessionTeam; ball.owner=best; ball.lastTouch=best; possessionTeam=best.team; if(changed) Sound.kick(); }
 }
 
 /* ============================================================
@@ -367,7 +443,7 @@ function aiPlayer(p, dt){
       const mate = bestPassTarget(p);
       const tgt = mate||{x:goalAttX, y:atkY};
       const a=Math.atan2(tgt.y-p.y, tgt.x-p.x);
-      shootBall(p, 7.5, Math.cos(a), Math.sin(a));
+      shootBall(p, 7.5, Math.cos(a), Math.sin(a)); Sound.kick();
     }
     return;
   }
@@ -378,12 +454,12 @@ function aiPlayer(p, dt){
     const pressed = players.some(o=>o.team!==myTeam && dist(o.x,o.y,p.x,p.y)<70);
     if(dGoal < 300){
       const a=Math.atan2(atkY-p.y, (goalAttX + (Math.random()-0.5)*GOAL_W*0.6)-p.x);
-      shootBall(p, 9.5, Math.cos(a), Math.sin(a));
+      shootBall(p, 9.5, Math.cos(a), Math.sin(a)); Sound.shoot();
       return;
     }
     if(pressed && Math.random()<0.04){
       const mate=bestPassTarget(p);
-      if(mate){ const a=Math.atan2(mate.y-p.y,mate.x-p.x); shootBall(p, 6.5+dist(p.x,p.y,mate.x,mate.y)*0.012, Math.cos(a),Math.sin(a)); return; }
+      if(mate){ const a=Math.atan2(mate.y-p.y,mate.x-p.x); shootBall(p, 6.5+dist(p.x,p.y,mate.x,mate.y)*0.012, Math.cos(a),Math.sin(a)); Sound.pass(); return; }
     }
     // avanza hacia portería, esquivando un poco
     let tx=goalAttX + (p.x-goalAttX)*0.4, ty=atkY;
@@ -540,7 +616,7 @@ function handleUserActions(canPlay){
       let mv=readKeyboardMove(); if(!mv && input.active) mv={x:input.move.x,y:input.move.y};
       if(mv && (mv.x||mv.y)){ const d=Math.hypot(mv.x,mv.y); dx=mv.x/d; dy=mv.y/d; }
       else { const gy=targetGoalY('home'); const a=Math.atan2(gy-userPlayer.y, goalX()-userPlayer.x); dx=Math.cos(a); dy=Math.sin(a); }
-      shootBall(userPlayer, power, dx, dy);
+      shootBall(userPlayer, power, dx, dy); Sound.shoot();
       input.shootHold=0;
     }
     // PASE
@@ -548,7 +624,7 @@ function handleUserActions(canPlay){
       const mate=bestPassTarget(userPlayer);
       if(mate){ const a=Math.atan2(mate.y-userPlayer.y,mate.x-userPlayer.x);
         const pw=6+dist(userPlayer.x,userPlayer.y,mate.x,mate.y)*0.014;
-        shootBall(userPlayer, pw, Math.cos(a), Math.sin(a)); }
+        shootBall(userPlayer, pw, Math.cos(a), Math.sin(a)); Sound.pass(); }
     }
   } else {
     input.shootHold=0;
@@ -589,12 +665,12 @@ function updateBall(dt){
   // arriba (portería del away -> gol de home)
   if(ball.y<top+BALL_R){
     if(ball.x>gxL && ball.x<gxR && state==='play'){ goalScored('home'); return; }
-    else { ball.y=top+BALL_R; ball.vy=Math.abs(ball.vy)*0.6; }
+    else { ball.y=top+BALL_R; ball.vy=Math.abs(ball.vy)*0.6; if(Math.abs(ball.vy)>1.5) Sound.post(); }
   }
   // abajo (portería de home -> gol de away)
   if(ball.y>bot-BALL_R){
     if(ball.x>gxL && ball.x<gxR && state==='play'){ goalScored('away'); return; }
-    else { ball.y=bot-BALL_R; ball.vy=-Math.abs(ball.vy)*0.6; }
+    else { ball.y=bot-BALL_R; ball.vy=-Math.abs(ball.vy)*0.6; if(Math.abs(ball.vy)>1.5) Sound.post(); }
   }
 }
 
@@ -611,6 +687,7 @@ function goalScored(team){
   score[team]++;
   state='goal'; kickoffTimer=1.8;
   kickoffTeam = team==='home'?'away':'home';
+  Sound.goal();
   const fx=document.getElementById('goalFx');
   fx.classList.remove('show'); void fx.offsetWidth; fx.classList.add('show');
   fx.querySelector('span').textContent = team==='home' ? '¡GOOOL!' : '¡GOL RIVAL!';
@@ -792,14 +869,20 @@ document.querySelectorAll('#diffOpts .opt').forEach(o=>o.onclick=()=>{
   document.querySelectorAll('#diffOpts .opt').forEach(x=>x.classList.remove('sel')); o.classList.add('sel'); diff=+o.dataset.diff; });
 document.querySelectorAll('#lenOpts .opt').forEach(o=>o.onclick=()=>{
   document.querySelectorAll('#lenOpts .opt').forEach(x=>x.classList.remove('sel')); o.classList.add('sel'); matchLen=+o.dataset.len; });
+document.querySelectorAll('#modeOpts .opt').forEach(o=>o.onclick=()=>{
+  document.querySelectorAll('#modeOpts .opt').forEach(x=>x.classList.remove('sel')); o.classList.add('sel'); gameMode=o.dataset.mode; });
+document.querySelectorAll('#sndOpts .opt').forEach(o=>o.onclick=()=>{
+  document.querySelectorAll('#sndOpts .opt').forEach(x=>x.classList.remove('sel')); o.classList.add('sel'); soundOn=o.dataset.snd==='1'; if(soundOn) Sound.unlock(); });
 
 function showGame(){
   document.getElementById('menu').classList.add('hidden');
   document.getElementById('end').classList.add('hidden');
+  document.getElementById('cup').classList.add('hidden');
   document.getElementById('hud').classList.remove('hidden');
   document.getElementById('controls').classList.remove('hidden');
 }
 function startMatch(){
+  Sound.unlock();
   resize(); updateNames(); setupMatch(); showGame();
   try{ if(cv.requestFullscreen) cv.requestFullscreen().catch(()=>{}); }catch(e){}
 }
@@ -807,19 +890,144 @@ function endMatch(){
   state='end';
   document.getElementById('hud').classList.add('hidden');
   document.getElementById('controls').classList.add('hidden');
+  if(gameMode==='cup'){ cupResolve(score.home, score.away); return; }
   const end=document.getElementById('end'); end.classList.remove('hidden');
   document.getElementById('endHome').textContent=score.home;
   document.getElementById('endAway').textContent=score.away;
   let msg, title;
-  if(score.home>score.away){ title='🏆 ¡VICTORIA!'; msg=`¡${COLORS[homeIdx].name} ganan el partido!`; }
-  else if(score.home<score.away){ title='😞 DERROTA'; msg=`${COLORS[awayIdx].name} se llevan la victoria.`; }
+  if(score.home>score.away){ title='🏆 ¡VICTORIA!'; msg=`¡${COLORS[homeIdx].name} ganan el partido!`; Sound.win(); }
+  else if(score.home<score.away){ title='😞 DERROTA'; msg=`${COLORS[awayIdx].name} se llevan la victoria.`; Sound.lose(); }
   else { title='🤝 EMPATE'; msg='Repartieron los puntos.'; }
   document.getElementById('endTitle').textContent=title;
   document.getElementById('endMsg').textContent=msg;
 }
 
-document.getElementById('playBtn').onclick=startMatch;
+/* ============================================================
+   Modo Torneo — Copa de 4 equipos (Semifinales + Final)
+   ============================================================ */
+let cup=null;
+function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+
+function startCup(){
+  Sound.unlock();
+  const pool=[...Array(COLORS.length).keys()].filter(i=>i!==homeIdx);
+  shuffle(pool);
+  const t=[homeIdx, pool[0], pool[1], pool[2]];
+  cup={
+    user:homeIdx,
+    roundNames:['SEMIFINAL','FINAL'],
+    round:0,
+    rounds:[
+      [ {a:t[0], b:t[1]}, {a:t[2], b:t[3]} ],
+      [ {a:null, b:null} ]
+    ],
+    eliminated:false, champion:null
+  };
+  showCupScreen();
+}
+function userMatch(r){ return cup.rounds[r].find(m=>(m.a===cup.user||m.b===cup.user) && !m.played); }
+function simMatch(a,b){
+  let sa=Math.floor(Math.random()*4), sb=Math.floor(Math.random()*4);
+  if(sa===sb){ Math.random()<0.5?sa++:sb++; }
+  return { scoreA:sa, scoreB:sb, winner: sa>sb?a:b, played:true };
+}
+function resolveScores(m, sa, sb){
+  m.scoreA=sa; m.scoreB=sb; m.played=true;
+  if(sa>sb) m.winner=m.a;
+  else if(sb>sa) m.winner=m.b;
+  else { // penaltis
+    let pa=Math.floor(Math.random()*5)+1, pb=Math.floor(Math.random()*5)+1;
+    if(pa===pb){ Math.random()<0.5?pa++:pb++; }
+    m.pens=[pa,pb]; m.winner = pa>pb?m.a:m.b;
+  }
+}
+function cupResolve(userScore, oppScore){
+  const m=userMatch(cup.round);
+  if(m.a===cup.user) resolveScores(m, userScore, oppScore);
+  else               resolveScores(m, oppScore, userScore);
+  // simula las demás eliminatorias de la ronda
+  for(const om of cup.rounds[cup.round]){ if(!om.played && om.a!=null){ const r=simMatch(om.a,om.b); Object.assign(om,r); } }
+
+  const userWon = (m.winner===cup.user);
+  if(!userWon){
+    cup.eliminated=true; cup.champion=m.winner; Sound.lose();
+    showCupScreen(); return;
+  }
+  // avanza
+  if(cup.round < cup.rounds.length-1){
+    const winners = cup.rounds[cup.round].map(x=>x.winner);
+    cup.rounds[cup.round+1][0] = {a:winners[0], b:winners[1]};
+    cup.round++;
+    showCupScreen();
+  } else {
+    cup.champion=cup.user; Sound.win(); showCupScreen();
+  }
+}
+function teamChip(idx, cls){
+  if(idx==null) return `<span class="brk-side ${cls}"><span class="dot" style="background:#555"></span>?</span>`;
+  return `<span class="brk-side ${cls}"><span class="dot" style="background:${COLORS[idx].c}"></span>${COLORS[idx].name}</span>`;
+}
+function showCupScreen(){
+  document.getElementById('menu').classList.add('hidden');
+  document.getElementById('end').classList.add('hidden');
+  document.getElementById('hud').classList.add('hidden');
+  document.getElementById('controls').classList.add('hidden');
+  const cs=document.getElementById('cup'); cs.classList.remove('hidden');
+  state='menu';
+
+  // construir cuadro
+  const next = (!cup.eliminated && !cup.champion) ? userMatch(cup.round) : null;
+  let html='';
+  cup.rounds.forEach((round, ri)=>{
+    html+=`<div class="brk-round"><h4>${cup.roundNames[ri]}</h4>`;
+    round.forEach(m=>{
+      const live = (m===next);
+      const aW = m.played && m.winner===m.a, bW = m.played && m.winner===m.b;
+      const sc = m.played ? `${m.scoreA} - ${m.scoreB}${m.pens?` (p ${m.pens[0]}-${m.pens[1]})`:''}` : 'vs';
+      html+=`<div class="brk-match ${live?'live':''} ${m.played?'done':''}">
+        ${teamChip(m.a, 'left '+(m.played?(aW?'win':'lose'):''))}
+        <span class="brk-sc">${sc}</span>
+        ${teamChip(m.b, 'right '+(m.played?(bW?'win':'lose'):''))}
+      </div>`;
+    });
+    html+=`</div>`;
+  });
+  document.getElementById('cupBracket').innerHTML=html;
+
+  const btn=document.getElementById('cupNextBtn');
+  const title=document.getElementById('cupTitle');
+  const msg=document.getElementById('cupMsg');
+  if(cup.champion===cup.user){
+    title.textContent='🏆 ¡CAMPEONES!';
+    msg.textContent=`¡${COLORS[cup.user].name} levantan la Copa Moin!`;
+    btn.textContent='VOLVER AL MENÚ'; btn.onclick=cupToMenu;
+  } else if(cup.eliminated){
+    title.textContent='😞 ELIMINADOS';
+    msg.textContent=`Fin del torneo. Campeón: ${COLORS[cup.champion].name}.`;
+    btn.textContent='VOLVER AL MENÚ'; btn.onclick=cupToMenu;
+  } else {
+    const opp = next.a===cup.user?next.b:next.a;
+    title.textContent='🏆 COPA MOIN';
+    msg.textContent=`${cup.roundNames[cup.round]}: ${COLORS[cup.user].name} vs ${COLORS[opp].name}`;
+    btn.textContent=`JUGAR ${cup.roundNames[cup.round]} ▶`;
+    btn.onclick=playCupMatch;
+  }
+}
+function playCupMatch(){
+  const m=userMatch(cup.round);
+  const opp = m.a===cup.user?m.b:m.a;
+  awayIdx=opp; updateNames();
+  startMatch();
+}
+function cupToMenu(){
+  document.getElementById('cup').classList.add('hidden');
+  document.getElementById('menu').classList.remove('hidden');
+  state='menu'; cup=null;
+}
+
+document.getElementById('playBtn').onclick=()=>{ updateNames(); if(gameMode==='cup') startCup(); else startMatch(); };
 document.getElementById('rematchBtn').onclick=startMatch;
+document.getElementById('cupQuitBtn').onclick=cupToMenu;
 document.getElementById('toMenuBtn').onclick=()=>{
   document.getElementById('end').classList.add('hidden');
   document.getElementById('menu').classList.remove('hidden');

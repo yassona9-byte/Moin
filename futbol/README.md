@@ -23,6 +23,27 @@ En PC: **WASD/flechas** mover, **Espacio** tirar, **X** pasar, **Shift** correr.
 - Elección de color de equipo y rival, dificultad y duración.
 - Celebración de gol, pantalla de resultado y revancha.
 - Cámara que sigue el balón, campo vertical optimizado para móvil.
+- **Modo Torneo (Copa Moin):** 4 equipos, semifinal y final con cuadro de
+  eliminatorias; las demás eliminatorias se simulan, los empates se deciden por
+  penaltis, y si ganas la final te proclamas campeón.
+- **Sonidos** generados por código (Web Audio): tiro, pase, robo, poste, gol y
+  pitido del árbitro. Se pueden silenciar desde el menú.
+
+## URL pública (GitHub Pages)
+
+El repositorio incluye un workflow (`.github/workflows/pages.yml`) que publica
+este juego en GitHub Pages. Para activarlo (una sola vez):
+
+1. En GitHub: **Settings → Pages → Build and deployment → Source: "GitHub Actions"**.
+2. Asegúrate de que estos cambios estén en la rama **main** (haz merge de la rama
+   de trabajo). El workflow se ejecuta solo en cada push a `main` que toque
+   `futbol/`; también puedes lanzarlo a mano desde la pestaña **Actions**.
+
+Cuando termine, la URL será aproximadamente:
+
+```
+https://yassona9-byte.github.io/Moin/
+```
 
 ## Cómo ejecutarlo
 
