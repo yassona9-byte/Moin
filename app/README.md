@@ -4,6 +4,11 @@ Juego de fútbol arcade estilo *Dream League Soccer* hecho como **app nativa** c
 **Flutter** (no es una web). Genera un **APK instalable** en Android. El mismo
 código compila también para iPhone.
 
+Partidos **11 vs 11** con **8 equipos** y plantillas de jugadores reconocibles
+pero con **nombres parodiados / alterados** (sin licencias). Las valoraciones de
+cada jugador afectan al juego: las estrellas corren y chutan mejor. Durante el
+partido se muestra el **nombre del jugador que lleva el balón**.
+
 ## Cómo conseguir el APK (sin instalar nada en tu PC)
 
 El repositorio compila la app en la nube con GitHub Actions:
