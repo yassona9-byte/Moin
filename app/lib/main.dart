@@ -98,6 +98,46 @@ const List<Team> kTeams = [
     Pl('Cambiasó', 80), Pl('Mc Kenì', 80), Pl('Locatelì', 82), Pl('Tudó', 79),
     Pl('Yildís', 82), Pl('Vlahovç', 84), Pl('Conceiçá', 81),
   ]),
+  Team('MILÁN ROSSONERO', Color(0xFFb01722), Color(0xFF2a0a0d), Color(0xFFffffff), [
+    Pl('Maignàn', 85), Pl('Emersón R.', 79), Pl('Tomorì', 81), Pl('Gabbià', 78),
+    Pl('Teo H.', 84), Pl('Puleisic', 84), Pl('Reijndé', 82), Pl('Fofanà', 82),
+    Pl('Leào', 86), Pl('Morata J.', 82), Pl('Chuqui', 79),
+  ]),
+  Team('MILÁN NERAZZURRI', Color(0xFF1c2b6b), Color(0xFF0c1436), Color(0xFFffffff), [
+    Pl('Sómer', 82), Pl('Dumfrí', 82), Pl('Pavà', 80), Pl('Acerbì', 81),
+    Pl('Dimarcò', 84), Pl('Barellà', 85), Pl('Chalanó', 84), Pl('Mkhitá', 81),
+    Pl('Bastonì', 84), Pl('Lautà', 88), Pl('Tuhràm M.', 85),
+  ]),
+  Team('NÁPOLES AZZURRO', Color(0xFF12a5e8), Color(0xFF0a6a95), Color(0xFFffffff), [
+    Pl('Meret A.', 80), Pl('Di Lorè', 82), Pl('Rrahmà', 80), Pl('Buongió', 82),
+    Pl('Oliverà', 79), Pl('Polità', 81), Pl('Lobotká', 83), Pl('Anguisà', 83),
+    Pl('Kvarà', 86), Pl('Lukakù R.', 83), Pl('Neres D.', 81),
+  ]),
+  Team('DORTMUND AMBAR', Color(0xFFf1d600), Color(0xFF161616), Color(0xFF1a1a1a), [
+    Pl('Kobél', 82), Pl('Ryersón', 78), Pl('Schlotb', 80), Pl('Hummés', 80),
+    Pl('Marató', 78), Pl('Brandt J.', 82), Pl('Zabitzé', 79), Pl('Can E.', 79),
+    Pl('Adeyemà', 81), Pl('Guirasí', 83), Pl('Gittèns', 79),
+  ]),
+  Team('ÁMSTERDAM AJÁ', Color(0xFFd11a2a), Color(0xFF7a0f18), Color(0xFFffffff), [
+    Pl('Ramà', 76), Pl('Rensch', 75), Pl('Sutalò', 76), Pl('Ható', 78),
+    Pl('Wijndá', 75), Pl('Berghà', 77), Pl('Taylà K.', 76), Pl('Henderson', 79),
+    Pl('Bergwì', 78), Pl('Brobbé', 76), Pl('Akpom', 76),
+  ]),
+  Team('ARGENTINA ALBI', Color(0xFF75c2e8), Color(0xFF3f8fbf), Color(0xFF0a2a40), [
+    Pl('Martines E.', 86), Pl('Molinà N.', 82), Pl('Romerò C.', 84), Pl('Otamén', 82),
+    Pl('Taglià', 82), Pl('De Paùl', 84), Pl('Fernándz E.', 84), Pl('Mac Alí', 85),
+    Pl('Di Marí', 84), Pl('Messias', 92), Pl('Álvares J.', 85),
+  ]),
+  Team('FRANCIA BLEU', Color(0xFF1a3a8f), Color(0xFF0d1e4d), Color(0xFFffffff), [
+    Pl('Maignán', 85), Pl('Coumán', 82), Pl('Saliba W.', 85), Pl('Upamé', 84),
+    Pl('T. Hernán', 84), Pl('Chuamé', 84), Pl('Camavín', 85), Pl('Grizmán', 86),
+    Pl('Barcolà', 82), Pl('Mbabé', 91), Pl('Dembelè', 84),
+  ]),
+  Team('BRASIL VERDEAMA', Color(0xFFf7d716), Color(0xFF0a7d3a), Color(0xFF0a3a1a), [
+    Pl('Alissón', 88), Pl('Danilò', 80), Pl('Marquiñ', 85), Pl('Gabriél M.', 84),
+    Pl('Wendèl', 79), Pl('Bruno G.', 83), Pl('Casemì', 82), Pl('Lucas P.', 82),
+    Pl('Rodrigró', 85), Pl('Vinísius', 91), Pl('Rafinià', 84),
+  ]),
 ];
 
 class MatchConfig {
@@ -107,6 +147,66 @@ class MatchConfig {
   int matchLen;
   MatchConfig(
       {this.homeIdx = 0, this.awayIdx = 1, this.diff = 1, this.matchLen = 3});
+}
+
+String teamInitials(String name) {
+  final parts = name.split(' ');
+  if (parts.length >= 2 && parts[0].isNotEmpty && parts[1].isNotEmpty) {
+    return (parts[0][0] + parts[1][0]).toUpperCase();
+  }
+  return name.substring(0, name.length >= 3 ? 3 : name.length).toUpperCase();
+}
+
+class TeamCrest extends StatelessWidget {
+  final Team team;
+  final double size;
+  const TeamCrest(this.team, {this.size = 20, super.key});
+  @override
+  Widget build(BuildContext context) => SizedBox(
+      width: size,
+      height: size * 1.15,
+      child: CustomPaint(painter: _CrestPainter(team)));
+}
+
+class _CrestPainter extends CustomPainter {
+  final Team team;
+  _CrestPainter(this.team);
+  @override
+  void paint(Canvas canvas, Size s) {
+    final w = s.width, h = s.height;
+    final path = Path()
+      ..moveTo(w * 0.12, h * 0.06)
+      ..lineTo(w * 0.88, h * 0.06)
+      ..lineTo(w * 0.88, h * 0.55)
+      ..quadraticBezierTo(w * 0.88, h * 0.86, w * 0.5, h * 0.98)
+      ..quadraticBezierTo(w * 0.12, h * 0.86, w * 0.12, h * 0.55)
+      ..close();
+    canvas.drawPath(path, Paint()..color = team.color);
+    canvas.save();
+    canvas.clipPath(path);
+    canvas.drawRect(Rect.fromLTWH(w * 0.42, 0, w * 0.16, h),
+        Paint()..color = team.dark.withOpacity(0.55));
+    canvas.restore();
+    canvas.drawPath(
+        path,
+        Paint()
+          ..color = team.dark
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = w * 0.06);
+    final tp = TextPainter(
+      text: TextSpan(
+          text: teamInitials(team.name),
+          style: TextStyle(
+              color: team.text,
+              fontSize: h * 0.4,
+              fontWeight: FontWeight.w900)),
+      textDirection: TextDirection.ltr,
+    )..layout();
+    tp.paint(canvas, Offset(w / 2 - tp.width / 2, h * 0.42 - tp.height / 2));
+  }
+
+  @override
+  bool shouldRepaint(covariant _CrestPainter old) => old.team != team;
 }
 
 /* ============================================================
@@ -120,6 +220,7 @@ class MenuScreen extends StatefulWidget {
 
 class _MenuScreenState extends State<MenuScreen> {
   final cfg = MatchConfig();
+  int mode = 0; // 0 amistoso, 1 liga, 2 copa
 
   @override
   Widget build(BuildContext context) {
@@ -155,6 +256,10 @@ class _MenuScreenState extends State<MenuScreen> {
                 _card(
                   child: Column(
                     children: [
+                      _label('Modo'),
+                      _opts(const ['Amistoso', 'Liga', 'Copa'], mode,
+                          (i) => setState(() => mode = i)),
+                      const SizedBox(height: 12),
                       _teamPicker('Tu equipo', cfg.homeIdx, (v) {
                         setState(() {
                           cfg.homeIdx = v;
@@ -163,12 +268,13 @@ class _MenuScreenState extends State<MenuScreen> {
                           }
                         });
                       }),
-                      const SizedBox(height: 8),
-                      _teamPicker('Rival', cfg.awayIdx, (v) {
-                        setState(() {
-                          if (v != cfg.homeIdx) cfg.awayIdx = v;
-                        });
-                      }),
+                      if (mode == 0) const SizedBox(height: 8),
+                      if (mode == 0)
+                        _teamPicker('Rival', cfg.awayIdx, (v) {
+                          setState(() {
+                            if (v != cfg.homeIdx) cfg.awayIdx = v;
+                          });
+                        }),
                       const SizedBox(height: 14),
                       _label('Dificultad'),
                       _opts(['Fácil', 'Normal', 'Difícil'], cfg.diff,
@@ -190,13 +296,22 @@ class _MenuScreenState extends State<MenuScreen> {
                         backgroundColor: const Color(0xFF16c172),
                         padding: const EdgeInsets.symmetric(vertical: 16)),
                     onPressed: () {
-                      Navigator.of(context).push(MaterialPageRoute(
-                          builder: (_) => GameScreen(
-                              cfg: MatchConfig(
-                                  homeIdx: cfg.homeIdx,
-                                  awayIdx: cfg.awayIdx,
-                                  diff: cfg.diff,
-                                  matchLen: cfg.matchLen))));
+                      if (mode == 0) {
+                        Navigator.of(context).push(MaterialPageRoute(
+                            builder: (_) => GameScreen(
+                                cfg: MatchConfig(
+                                    homeIdx: cfg.homeIdx,
+                                    awayIdx: cfg.awayIdx,
+                                    diff: cfg.diff,
+                                    matchLen: cfg.matchLen))));
+                      } else {
+                        Navigator.of(context).push(MaterialPageRoute(
+                            builder: (_) => TournamentScreen(
+                                userTeam: cfg.homeIdx,
+                                isCup: mode == 2,
+                                diff: cfg.diff,
+                                matchLen: cfg.matchLen)));
+                      }
                     },
                     child: const Text('JUGAR ▶',
                         style: TextStyle(
@@ -263,12 +378,7 @@ class _MenuScreenState extends State<MenuScreen> {
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Container(
-                          width: 12,
-                          height: 12,
-                          decoration: BoxDecoration(
-                              color: tt.color,
-                              borderRadius: BorderRadius.circular(3))),
+                      TeamCrest(tt, size: 16),
                       const SizedBox(width: 8),
                       Text('${tt.name}  (${tt.rating})',
                           style: const TextStyle(
@@ -555,72 +665,127 @@ class World {
     if (p.vy.abs() > 0.1) p.facing = p.vy.sign;
   }
 
+  Player? _secondClosest(String team, Player? ex) {
+    Player? best;
+    double bd = 1e9;
+    for (final p in players) {
+      if (p.team != team || p.role == 'GK' || p == ex) continue;
+      final d = _dist(p.x, p.y, ball.x, ball.y);
+      if (d < bd) {
+        bd = d;
+        best = p;
+      }
+    }
+    return best;
+  }
+
+  Player? _nearestOpponent(Player p) {
+    Player? best;
+    double bd = 1e9;
+    for (final o in players) {
+      if (o.team == p.team) continue;
+      final d = _dist(p.x, p.y, o.x, o.y);
+      if (d < bd) {
+        bd = d;
+        best = o;
+      }
+    }
+    return best;
+  }
+
   void _ai(Player p) {
     final hasBall = ball.owner == p;
     final myTeam = p.team;
     final atkY = _targetGoalY(myTeam);
     final ownY = _ownGoalY(myTeam);
     final gAttX = _goalX;
+    final dir = myTeam == 'home' ? -1.0 : 1.0; // hacia porteria rival
 
+    // ---- Portero ----
     if (p.role == 'GK') {
       final gy = ownY + (myTeam == 'home' ? -50 : 50);
-      double tx =
+      final tx =
           _clamp(ball.x, gAttX - kGoalW / 2 + 10, gAttX + kGoalW / 2 - 10);
       final near = _dist(p.x, p.y, ball.x, ball.y);
-      if (near < 150 && (ball.y - ownY).abs() < 220 && ball.owner == null) {
-        tx = ball.x;
-        _moveToward(p, ball.x, ball.y, 1.0);
+      if (near < 160 && (ball.y - ownY).abs() < 240 && ball.owner == null) {
+        _moveToward(p, ball.x, ball.y, 1.05); // sale a despejar
       } else {
-        _moveToward(p, tx, gy, 0.7);
+        _moveToward(p, tx, gy, 0.75);
       }
       if (hasBall) {
         final mate = _bestPassTarget(p);
         final tgtX = mate?.x ?? gAttX;
         final tgtY = mate?.y ?? atkY;
         final a = math.atan2(tgtY - p.y, tgtX - p.x);
-        _shoot(p, 7.5, math.cos(a), math.sin(a));
+        _shoot(p, mate != null ? 6.5 : 8.0, math.cos(a), math.sin(a));
       }
       return;
     }
 
+    // ---- Con balon ----
     if (hasBall) {
       final dGoal = _dist(p.x, p.y, gAttX, atkY);
-      final pressed =
-          players.any((o) => o.team != myTeam && _dist(o.x, o.y, p.x, p.y) < 70);
-      if (dGoal < 320) {
-        final a = math.atan2(
-            atkY - p.y, (gAttX + (rnd.nextDouble() - 0.5) * kGoalW * 0.6) - p.x);
+      final opp = _nearestOpponent(p);
+      final pressDist = opp != null ? _dist(p.x, p.y, opp.x, opp.y) : 999.0;
+      final pressed = pressDist < 62;
+
+      if (dGoal < 330 && pressDist > 26) {
+        final a = math.atan2(atkY - p.y,
+            (gAttX + (rnd.nextDouble() - 0.5) * kGoalW * 0.55) - p.x);
         _shoot(p, 9.5, math.cos(a), math.sin(a));
         return;
       }
-      if (pressed && rnd.nextDouble() < 0.05) {
-        final mate = _bestPassTarget(p);
-        if (mate != null) {
+      final mate = _bestPassTarget(p);
+      if (mate != null) {
+        final mateAdvance = dir * (mate.y - p.y) > 20;
+        final wantPass = pressed
+            ? rnd.nextDouble() < 0.5
+            : (mateAdvance && rnd.nextDouble() < 0.03);
+        if (wantPass) {
           final a = math.atan2(mate.y - p.y, mate.x - p.x);
-          _shoot(p, 6.5 + _dist(p.x, p.y, mate.x, mate.y) * 0.012, math.cos(a),
+          _shoot(p, 6.0 + _dist(p.x, p.y, mate.x, mate.y) * 0.013, math.cos(a),
               math.sin(a));
           return;
         }
       }
-      final tx = gAttX + (p.x - gAttX) * 0.4;
+      // regate hacia porteria, esquivando al rival mas cercano
+      double tx = gAttX + (p.x - gAttX) * 0.4;
+      if (opp != null && pressDist < 95) {
+        final away = (p.x - opp.x).sign;
+        tx = _clamp(p.x + (away == 0 ? 1.0 : away) * 70, kMargin, kMargin + kW);
+      }
       _moveToward(p, tx, atkY, 0.95 + cfg.diff * 0.05);
       return;
     }
 
+    // ---- Sin balon ----
+    final weHaveBall = ball.owner != null && ball.owner!.team == myTeam;
     final chaser = _closestToBall(myTeam);
-    final weAttack = possessionTeam == myTeam;
-    if (chaser == p && !(ball.owner != null && ball.owner!.team == myTeam)) {
-      _moveToward(p, ball.x, ball.y, 0.82 + cfg.diff * 0.07);
-    } else {
-      final f = kFormation[p.slot];
-      final baseX = _teamHomeX(f);
-      final baseY = _teamHomeY(myTeam, f);
-      final fwd = 0.4 + f.y * 1.7; // los delanteros suben mas
-      final push = weAttack ? 150 * fwd : -30.0;
-      final ty = baseY + (myTeam == 'home' ? -1 : 1) * push;
-      final tx = baseX + (ball.x - gAttX) * 0.16;
+    final second = _secondClosest(myTeam, chaser);
+    final f = kFormation[p.slot];
+    final baseX = _teamHomeX(f);
+    final baseY = _teamHomeY(myTeam, f);
+
+    if (!weHaveBall && chaser == p) {
+      _moveToward(p, ball.x, ball.y, 0.85 + cfg.diff * 0.08); // presiona
+      return;
+    }
+    if (!weHaveBall && second == p) {
+      _moveToward(p, ball.x, ball.y - dir * 70, 0.82); // cobertura por detras
+      return;
+    }
+
+    if (weHaveBall) {
+      final fwd = 0.5 + f.y * 1.7; // delanteros hacen desmarques mas arriba
+      final ty = baseY + dir * (140 * fwd);
+      final tx = baseX + (ball.x - gAttX) * 0.20;
       _moveToward(p, _clamp(tx, kMargin, kMargin + kW),
-          _clamp(ty, kMargin, kMargin + kH), 0.7);
+          _clamp(ty, kMargin, kMargin + kH), 0.8);
+    } else {
+      final ty = baseY + dir * -20; // linea compacta, algo adelantada al balon
+      final tx = baseX + (ball.x - gAttX) * 0.22;
+      _moveToward(p, _clamp(tx, kMargin, kMargin + kW),
+          _clamp(ty, kMargin, kMargin + kH), 0.72);
     }
   }
 
@@ -840,7 +1005,8 @@ class World {
    ============================================================ */
 class GameScreen extends StatefulWidget {
   final MatchConfig cfg;
-  const GameScreen({super.key, required this.cfg});
+  final bool tournament;
+  const GameScreen({super.key, required this.cfg, this.tournament = false});
   @override
   State<GameScreen> createState() => _GameScreenState();
 }
@@ -994,7 +1160,7 @@ class _GameScreenState extends State<GameScreen>
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            _dot(h.color),
+            TeamCrest(h, size: 16),
             const SizedBox(width: 5),
             Text(h.name,
                 style:
@@ -1008,7 +1174,7 @@ class _GameScreenState extends State<GameScreen>
                 style:
                     const TextStyle(fontWeight: FontWeight.w800, fontSize: 12)),
             const SizedBox(width: 5),
-            _dot(a.color),
+            TeamCrest(a, size: 16),
             const SizedBox(width: 8),
             Container(
               padding:
@@ -1025,12 +1191,6 @@ class _GameScreenState extends State<GameScreen>
       ),
     );
   }
-
-  Widget _dot(Color c) => Container(
-      width: 12,
-      height: 12,
-      decoration:
-          BoxDecoration(color: c, borderRadius: BorderRadius.circular(4)));
 
   Widget _goalOverlay() => IgnorePointer(
         child: Center(
@@ -1078,26 +1238,41 @@ class _GameScreenState extends State<GameScreen>
                 textAlign: TextAlign.center,
                 style: const TextStyle(color: Color(0xFF9fbdb0))),
             const SizedBox(height: 22),
-            FilledButton(
-              style: FilledButton.styleFrom(
-                  backgroundColor: const Color(0xFF16c172),
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 28, vertical: 14)),
-              onPressed: () {
-                setState(() {
-                  world.restart();
-                  _last = Duration.zero;
-                });
-              },
-              child: const Text('REVANCHA 🔁',
-                  style: TextStyle(fontWeight: FontWeight.w900, fontSize: 18)),
-            ),
-            const SizedBox(height: 10),
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('MENÚ',
-                  style: TextStyle(color: Colors.white, fontSize: 16)),
-            ),
+            if (widget.tournament)
+              FilledButton(
+                style: FilledButton.styleFrom(
+                    backgroundColor: const Color(0xFF16c172),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 28, vertical: 14)),
+                onPressed: () => Navigator.of(context)
+                    .pop(<int>[world.homeScore, world.awayScore]),
+                child: const Text('CONTINUAR ▶',
+                    style:
+                        TextStyle(fontWeight: FontWeight.w900, fontSize: 18)),
+              )
+            else ...[
+              FilledButton(
+                style: FilledButton.styleFrom(
+                    backgroundColor: const Color(0xFF16c172),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 28, vertical: 14)),
+                onPressed: () {
+                  setState(() {
+                    world.restart();
+                    _last = Duration.zero;
+                  });
+                },
+                child: const Text('REVANCHA 🔁',
+                    style:
+                        TextStyle(fontWeight: FontWeight.w900, fontSize: 18)),
+              ),
+              const SizedBox(height: 10),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('MENÚ',
+                    style: TextStyle(color: Colors.white, fontSize: 16)),
+              ),
+            ],
           ],
         ),
       ),
@@ -1340,3 +1515,456 @@ class FieldPainter extends CustomPainter {
   @override
   bool shouldRepaint(covariant FieldPainter oldDelegate) => true;
 }
+
+/* ============================================================
+   Modo Torneo: Liga (round-robin) y Copa (eliminatorias)
+   ============================================================ */
+class TMatch {
+  int a, b;
+  bool played = false;
+  int sa = 0, sb = 0;
+  List<int>? pens;
+  int? winner;
+  TMatch(this.a, this.b);
+}
+
+class TournamentScreen extends StatefulWidget {
+  final int userTeam;
+  final bool isCup;
+  final int diff;
+  final int matchLen;
+  const TournamentScreen(
+      {super.key,
+      required this.userTeam,
+      required this.isCup,
+      required this.diff,
+      required this.matchLen});
+  @override
+  State<TournamentScreen> createState() => _TournamentScreenState();
+}
+
+class _TournamentScreenState extends State<TournamentScreen> {
+  final rnd = math.Random();
+  List<int> pool = [];
+  List<List<TMatch>> rounds = [];
+  int roundIdx = 0;
+  int? champion;
+  bool eliminated = false;
+  bool finished = false;
+
+  @override
+  void initState() {
+    super.initState();
+    final others = List.generate(kTeams.length, (i) => i)..remove(widget.userTeam);
+    others.shuffle(rnd);
+    if (widget.isCup) {
+      pool = [widget.userTeam, ...others.take(7)];
+      pool.shuffle(rnd);
+      final r0 = <TMatch>[];
+      for (int i = 0; i < pool.length; i += 2) {
+        r0.add(TMatch(pool[i], pool[i + 1]));
+      }
+      rounds = [r0];
+    } else {
+      pool = [widget.userTeam, ...others.take(5)];
+      rounds = _leagueSchedule(pool);
+    }
+  }
+
+  List<List<TMatch>> _leagueSchedule(List<int> teams) {
+    final n = teams.length;
+    final arr = List<int>.from(teams);
+    final rs = <List<TMatch>>[];
+    for (int r = 0; r < n - 1; r++) {
+      final pairs = <TMatch>[];
+      for (int i = 0; i < n ~/ 2; i++) {
+        pairs.add(TMatch(arr[i], arr[n - 1 - i]));
+      }
+      rs.add(pairs);
+      final last = arr.removeAt(n - 1);
+      arr.insert(1, last);
+    }
+    return rs;
+  }
+
+  TMatch? _userMatch() {
+    for (final m in rounds[roundIdx]) {
+      if ((m.a == widget.userTeam || m.b == widget.userTeam) && !m.played) {
+        return m;
+      }
+    }
+    return null;
+  }
+
+  List<int> _sim(int a, int b) {
+    final ra = kTeams[a].rating, rb = kTeams[b].rating;
+    int g(int me, int op) =>
+        (1.15 + (me - op) / 16.0 + (rnd.nextDouble() * 2.2 - 0.9))
+            .round()
+            .clamp(0, 6)
+            .toInt();
+    return [g(ra, rb), g(rb, ra)];
+  }
+
+  void _resolveCup(TMatch m) {
+    m.played = true;
+    if (m.sa > m.sb) {
+      m.winner = m.a;
+    } else if (m.sb > m.sa) {
+      m.winner = m.b;
+    } else {
+      int pa = rnd.nextInt(5) + 1, pb = rnd.nextInt(5) + 1;
+      if (pa == pb) {
+        if (rnd.nextBool()) {
+          pa++;
+        } else {
+          pb++;
+        }
+      }
+      m.pens = [pa, pb];
+      m.winner = pa > pb ? m.a : m.b;
+    }
+  }
+
+  Map<int, List<int>> _standings() {
+    final st = {for (final t in pool) t: [0, 0, 0, 0, 0, 0]};
+    for (final round in rounds) {
+      for (final m in round) {
+        if (!m.played) continue;
+        final A = st[m.a]!, B = st[m.b]!;
+        A[0]++;
+        B[0]++;
+        A[4] += m.sa;
+        A[5] += m.sb;
+        B[4] += m.sb;
+        B[5] += m.sa;
+        if (m.sa > m.sb) {
+          A[1]++;
+          B[3]++;
+        } else if (m.sb > m.sa) {
+          B[1]++;
+          A[3]++;
+        } else {
+          A[2]++;
+          B[2]++;
+        }
+      }
+    }
+    return st;
+  }
+
+  int _pts(List<int> s) => s[1] * 3 + s[2];
+  int _dg(List<int> s) => s[4] - s[5];
+
+  List<int> _sortedPool() {
+    final st = _standings();
+    final order = List<int>.from(pool);
+    order.sort((x, y) {
+      final sx = st[x]!, sy = st[y]!;
+      if (_pts(sy) != _pts(sx)) return _pts(sy) - _pts(sx);
+      if (_dg(sy) != _dg(sx)) return _dg(sy) - _dg(sx);
+      return sy[4] - sx[4];
+    });
+    return order;
+  }
+
+  Future<void> _playNext() async {
+    final m = _userMatch();
+    if (m == null) return;
+    final opp = m.a == widget.userTeam ? m.b : m.a;
+    final res = await Navigator.of(context).push<List<int>>(MaterialPageRoute(
+        builder: (_) => GameScreen(
+            cfg: MatchConfig(
+                homeIdx: widget.userTeam,
+                awayIdx: opp,
+                diff: widget.diff,
+                matchLen: widget.matchLen),
+            tournament: true)));
+    if (res == null) return;
+    if (m.a == widget.userTeam) {
+      m.sa = res[0];
+      m.sb = res[1];
+    } else {
+      m.sa = res[1];
+      m.sb = res[0];
+    }
+    if (widget.isCup) {
+      _resolveCup(m);
+    } else {
+      m.played = true;
+    }
+    for (final om in rounds[roundIdx]) {
+      if (om.played) continue;
+      final s = _sim(om.a, om.b);
+      om.sa = s[0];
+      om.sb = s[1];
+      if (widget.isCup) {
+        _resolveCup(om);
+      } else {
+        om.played = true;
+      }
+    }
+    _advance();
+    if (mounted) setState(() {});
+  }
+
+  void _advance() {
+    if (widget.isCup) {
+      final um = rounds[roundIdx].firstWhere(
+          (x) => x.a == widget.userTeam || x.b == widget.userTeam,
+          orElse: () => rounds[roundIdx].first);
+      if (um.winner != widget.userTeam) {
+        eliminated = true;
+        champion = um.winner;
+        finished = true;
+        return;
+      }
+      if (rounds[roundIdx].length == 1) {
+        champion = widget.userTeam;
+        finished = true;
+      } else {
+        final winners = rounds[roundIdx].map((x) => x.winner!).toList();
+        final next = <TMatch>[];
+        for (int i = 0; i < winners.length; i += 2) {
+          next.add(TMatch(winners[i], winners[i + 1]));
+        }
+        rounds.add(next);
+        roundIdx++;
+      }
+    } else {
+      if (roundIdx < rounds.length - 1) {
+        roundIdx++;
+      } else {
+        champion = _sortedPool().first;
+        finished = true;
+      }
+    }
+  }
+
+  String _cupRoundName(int matches) => matches >= 4
+      ? 'CUARTOS'
+      : matches == 2
+          ? 'SEMIFINALES'
+          : 'FINAL';
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(widget.isCup ? '🏆 COPA MOIN' : '🏅 LIGA MOIN'),
+        backgroundColor: const Color(0xFF063a26),
+      ),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              if (finished) _finishBanner(),
+              if (widget.isCup) _cupView() else _leagueView(),
+              const SizedBox(height: 18),
+              if (!finished)
+                FilledButton(
+                  style: FilledButton.styleFrom(
+                      backgroundColor: const Color(0xFF16c172),
+                      padding: const EdgeInsets.symmetric(vertical: 15)),
+                  onPressed: _playNext,
+                  child: Text(_nextLabel(),
+                      style: const TextStyle(
+                          fontWeight: FontWeight.w900, fontSize: 18)),
+                )
+              else
+                FilledButton(
+                  style: FilledButton.styleFrom(
+                      backgroundColor: const Color(0xFF3a4a55),
+                      padding: const EdgeInsets.symmetric(vertical: 15)),
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: const Text('VOLVER AL MENÚ',
+                      style: TextStyle(
+                          fontWeight: FontWeight.w900, fontSize: 16)),
+                ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  String _nextLabel() {
+    if (widget.isCup) {
+      return 'JUGAR ${_cupRoundName(rounds[roundIdx].length)} ▶';
+    }
+    return 'JUGAR JORNADA ${roundIdx + 1} ▶';
+  }
+
+  Widget _finishBanner() {
+    String title, msg;
+    if (champion == widget.userTeam) {
+      title = '🏆 ¡CAMPEONES!';
+      msg = '¡${kTeams[widget.userTeam].name} levanta el título!';
+    } else if (eliminated) {
+      title = '😞 ELIMINADOS';
+      msg = 'Campeón: ${champion != null ? kTeams[champion!].name : "-"}.';
+    } else {
+      title = '🏁 FIN DE LA LIGA';
+      msg = 'Campeón: ${champion != null ? kTeams[champion!].name : "-"}.';
+    }
+    return Container(
+      margin: const EdgeInsets.only(bottom: 14),
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.06),
+          borderRadius: BorderRadius.circular(14)),
+      child: Column(
+        children: [
+          Text(title,
+              style:
+                  const TextStyle(fontSize: 22, fontWeight: FontWeight.w900)),
+          const SizedBox(height: 4),
+          Text(msg,
+              textAlign: TextAlign.center,
+              style: const TextStyle(color: Color(0xFF9fbdb0))),
+        ],
+      ),
+    );
+  }
+
+  Widget _teamRow(int idx, {bool bold = false}) {
+    final t = kTeams[idx];
+    final me = idx == widget.userTeam;
+    return Row(
+      children: [
+        TeamCrest(t, size: 15),
+        const SizedBox(width: 6),
+        Expanded(
+          child: Text(t.name,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                  fontWeight: me || bold ? FontWeight.w900 : FontWeight.w600,
+                  color: me ? const Color(0xFF7CFC8A) : Colors.white,
+                  fontSize: 13)),
+        ),
+      ],
+    );
+  }
+
+  Widget _leagueView() {
+    final order = _sortedPool();
+    final st = _standings();
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.05),
+          borderRadius: BorderRadius.circular(14)),
+      child: Column(
+        children: [
+          Row(
+            children: const [
+              SizedBox(width: 22, child: Text('#', style: _thdr)),
+              Expanded(child: Text('EQUIPO', style: _thdr)),
+              SizedBox(width: 30, child: Text('PJ', style: _thdr, textAlign: TextAlign.center)),
+              SizedBox(width: 34, child: Text('DG', style: _thdr, textAlign: TextAlign.center)),
+              SizedBox(width: 34, child: Text('PTS', style: _thdr, textAlign: TextAlign.center)),
+            ],
+          ),
+          const Divider(color: Colors.white24, height: 14),
+          ...List.generate(order.length, (i) {
+            final idx = order[i];
+            final s = st[idx]!;
+            return Padding(
+              padding: const EdgeInsets.symmetric(vertical: 4),
+              child: Row(
+                children: [
+                  SizedBox(
+                      width: 22,
+                      child: Text('${i + 1}',
+                          style: TextStyle(
+                              fontWeight: FontWeight.w800,
+                              color: i == 0
+                                  ? const Color(0xFFffe27a)
+                                  : Colors.white70))),
+                  Expanded(child: _teamRow(idx)),
+                  SizedBox(
+                      width: 30,
+                      child: Text('${s[0]}',
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(color: Colors.white70))),
+                  SizedBox(
+                      width: 34,
+                      child: Text('${_dg(s) >= 0 ? '+' : ''}${_dg(s)}',
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(color: Colors.white70))),
+                  SizedBox(
+                      width: 34,
+                      child: Text('${_pts(s)}',
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                              fontWeight: FontWeight.w900))),
+                ],
+              ),
+            );
+          }),
+        ],
+      ),
+    );
+  }
+
+  Widget _cupView() {
+    final next = finished ? null : _userMatch();
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        for (int ri = 0; ri < rounds.length; ri++) ...[
+          Padding(
+            padding: const EdgeInsets.only(top: 6, bottom: 4, left: 2),
+            child: Text(_cupRoundName(rounds[ri].length),
+                style: const TextStyle(
+                    color: Color(0xFF7fd6a8),
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: 2,
+                    fontSize: 12)),
+          ),
+          ...rounds[ri].map((m) => _cupMatch(m, m == next)),
+        ],
+      ],
+    );
+  }
+
+  Widget _cupMatch(TMatch m, bool live) {
+    String score;
+    if (m.played) {
+      score = '${m.sa} - ${m.sb}';
+      if (m.pens != null) score += '  (p ${m.pens![0]}-${m.pens![1]})';
+    } else {
+      score = 'vs';
+    }
+    Color? bg = live ? const Color(0x2021d4fd) : Colors.white.withOpacity(0.05);
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 3),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+      decoration: BoxDecoration(
+          color: bg,
+          borderRadius: BorderRadius.circular(10),
+          border: live
+              ? Border.all(color: const Color(0xFF21d4fd), width: 2)
+              : null),
+      child: Row(
+        children: [
+          Expanded(
+              child: _teamRow(m.a, bold: m.played && m.winner == m.a)),
+          SizedBox(
+              width: 96,
+              child: Text(score,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                      fontWeight: FontWeight.w900, fontSize: 13))),
+          Expanded(
+              child: _teamRow(m.b, bold: m.played && m.winner == m.b)),
+        ],
+      ),
+    );
+  }
+}
+
+const TextStyle _thdr = TextStyle(
+    color: Color(0xFF7fd6a8), fontWeight: FontWeight.w800, fontSize: 11);
