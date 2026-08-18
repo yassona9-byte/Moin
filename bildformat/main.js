@@ -669,6 +669,7 @@
      Corner ad toast (placeholder, dismissible, session-remembered)
      ========================================================== */
   function initAdToast() {
+    if (!DATA.adsEnabled) return;
     const toast = $("#ad-toast");
     if (!toast) return;
     let closed = null;
@@ -685,6 +686,7 @@
      Boot
      ========================================================== */
   function boot() {
+    if (DATA.adsEnabled) document.documentElement.classList.add("ads-on");
     safe(initConsent, "initConsent");
     safe(initAdToast, "initAdToast");
     if (tool) {

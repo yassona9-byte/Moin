@@ -311,6 +311,11 @@ select {
   color: var(--ink-soft); font-size: .78rem;
 }
 
+/* Interruptor global de publicidad: los huecos solo se muestran si
+   lib/manifest.js declara adsEnabled: true (main.js añade .ads-on). */
+html:not(.ads-on) .ad-slot,
+html:not(.ads-on) .ad-toast { display: none !important; }
+
 /* =============================================================
    7. Content sections
    ============================================================= */

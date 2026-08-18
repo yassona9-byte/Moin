@@ -21,6 +21,15 @@
     tagline: "Bilder für Social Media zuschneiden – direkt im Browser",
     dataYear: 2026,
 
+    // INTERRUPTOR DE PUBLICIDAD (fase de prueba).
+    // false = los huecos ANZEIGE (banner, in-content y aviso de esquina)
+    //         quedan completamente ocultos. La web se comporta como un
+    //         proyecto personal sin monetizar.
+    // true  = los huecos vuelven a mostrarse (fase 2: Gewerbe + Impressum
+    //         completo + código del anunciante dentro del bloque bloqueado
+    //         por el banner de cookies).
+    adsEnabled: false,
+
     platforms: [
       {
         id: "youtube",

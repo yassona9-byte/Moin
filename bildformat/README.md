@@ -21,7 +21,7 @@ Herramienta que corre por completo en el navegador del visitante (las imágenes 
 
 1. **Rellenar los huecos amarillos** de `impressum.html` y `datenschutz.html` (nombre, dirección, email, teléfono, hosting…). Están marcados como `[HIER … EINTRAGEN]`.
 2. Añadir la URL canónica en `index.html` (hay un comentario `TODO` en el `<head>`).
-3. Los huecos de publicidad (marcados ANZEIGE) están vacíos a propósito: el código del anunciante se pega dentro del bloque bloqueado por el banner de cookies (comentario en el `<head>` de `index.html`), para que solo cargue tras la aceptación del visitante.
+3. Los huecos de publicidad (marcados ANZEIGE) están **ocultos** en la fase de prueba: el interruptor `adsEnabled` en `lib/manifest.js` está en `false`. Para la fase de monetización: poner `adsEnabled: true`, completar el Impressum con datos reales (y Gewerbe hecho), y pegar el código del anunciante dentro del bloque bloqueado por el banner de cookies (comentario en el `<head>` de `index.html`), para que solo cargue tras la aceptación del visitante.
 
 ## Vista previa local
 
