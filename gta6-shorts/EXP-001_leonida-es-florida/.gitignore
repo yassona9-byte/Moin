@@ -1,0 +1,5 @@
+build/frames/
+build/test/
+build/*.wav
+export/
+*.blend1

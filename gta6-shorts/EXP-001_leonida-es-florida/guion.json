@@ -1,0 +1,12 @@
+[
+ {"id":"hook",   "tts":"Este estado no existe. Pero lo conoces de sobra.", "sub":"Este estado NO EXISTE. Pero lo conoces de sobra."},
+ {"id":"ctx",    "tts":"Ge, te, a, seis, transcurre en Leonida: un estado inventado por Rockstar, con seis regiones oficiales.", "sub":"GTA VI transcurre en LEONIDA: un estado inventado por Rockstar, con SEIS regiones oficiales."},
+ {"id":"vice",   "tts":"Vice City: su versión de Miami.", "sub":"VICE CITY: su versión de MIAMI."},
+ {"id":"keys",   "tts":"Los Cayos de Leonida, como los Cayos de Florida.", "sub":"Los CAYOS DE LEONIDA, como los Cayos de Florida."},
+ {"id":"grass",  "tts":"Grass rivers: un pantano que recuerda a los Everglades.", "sub":"GRASSRIVERS: un pantano que recuerda a los EVERGLADES."},
+ {"id":"ambro",  "tts":"Ambrosia, en el corazón del estado.", "sub":"AMBROSIA, en el corazón del estado."},
+ {"id":"kalaga", "tts":"Mount Kalaga, un parque nacional pegado a la frontera norte.", "sub":"MOUNT KALAGA, un parque nacional pegado a la frontera norte."},
+ {"id":"port",   "tts":"Y Port Gellhorn... el que más dudas genera.", "sub":"Y PORT GELLHORN... el que más dudas genera."},
+ {"id":"reveal", "tts":"Leonida no se llama Florida. Pero las piezas encajan demasiado bien.", "sub":"Leonida no se llama Florida. Pero las piezas encajan DEMASIADO bien."},
+ {"id":"cierre", "tts":"¿Qué región vas a explorar primero?", "sub":"¿Qué región vas a explorar PRIMERO?"}
+]
