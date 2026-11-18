@@ -217,10 +217,11 @@ elif SHOT == "s7_linea":
     cu = bpy.data.curves.new("line", "CURVE"); cu.dimensions = "3D"; sp = cu.splines.new("POLY"); sp.points.add(1)
     sp.points[0].co = (0, 0, 0.05, 1); sp.points[1].co = (end_x, 0, 0.05, 1)
     cu.bevel_depth = 0.03; ln = link(bpy.data.objects.new("line", cu)); cu.materials.append(mat_emission("ln", PINK, 12))
-    cu.bevel_factor_end = 0.0; cu.keyframe_insert("bevel_factor_end", frame=1)
-    cu.bevel_factor_end = 1.0; cu.keyframe_insert("bevel_factor_end", frame=fr(0.62))
+    MT = {1997: 4, 2000: fr(0.2), 2013: fr(0.42), 2026: fr(0.64)}     # momento en que la línea llega a cada año
+    for y, f in MT.items():
+        cu.bevel_factor_end = (y - 1997) * K / end_x; cu.keyframe_insert("bevel_factor_end", frame=f)
     for y, lab, yr, col in marks:
-        x = (y - 1997) * K; f_on = 2 + int(fr(0.62) * x / end_x)
+        x = (y - 1997) * K; f_on = MT[y]
         big = y == 2026
         o, m = tube((x, 0, 0.05), (x, 0, 1.4 if big else 0.9), col, 14, 0.03)
         pop_scale(o, f_on, 8)
@@ -229,11 +230,15 @@ elif SHOT == "s7_linea":
         ml = mat_emission("l" + yr, CREAM, 0)
         text(lab, BB, 0.36 if big else 0.27, ml, (x, 0, (1.55 if big else 1.0) + (0.0 if big else -0.0) - (0.0)), extrude=0.015).location.z = (2.55 if big else 1.68)
         neon_flicker_on(ml, f_on + 4, 5, flick=False)
-    light("AREA", "rim", (end_x, 3, 3), (R(-50), 0, 0), PINK, 200, 4)
+    light("AREA", "rim", (end_x, 3, 3), (R(-50), 0, 0), PINK, 200, 4, 0.0)
     cam, tgt = camera(30)
-    cam_keys(cam, tgt, [(1, V((-1.0, -4.2, 1.6)), V((1.0, 0, 0.9))),
-                        (fr(0.62), V((end_x - 4.0, -4.6, 1.8)), V((end_x - 1.0, 0, 1.2))),
-                        (N, V((end_x - 0.9, -4.4, 1.7)), V((end_x, 0, 1.6)))], 0.01)
+    keys = []
+    for y, *_ in marks:
+        x = (y - 1997) * K
+        keys.append((max(1, MT[y] + 4), V((x - 0.45, -4.2, 1.55)), V((x, 0, 0.95))))
+    keys[0] = (1, V((-0.6, -4.0, 1.5)), V((0.2, 0, 0.9)))
+    keys.append((N, V((end_x - 0.7, -4.3, 1.7)), V((end_x, 0, 1.6))))
+    cam_keys(cam, tgt, keys, 0.01)
 
 else:
     raise SystemExit("plano desconocido: %s" % SHOT)
