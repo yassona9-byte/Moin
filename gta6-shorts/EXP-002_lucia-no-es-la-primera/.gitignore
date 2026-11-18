@@ -1,0 +1,6 @@
+build/shots/
+build/*.mp4
+build/*.wav
+build/*.png
+export/
+audio/*.mp3

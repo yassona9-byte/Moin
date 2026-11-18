@@ -1,0 +1,9 @@
+[
+ {"id":"hook",   "shot":"s1_titulo",   "text":"Todo el mundo dice que Lucía es la primera protagonista mujer de GTA. Y no es verdad."},
+ {"id":"y1997",  "shot":"s2_crt",      "text":"Hay que volver a 1997. En el primer Grand Theft Auto, en PC, elegías entre ocho criminales. Y cuatro eran mujeres: Divine, Katie, Mikki y Ulrika."},
+ {"id":"sprite", "shot":"s3_cenital",  "text":"Eso sí: en la calle todas eran el mismo muñequito visto desde arriba. Sin voz y sin historia."},
+ {"id":"gbc",    "shot":"s4_portatil", "text":"La versión de Game Boy Color de GTA 2 repitió la idea, con Candy y Gretchen."},
+ {"id":"online", "shot":"s5_creador",  "text":"Y desde 2013, en GTA Online, cualquiera puede crearse su propia protagonista."},
+ {"id":"reveal", "shot":"s6_lucia",    "text":"Entonces, ¿qué tiene Lucía de especial? Que es la primera que no eliges tú: con nombre, con voz y con una historia escrita para ella."},
+ {"id":"cierre", "shot":"s7_linea",    "text":"Veintinueve años después del primer GTA. ¿Ha tardado demasiado Rockstar?"}
+]
